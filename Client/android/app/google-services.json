@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "573334362595",
+    "project_id": "doctorgpt-app",
+    "storage_bucket": "doctorgpt-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573334362595:android:02ecca1c3450030fa928d6",
+        "android_client_info": {
+          "package_name": "com.example.doctorgpt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2sIjl8g7AhlFbb78wbY3y1OxSVAY44cw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
