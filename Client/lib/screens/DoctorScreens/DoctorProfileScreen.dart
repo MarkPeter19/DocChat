@@ -82,16 +82,24 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Profile",
-          style: TextStyle(fontSize: 26),
-        ),
-      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(26),
         child: Column(
           children: [
+            //title
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Profile',
+                  style: TextStyle(fontSize: 32),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            //username
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
@@ -99,16 +107,20 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               ),
             ),
             SizedBox(height: 30),
+
+            //save username
             ElevatedButton(
               onPressed: _saveUsername,
               child: Text('Save Username'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.lightGreen, // Háttérszín
-                onPrimary: Colors.white, // Szövegszín
+                primary: Colors.lightGreen, 
+                onPrimary: Colors.white, 
                 textStyle: TextStyle(fontSize: 20),
               ),
             ),
             SizedBox(height: 20),
+
+            //password
             TextField(
               controller: _currentPasswordController,
               decoration: InputDecoration(
@@ -117,6 +129,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               obscureText: true,
             ),
             SizedBox(height: 20),
+
+            //new password
             TextField(
               controller: _newPasswordController,
               decoration: InputDecoration(
@@ -125,15 +139,20 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               obscureText: true,
             ),
             SizedBox(height: 30),
+
+            //save password
             ElevatedButton(
-              onPressed: () => _changePassword(_currentPasswordController.text, _newPasswordController.text),
+              onPressed: () => _changePassword(
+                  _currentPasswordController.text, _newPasswordController.text),
               child: Text('Save Password'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.green, // Háttérszín
-                onPrimary: Colors.white, // Szövegszín
+                primary: Colors.green, 
+                onPrimary: Colors.white,
                 textStyle: TextStyle(fontSize: 20),
               ),
             ),
+
+            //log out
             SizedBox(height: 200),
             ElevatedButton(
               onPressed: _logout,
@@ -145,6 +164,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               ),
             ),
             SizedBox(height: 10),
+
+            //delete
             ElevatedButton(
               onPressed: _deleteAccount,
               child: Text('Delete Account'),
