@@ -89,81 +89,85 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(
-              'Register',
-              style: TextStyle(
-                fontSize: 32.0,
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              SizedBox(height: 60.0),
+              Text(
+                'Register',
+                style: TextStyle(
+                  fontSize: 32.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 48.0),
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 24.0),
-            Center(
-              child: ToggleButtons(
-                // user type select: Patient/Doctor
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32.0),
-                    child: Text('Patient'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32.0),
-                    child: Text('Doctor'),
-                  ),
-                ],
-                onPressed: (int index) {
-                  setState(() {
-                    for (int i = 0; i < _selections.length; i++) {
-                      _selections[i] = (i == index);
-                    }
-                    _userType = index == 0 ? UserType.patient : UserType.doctor;
-                  });
+              SizedBox(height: 48.0),
+              TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(labelText: 'Username'),
+              ),
+              SizedBox(height: 16.0),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              SizedBox(height: 16.0),
+              TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              SizedBox(height: 24.0),
+              Center(
+                child: ToggleButtons(
+                  // user type select: Patient/Doctor
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Text('Patient'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Text('Doctor'),
+                    ),
+                  ],
+                  onPressed: (int index) {
+                    setState(() {
+                      for (int i = 0; i < _selections.length; i++) {
+                        _selections[i] = (i == index);
+                      }
+                      _userType =
+                          index == 0 ? UserType.patient : UserType.doctor;
+                    });
+                  },
+                  isSelected: _selections,
+                  borderRadius: BorderRadius.circular(35.0),
+                  fillColor: Theme.of(context).colorScheme.primary,
+                  selectedBorderColor: Theme.of(context).colorScheme.primary,
+                  selectedColor: Colors.white,
+                  borderColor: Theme.of(context).colorScheme.primary,
+                  borderWidth: 2,
+                ),
+              ),
+              SizedBox(height: 24.0),
+              ElevatedButton(
+                child: Text('Register'),
+                onPressed: _register,
+              ),
+              TextButton(
+                child: Text('Already have an account? Login here'),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushNamed('/login'); // Navigálj a LoginScreen-hez
                 },
-                isSelected: _selections,
-                borderRadius: BorderRadius.circular(35.0),
-                fillColor: Theme.of(context).colorScheme.primary,
-                selectedBorderColor: Theme.of(context).colorScheme.primary,
-                selectedColor: Colors.white,
-                borderColor: Theme.of(context).colorScheme.primary,
-                borderWidth: 2,
               ),
-            ),
-            SizedBox(height: 24.0),
-            ElevatedButton(
-              child: Text('Register'),
-              onPressed: _register,
-            ),
-            TextButton(
-              child: Text('Already have an account? Login here'),
-              onPressed: () {
-                Navigator.of(context)
-                    .pushNamed('/login'); // Navigálj a LoginScreen-hez
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

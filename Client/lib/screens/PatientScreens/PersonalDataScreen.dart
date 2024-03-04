@@ -1,3 +1,4 @@
+import 'package:doctorgpt/screens/PatientScreens/CameraScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -367,9 +368,9 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       bottomNavigationBar: BottomAppBar(
         height: 65,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0), // Szűkíti a gombok közötti távolságot
+          padding: const EdgeInsets.symmetric(horizontal: 0), 
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Egyenletesen elosztja a gombokat
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.arrow_back),
@@ -379,14 +380,13 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
               ),
               ElevatedButton(
                 onPressed: (){
-                  // Itt hozzáadod a navigációt az új dokumentum hozzáadása képernyőre
-                  // Például: Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddDocumentScreen()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => CameraScreen()));
                 }, 
                 child: Text('Add Analysis Doc'),
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).colorScheme.primary, // Gomb színe
-                  onPrimary: Colors.white, // Szöveg színe
-                  textStyle: TextStyle(fontSize: 16), // Szöveg stílusa
+                  primary: Theme.of(context).colorScheme.primary, 
+                  onPrimary: Colors.white, 
+                  textStyle: TextStyle(fontSize: 16), 
                 ),
               ),
             ],
