@@ -28,24 +28,35 @@ class _CameraScreenState extends State<CameraScreen> {
   Future<void> _uploadImage() async {
     if (_image == null) return;
     final uri = Uri.parse(
-        'http://10.0.2.2:8000/upload/'); // Az Android Emulátor esetében a localhost elérése 10.0.2.2
+        'http://192.168.1.4:8000/upload/'); // A szerver lokalis IP cime, ha emulatort hasznalok -> http://10.0.2.2:8000/upload/
     final request = http.MultipartRequest('POST', uri)
       ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
-    
-    final response = await request.send();
 
-    if (response.statusCode == 200) {
-      // Sikeres feltöltés
-      final responseData = await response.stream.toBytes();
-      final responseString = String.fromCharCodes(responseData);
-      final decodedResponse = json.decode(responseString); // Itt dekódoljuk a JSON-t
+    try {
+      final response = await request.send();
 
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) =>
-            ViewAnalysisResultScreen(result: decodedResponse['text']),
-      ));
-    } else {
-      print('Failed to upload image');
+      if (response.statusCode == 200) {
+        // Sikeres feltöltés
+        final responseData = await response.stream.toBytes();
+        final responseString = String.fromCharCodes(responseData);
+        final decodedResponse =
+            json.decode(responseString); // Itt dekódoljuk a JSON-t
+
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>
+              ViewAnalysisResultScreen(result: decodedResponse['text']),
+        ));
+      } else {
+        // Sikertelen feltöltés, megjelenítünk egy Snackbar üzenetet
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to upload image. Please try again.')),
+        );
+      }
+    } catch (e) {
+      // Hálózati vagy egyéb hiba esetén is informáljuk a felhasználót
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred. Please try again.')),
+      );
     }
   }
 
@@ -59,24 +70,26 @@ class _CameraScreenState extends State<CameraScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (_image != null) Image.file(File(_image!.path)),
-            ElevatedButton(
-              onPressed: () => _pickImage(ImageSource.camera),
-              child: Text('Take Picture'),
-            ),
-            ElevatedButton(
-              onPressed: () => _pickImage(ImageSource.gallery),
-              child: Text('Pick from Gallery'),
-            ),
-            ElevatedButton(
-              onPressed: _uploadImage,
-              child: Text('Extract Data'),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              if (_image != null) Image.file(File(_image!.path)),
+              ElevatedButton(
+                onPressed: () => _pickImage(ImageSource.camera),
+                child: Text('Take Picture'),
+              ),
+              ElevatedButton(
+                onPressed: () => _pickImage(ImageSource.gallery),
+                child: Text('Pick from Gallery'),
+              ),
+              ElevatedButton(
+                onPressed: _uploadImage,
+                child: Text('Extract Data'),
+              ),
+            ],
+          ),
         ),
       ),
     );

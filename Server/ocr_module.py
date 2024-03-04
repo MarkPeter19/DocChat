@@ -2,9 +2,11 @@
 
 import pytesseract
 from PIL import Image
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 import aiofiles
 import os
+import io
+
 
 
 # Pillow csomag ->  segítségével olvashatod be a képeket, amelyekre a Tesseract alkalmazva lesz
@@ -16,20 +18,17 @@ import os
 
 async def extract_text_from_image(file: UploadFile):
     try:
-        # Az ideiglenes fájl kiterjesztésének megfelelő beállítása
-        suffix = os.path.splitext(file.filename)[1]
-        async with aiofiles.tempfile.NamedTemporaryFile(delete=True, suffix=suffix) as temp_file:
-            await temp_file.write(await file.read())
-            await temp_file.seek(0)
-            
-            # Kép előfeldolgozása, ha szükséges (pl. méretezés)
-            image = Image.open(temp_file.name)
-            # Itt hajtható végre esetleges kép előfeldolgozás
-            
-            # OCR feldolgozás
-            text = pytesseract.image_to_string(image)
-            return text
+        # A fájl tartalmának beolvasása az emlékezetbe
+        contents = await file.read()
+        image = Image.open(io.BytesIO(contents))
+        
+        # Kép előfeldolgozása, ha szükséges (pl. méretezés)
+        # Itt hajtható végre esetleges kép előfeldolgozás
+        
+        # OCR feldolgozás
+        text = pytesseract.image_to_string(image)
+        print(text)
+        return text
     except Exception as e:
         print(f"Error processing image: {e}")
         return None
-
