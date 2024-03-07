@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from ocr_module import extract_text_from_image
+from ocr_module_tesseract import extract_text_from_image
 import logging
 
 logger = logging.getLogger("ocr_logger")
