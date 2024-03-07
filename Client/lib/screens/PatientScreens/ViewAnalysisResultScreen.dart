@@ -11,11 +11,13 @@ class ViewAnalysisResultScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('View Analysis Result'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text(
-          result,
-          style: TextStyle(fontSize: 8.0),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            result,
+            style: TextStyle(fontSize: 8.0),
+          ),
         ),
       ),
     );
