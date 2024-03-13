@@ -79,6 +79,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     }
   }
 
+ 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +108,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                 labelText: 'Change username',
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 20),
 
             //save username
             ElevatedButton(
@@ -115,7 +117,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               style: ElevatedButton.styleFrom(
                 primary: Colors.lightGreen, 
                 onPrimary: Colors.white, 
-                textStyle: TextStyle(fontSize: 20),
+                textStyle: TextStyle(fontSize: 16),
               ),
             ),
             SizedBox(height: 20),
@@ -138,7 +140,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               ),
               obscureText: true,
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 20),
 
             //save password
             ElevatedButton(
@@ -148,19 +150,19 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               style: ElevatedButton.styleFrom(
                 primary: Colors.green, 
                 onPrimary: Colors.white,
-                textStyle: TextStyle(fontSize: 20),
+                textStyle: TextStyle(fontSize: 16),
               ),
             ),
 
             //log out
-            SizedBox(height: 200),
+            SizedBox(height: 70),
             ElevatedButton(
               onPressed: _logout,
               child: Text('Log Out'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.orange,
+                primary: Color.fromARGB(255, 252, 171, 50),
                 onPrimary: Colors.white,
-                textStyle: TextStyle(fontSize: 20),
+                textStyle: TextStyle(fontSize: 16),
               ),
             ),
             SizedBox(height: 10),
@@ -170,9 +172,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               onPressed: _deleteAccount,
               child: Text('Delete Account'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.red,
+                primary: const Color.fromARGB(255, 255, 106, 96),
                 onPrimary: Colors.white,
-                textStyle: TextStyle(fontSize: 20),
+                textStyle: TextStyle(fontSize: 16),
               ),
             ),
           ],
@@ -181,3 +183,4 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
     );
   }
 }
+

@@ -1,7 +1,7 @@
 {
   "file_generated_by": "FlutterFire CLI",
   "purpose": "FirebaseAppID & ProjectID for this Firebase app in this directory",
-  "GOOGLE_APP_ID": "1:573334362595:ios:1b2746328d3499afa928d6",
-  "FIREBASE_PROJECT_ID": "doctorgpt-app",
-  "GCM_SENDER_ID": "573334362595"
+  "GOOGLE_APP_ID": "1:1075918910108:ios:34255c34635982ec5af359",
+  "FIREBASE_PROJECT_ID": "appdoctorgpt",
+  "GCM_SENDER_ID": "1075918910108"
 }

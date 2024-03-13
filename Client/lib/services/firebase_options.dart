@@ -44,38 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBsncRFC3s4pKNMIDkwA_74L9Te-6WI3hs',
-    appId: '1:573334362595:web:fb0a7aee04329e82a928d6',
-    messagingSenderId: '573334362595',
-    projectId: 'doctorgpt-app',
-    authDomain: 'doctorgpt-app.firebaseapp.com',
-    storageBucket: 'doctorgpt-app.appspot.com',
-    measurementId: 'G-1B36J76E32',
+    apiKey: 'AIzaSyCQLYpq_PUMzC9bfZUMQloG2h2E-cIXxfU',
+    appId: '1:1075918910108:web:9eb381a1b8fe4e355af359',
+    messagingSenderId: '1075918910108',
+    projectId: 'appdoctorgpt',
+    authDomain: 'appdoctorgpt.firebaseapp.com',
+    storageBucket: 'appdoctorgpt.appspot.com',
+    measurementId: 'G-CQF3NHN3SW',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA2sIjl8g7AhlFbb78wbY3y1OxSVAY44cw',
-    appId: '1:573334362595:android:02ecca1c3450030fa928d6',
-    messagingSenderId: '573334362595',
-    projectId: 'doctorgpt-app',
-    storageBucket: 'doctorgpt-app.appspot.com',
+    apiKey: 'AIzaSyCWh-qvOSUQOnANGuVcOByJ0JFlFcMJoio',
+    appId: '1:1075918910108:android:e7b76c059d42af7b5af359',
+    messagingSenderId: '1075918910108',
+    projectId: 'appdoctorgpt',
+    storageBucket: 'appdoctorgpt.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyALFj_ss-8vxj0PPK-QxEG53VnJVJiUnNk',
-    appId: '1:573334362595:ios:437ff0e27cf48ccca928d6',
-    messagingSenderId: '573334362595',
-    projectId: 'doctorgpt-app',
-    storageBucket: 'doctorgpt-app.appspot.com',
+    apiKey: 'AIzaSyBYXFyH2_ded_RX-8fYQscQQduZWl1sacc',
+    appId: '1:1075918910108:ios:e657929bdd05d4885af359',
+    messagingSenderId: '1075918910108',
+    projectId: 'appdoctorgpt',
+    storageBucket: 'appdoctorgpt.appspot.com',
     iosBundleId: 'com.example.doctorgpt',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyALFj_ss-8vxj0PPK-QxEG53VnJVJiUnNk',
-    appId: '1:573334362595:ios:1b2746328d3499afa928d6',
-    messagingSenderId: '573334362595',
-    projectId: 'doctorgpt-app',
-    storageBucket: 'doctorgpt-app.appspot.com',
+    apiKey: 'AIzaSyBYXFyH2_ded_RX-8fYQscQQduZWl1sacc',
+    appId: '1:1075918910108:ios:34255c34635982ec5af359',
+    messagingSenderId: '1075918910108',
+    projectId: 'appdoctorgpt',
+    storageBucket: 'appdoctorgpt.appspot.com',
     iosBundleId: 'com.example.doctorgpt.RunnerTests',
   );
 }

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:doctorgpt/screens/PatientScreens/ViewAnalysisResultScreen.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+//import 'package:google_ml_kit/';
 import 'dart:convert';
 //import 'package:http/http.dart' as http;
 
@@ -26,55 +26,98 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  // Future<void> _extractText() async {
+  //   if (_image == null) {
+  //     // Megjelenít egy Snackbar-t, ha nincs kép kiválasztva
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('No image selected')),
+  //     );
+  //     return;
+  //   }
 
-  Future<void> _extractText() async {
-  if (_image == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('No image selected')),
-    );
-    return;
-  }
+  //   final inputImage = InputImage.fromFilePath(_image!.path);
+  //   final textDetector = GoogleMlKit.vision.textRecognizer();
 
-  final inputImage = InputImage.fromFilePath(_image!.path);
-  final textDetector = GoogleMlKit.vision.textRecognizer();
+  //   try {
+  //     final RecognizedText recognizedText =
+  //         await textDetector.processImage(inputImage);
+  //     String text = recognizedText.text;
 
-  try {
-    final RecognizedText recognizedText = await textDetector.processImage(inputImage);
-    Map<String, dynamic> structuredResults = {};
+  //     if (text.isEmpty) {
+  //       // Megjelenít egy Snackbar-t, ha nem található szöveg a képen
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('No text found in the image')),
+  //       );
+  //     } else {
+  //       // Sikeres szövegazonosítás után átnavigál a ViewAnalysisResultScreen-re
+  //       Navigator.of(context).push(MaterialPageRoute(
+  //         builder: (context) => ViewAnalysisResultScreen(result: text),
+  //       ));
+  //     }
+  //   } catch (e) {
+  //     print(e); // Konzolra írja a hibát
+  //     // Megjelenít egy Snackbar-t, ha a szövegfeldolgozás során hiba történt
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error processing image: $e')),
+  //     );
+  //   } finally {
+  //     textDetector.close(); // Bezárja a detektort
+  //   }
+  // }
 
-    for (TextBlock block in recognizedText.blocks) {
-      for (TextLine line in block.lines) {
-        // Itt próbáljuk meg azonosítani a sorokat és értékeket, amiket strukturálni szeretnénk
-        // Ez függ a konkrét adatstruktúrától, amit vissza szeretnénk kapni
-        // Például: "Hemoglobina (HGB): 15,6 g/dl" -> {"Hemoglobina (HGB)": "15,6 g/dl"}
+// Future<void> _extractText() async {
+//   if (_image == null) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('No image selected')),
+//     );
+//     return;
+//   }
 
-        // Egyszerű szövegfelismerés esetén
-        String key = line.text.split(':')[0].trim();
-        String value = line.text.split(':').length > 1 ? line.text.split(':')[1].trim() : '';
-        structuredResults[key] = value;
-      }
-    }
+//   final inputImage = InputImage.fromFilePath(_image!.path);
+//   final textDetector = GoogleMlKit.vision.textRecognizer();
 
-    if (structuredResults.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No text found in the image')),
-      );
-    } else {
-      // Navigálás az eredmények megjelenítésére
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => ViewAnalysisResultScreen(result: jsonEncode(structuredResults)),
-      ));
-    }
-  } catch (e) {
-    print(e);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error processing image: $e')),
-    );
-  } finally {
-    textDetector.close();
-  }
-}
+//   try {
+//     final RecognizedText recognizedText = await textDetector.processImage(inputImage);
+//     List<Map<String, dynamic>> structuredResults = [];
 
+//     for (TextBlock block in recognizedText.blocks) {
+//       for (TextLine line in block.lines) {
+//         // Azonosíthatjuk az oszlopokat a megfelelő szóközök alapján
+//         List<String> parts = line.text.split(RegExp(r"\s{2,}")); // Több szóköz alapján történő felosztás
+
+//         if (parts.length >= 3) { // Feltételezve, hogy van név, érték és referencia értékek
+//           String name = parts[0];
+//           String value = parts[1];
+//           String reference = parts.sublist(2).join(" "); // A referenciaértékek összefűzése
+
+//           structuredResults.add({
+//             "name": name,
+//             "value": value,
+//             "reference": reference,
+//           });
+//         }
+//       }
+//     }
+
+//     if (structuredResults.isEmpty) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('No text found in the image')),
+//       );
+//     } else {
+//       // Az eredmények átadása az eredményeket megjelenítő képernyőnek
+//       Navigator.of(context).push(MaterialPageRoute(
+//         builder: (context) => ViewAnalysisResultScreen(result: jsonEncode(structuredResults)),
+//       ));
+//     }
+//   } catch (e) {
+//     print(e);
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('Error processing image: $e')),
+//     );
+//   } finally {
+//     textDetector.close();
+//   }
+// }
 
   // kep elkuldese a server-re
 
@@ -138,7 +181,8 @@ class _CameraScreenState extends State<CameraScreen> {
                 child: Text('Pick from Gallery'),
               ),
               ElevatedButton(
-                onPressed: _extractText,
+                onPressed: () {},
+                //onPressed: _extractText,
                 child: Text('Extract Data'),
               ),
             ],

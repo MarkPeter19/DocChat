@@ -13,7 +13,7 @@ class PatientHomeScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 550),
+              SizedBox(height: 350),
               ElevatedButton(
                 onPressed: () => Navigator.push(
                   context,

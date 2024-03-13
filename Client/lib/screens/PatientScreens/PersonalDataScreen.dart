@@ -322,7 +322,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 borderColor: Color.fromARGB(255, 232, 90, 82),
                 borderWidth: 2,
                 constraints: BoxConstraints(
-                    minHeight: 50.0), // Növeli a ToggleButton magasságát
+                    minHeight: 50.0),
               ),
 
               // medical history
