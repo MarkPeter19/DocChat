@@ -2,8 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:doctorgpt/screens/PatientScreens/ViewAnalysisResultScreen.dart';
-//import 'package:google_ml_kit/';
-import 'dart:convert';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+
+//import 'dart:convert';
 //import 'package:http/http.dart' as http;
 
 class CameraScreen extends StatefulWidget {
@@ -26,98 +27,41 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  // Future<void> _extractText() async {
-  //   if (_image == null) {
-  //     // Megjelenít egy Snackbar-t, ha nincs kép kiválasztva
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('No image selected')),
-  //     );
-  //     return;
-  //   }
+  Future<void> _extractText() async {
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select an image first.')),
+      );
+      return;
+    }
 
-  //   final inputImage = InputImage.fromFilePath(_image!.path);
-  //   final textDetector = GoogleMlKit.vision.textRecognizer();
+    final inputImage = InputImage.fromFilePath(_image!.path);
+    final textRecognizer = TextRecognizer();
 
-  //   try {
-  //     final RecognizedText recognizedText =
-  //         await textDetector.processImage(inputImage);
-  //     String text = recognizedText.text;
+    try {
+      final RecognizedText recognizedText =
+          await textRecognizer.processImage(inputImage);
+      final String text = recognizedText.text;
 
-  //     if (text.isEmpty) {
-  //       // Megjelenít egy Snackbar-t, ha nem található szöveg a képen
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('No text found in the image')),
-  //       );
-  //     } else {
-  //       // Sikeres szövegazonosítás után átnavigál a ViewAnalysisResultScreen-re
-  //       Navigator.of(context).push(MaterialPageRoute(
-  //         builder: (context) => ViewAnalysisResultScreen(result: text),
-  //       ));
-  //     }
-  //   } catch (e) {
-  //     print(e); // Konzolra írja a hibát
-  //     // Megjelenít egy Snackbar-t, ha a szövegfeldolgozás során hiba történt
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error processing image: $e')),
-  //     );
-  //   } finally {
-  //     textDetector.close(); // Bezárja a detektort
-  //   }
-  // }
+      if (text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No text recognized in the image')),
+        );
+        return;
+      }
 
-// Future<void> _extractText() async {
-//   if (_image == null) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text('No image selected')),
-//     );
-//     return;
-//   }
-
-//   final inputImage = InputImage.fromFilePath(_image!.path);
-//   final textDetector = GoogleMlKit.vision.textRecognizer();
-
-//   try {
-//     final RecognizedText recognizedText = await textDetector.processImage(inputImage);
-//     List<Map<String, dynamic>> structuredResults = [];
-
-//     for (TextBlock block in recognizedText.blocks) {
-//       for (TextLine line in block.lines) {
-//         // Azonosíthatjuk az oszlopokat a megfelelő szóközök alapján
-//         List<String> parts = line.text.split(RegExp(r"\s{2,}")); // Több szóköz alapján történő felosztás
-
-//         if (parts.length >= 3) { // Feltételezve, hogy van név, érték és referencia értékek
-//           String name = parts[0];
-//           String value = parts[1];
-//           String reference = parts.sublist(2).join(" "); // A referenciaértékek összefűzése
-
-//           structuredResults.add({
-//             "name": name,
-//             "value": value,
-//             "reference": reference,
-//           });
-//         }
-//       }
-//     }
-
-//     if (structuredResults.isEmpty) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('No text found in the image')),
-//       );
-//     } else {
-//       // Az eredmények átadása az eredményeket megjelenítő képernyőnek
-//       Navigator.of(context).push(MaterialPageRoute(
-//         builder: (context) => ViewAnalysisResultScreen(result: jsonEncode(structuredResults)),
-//       ));
-//     }
-//   } catch (e) {
-//     print(e);
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text('Error processing image: $e')),
-//     );
-//   } finally {
-//     textDetector.close();
-//   }
-// }
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => ViewAnalysisResultScreen(result: text),
+      ));
+    } catch (e) {
+      print("Error recognizing text: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to recognize text from image')),
+      );
+    } finally {
+      textRecognizer.close();
+    }
+  }
 
   // kep elkuldese a server-re
 
@@ -156,39 +100,106 @@ class _CameraScreenState extends State<CameraScreen> {
   //   }
   // }
 
+  Widget _buildImageSection() {
+    return Expanded(
+      child: _image == null
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('lib/assets/placeholder.png',
+                    width: double.infinity),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(
+                    "Add picture to analyze",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : Image.file(File(_image!.path)),
+    );
+  }
+
+  Widget _buildButtonSection() {
+    return Column(
+      children: [
+        _image == null
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    icon: Icon(Icons.photo_library),
+                    label: Text('Pic from Gallery'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Color.fromARGB(255, 255, 255, 255),
+                      textStyle: TextStyle(fontSize: 18),
+                    ),
+                  ),
+
+                  ElevatedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    icon: Icon(Icons.camera),
+                    label: Text('Take Picture'),
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 255, 255, 255),
+                      textStyle: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => setState(() => _image = null),
+                    icon: Icon(Icons.change_circle),
+                    label: Text('Change Picture'),
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 255, 255, 255),
+                      textStyle: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _extractText,
+                    icon: Icon(Icons.data_usage),
+                    label: Text('Extract Data'),
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 255, 255, 255),
+                      textStyle: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ],
+              ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Analysis'),
+        title: Text('Add Analysis' , style: TextStyle(fontSize: 28)),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              if (_image != null) Image.file(File(_image!.path)),
-              ElevatedButton(
-                onPressed: () => _pickImage(ImageSource.camera),
-                child: Text('Take Picture'),
-              ),
-              ElevatedButton(
-                onPressed: () => _pickImage(ImageSource.gallery),
-                child: Text('Pick from Gallery'),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                //onPressed: _extractText,
-                child: Text('Extract Data'),
-              ),
-            ],
-          ),
+      body: Center(
+        child: Column(
+          children: [
+            _buildImageSection(),
+            _buildButtonSection(),
+          ],
         ),
       ),
+
+      
     );
   }
 }
