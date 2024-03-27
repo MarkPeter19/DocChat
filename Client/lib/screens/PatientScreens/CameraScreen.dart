@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:doctorgpt/screens/PatientScreens/ViewAnalysisResultScreen.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 //import 'dart:convert';
 //import 'package:http/http.dart' as http;
@@ -15,7 +16,38 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
+  bool _isLoading = false;
 
+  //permissions
+  Future<void> _checkCameraPermission() async {
+    var status = await Permission.camera.status;
+    if (!status.isGranted) {
+      status = await Permission.camera.request();
+    }
+    if (status.isGranted) {
+      _pickImage(ImageSource.camera);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Camera permission denied')),
+      );
+    }
+  }
+
+  // Future<void> _checkGalleryPermission() async {
+  //   var status = await Permission.photos.status;
+  //   if (!status.isGranted) {
+  //     status = await Permission.photos.request();
+  //   }
+  //   if (status.isGranted) {
+  //     _pickImage(ImageSource.gallery);
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Gallery permission denied')),
+  //     );
+  //   }
+  // }
+
+  //pick image from gallery/camera
   Future<void> _pickImage(ImageSource source) async {
     try {
       final pickedFile = await _picker.pickImage(source: source);
@@ -27,7 +59,12 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  // OCR - extract data from image
   Future<void> _extractText() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please select an image first.')),
@@ -60,146 +97,73 @@ class _CameraScreenState extends State<CameraScreen> {
       );
     } finally {
       textRecognizer.close();
+      setState(() {
+        _isLoading = false;
+      });
     }
-  }
-
-  // kep elkuldese a server-re
-
-  // Future<void> _uploadImage() async {
-  //   if (_image == null) return;
-  //   final uri = Uri.parse(
-  //       'http://192.168.1.4:8000/upload/'); // A szerver lokalis IP cime, ha emulatort hasznalok -> http://10.0.2.2:8000/upload/
-  //   final request = http.MultipartRequest('POST', uri)
-  //     ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
-
-  //   try {
-  //     final response = await request.send();
-
-  //     if (response.statusCode == 200) {
-  //       // Sikeres feltöltés
-  //       final responseData = await response.stream.toBytes();
-  //       final responseString = String.fromCharCodes(responseData);
-  //       final decodedResponse =
-  //           json.decode(responseString); // Itt dekódoljuk a JSON-t
-
-  //       Navigator.of(context).push(MaterialPageRoute(
-  //         builder: (context) =>
-  //             ViewAnalysisResultScreen(result: decodedResponse['text']),
-  //       ));
-  //     } else {
-  //       // Sikertelen feltöltés, megjelenítünk egy Snackbar üzenetet
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Failed to upload image. Please try again.')),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     // Hálózati vagy egyéb hiba esetén is informáljuk a felhasználót
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('An error occurred. Please try again.')),
-  //     );
-  //   }
-  // }
-
-  Widget _buildImageSection() {
-    return Expanded(
-      child: _image == null
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('lib/assets/placeholder.png',
-                    width: double.infinity),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text(
-                    "Add picture to analyze",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple,
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : Image.file(File(_image!.path)),
-    );
-  }
-
-  Widget _buildButtonSection() {
-    return Column(
-      children: [
-        _image == null
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () => _pickImage(ImageSource.gallery),
-                    icon: Icon(Icons.photo_library),
-                    label: Text('Pic from Gallery'),
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromARGB(255, 255, 255, 255),
-                      textStyle: TextStyle(fontSize: 18),
-                    ),
-                  ),
-
-                  ElevatedButton.icon(
-                    onPressed: () => _pickImage(ImageSource.camera),
-                    icon: Icon(Icons.camera),
-                    label: Text('Take Picture'),
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(255, 255, 255, 255),
-                      textStyle: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () => setState(() => _image = null),
-                    icon: Icon(Icons.change_circle),
-                    label: Text('Change Picture'),
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(255, 255, 255, 255),
-                      textStyle: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: _extractText,
-                    icon: Icon(Icons.data_usage),
-                    label: Text('Extract Data'),
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(255, 255, 255, 255),
-                      textStyle: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ],
-              ),
-      ],
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Analysis' , style: TextStyle(fontSize: 28)),
+        title: Text('Add Analysis', style: TextStyle(fontSize: 32)),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context)),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            _buildImageSection(),
-            _buildButtonSection(),
-          ],
-        ),
+      body: Column(
+        children: [
+          SizedBox(height: 20),
+          SizedBox(
+            height: MediaQuery.of(context).size.height *
+                0.5, // Fix magasság a képnek
+            child: Center(
+              child: _image == null
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset('lib/assets/placeholder.png',
+                          fit: BoxFit.contain),
+                    )
+                  : Image.file(File(_image!.path), fit: BoxFit.contain),
+            ),
+          ),
+          Text("Add picture to analyze",
+              style: TextStyle(
+                  fontSize: 26, color: Color.fromRGBO(235, 144, 47, 1))),
+          Padding(
+            padding: const EdgeInsets.only(
+                top: 20, bottom: 20), // Gombok közötti távolság
+            child: Column(
+              mainAxisSize:
+                  MainAxisSize.min, // A gombokat szorosabban egymáshoz igazítja
+              children: [
+                _image == null
+                    ? ElevatedButton.icon(
+                        onPressed: () => _checkCameraPermission(),
+                        icon: Icon(Icons.camera),
+                        label: Text('Take Picture'),
+                      )
+                    : ElevatedButton.icon(
+                        onPressed: () => setState(() => _image = null),
+                        icon: Icon(Icons.photo),
+                        label: Text('Change Picture'),
+                      ),
+                SizedBox(height: 10), // Gombok közötti távolság
+                ElevatedButton.icon(
+                  onPressed: _image == null
+                      ? () => _pickImage(ImageSource.gallery)
+                      : _extractText,
+                  icon: Icon(
+                      _image == null ? Icons.photo_library : Icons.analytics),
+                  label: Text(
+                      _image == null ? 'Pick from Gallery' : 'Extract Data'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-
-      
     );
   }
 }

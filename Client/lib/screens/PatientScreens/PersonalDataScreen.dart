@@ -3,22 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 class PersonalDataScreen extends StatefulWidget {
   @override
   _PersonalDataScreenState createState() => _PersonalDataScreenState();
 }
 
 class _PersonalDataScreenState extends State<PersonalDataScreen> {
-
   // ha a user visszalep, akkor kitoldodjon a korabban megirt adatokkal
   @override
   void initState() {
     super.initState();
     _loadUserData();
   }
-
 
   final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -55,6 +51,8 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     return options[selectedIndex];
   }
 
+  bool _dataSaved = false;
+
   //adatok mentese a DB-be
   void _saveDatas() async {
     if (_formKey.currentState!.validate()) {
@@ -78,6 +76,9 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       }, SetOptions(merge: true)).then((_) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Data saved successfully!')));
+        setState(() {
+          _dataSaved = true; // Frissítjük az állapotváltozót
+        });
       }).catchError((error) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Failed to save data')));
@@ -85,14 +86,11 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     }
   }
 
-
-  
-
-
   void _loadUserData() async {
     User? currentUser = _auth.currentUser;
     try {
-      DocumentSnapshot userData = await _firestore.collection('patients').doc(currentUser!.uid).get();
+      DocumentSnapshot userData =
+          await _firestore.collection('patients').doc(currentUser!.uid).get();
 
       if (userData.exists) {
         Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
@@ -106,21 +104,21 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           _symptomsController.text = data['symptoms'] ?? '';
 
           int smokingIndex = smokingOptions.indexOf(data['smoker'] ?? 'No');
-          smokingStatusSelections = List.generate(smokingOptions.length, (index) => index == smokingIndex);
+          smokingStatusSelections = List.generate(
+              smokingOptions.length, (index) => index == smokingIndex);
 
           int alcoholIndex = alcoholOptions.indexOf(data['alcohol'] ?? 'No');
-          alcoholConsumptionSelections = List.generate(alcoholOptions.length, (index) => index == alcoholIndex);
+          alcoholConsumptionSelections = List.generate(
+              alcoholOptions.length, (index) => index == alcoholIndex);
         });
       }
     } catch (e) {
-      
       print("Error loading user data: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load data')),
       );
     }
   }
-
 
   @override
   void dispose() {
@@ -133,6 +131,12 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Personal Datas', style: TextStyle(fontSize: 32)),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context)),
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Form(
@@ -140,19 +144,6 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              //title
-               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Personal Datas',
-                    style: TextStyle(fontSize: 32),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              
               //name
               TextFormField(
                 controller: _nameController,
@@ -321,8 +312,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 selectedColor: Colors.white,
                 borderColor: Color.fromARGB(255, 232, 90, 82),
                 borderWidth: 2,
-                constraints: BoxConstraints(
-                    minHeight: 50.0),
+                constraints: BoxConstraints(minHeight: 50.0),
               ),
 
               // medical history
@@ -341,24 +331,12 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 controller: _symptomsController,
                 decoration: InputDecoration(
                     labelText: 'Do you have any symptoms?',
-                    labelStyle: TextStyle(fontSize: 20)),                
+                    labelStyle: TextStyle(fontSize: 20)),
                 style: TextStyle(fontSize: 18),
               ),
               SizedBox(height: 20),
 
-              // save
-              Center(
-                child: ElevatedButton(
-                  onPressed: _saveDatas,
-                  child: Text('Save'),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.lightGreen, 
-                    onPrimary: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20), 
-                    textStyle: TextStyle(fontSize: 18),                    
-                  ),
-                ),
-              )
+              
             ],
           ),
         ),
@@ -368,25 +346,32 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       bottomNavigationBar: BottomAppBar(
         height: 65,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0), 
+          padding: const EdgeInsets.symmetric(horizontal: 0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
+              if (!_dataSaved) // Ha az adatok nem lettek mentve
               ElevatedButton(
-                onPressed: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => CameraScreen()));
-                }, 
+                onPressed: _saveDatas,
+                child: Text('Save'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.lightGreen,
+                  onPrimary: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                  textStyle: TextStyle(fontSize: 18),
+                
+                ),
+              ),
+              if (_dataSaved) // Ha az adatok mentésre kerültek
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => CameraScreen()));
+                },
                 child: Text('Add Analysis Doc'),
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).colorScheme.primary, 
-                  onPrimary: Colors.white, 
-                  textStyle: TextStyle(fontSize: 16), 
+                  primary: Theme.of(context).colorScheme.primary,
+                  onPrimary: Colors.white,
+                  textStyle: TextStyle(fontSize: 16),
                 ),
               ),
             ],
