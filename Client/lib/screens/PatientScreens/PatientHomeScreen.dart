@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '/screens/PatientScreens/PersonalDataScreen.dart';
 import '/screens/PatientScreens/PatientProfileScreen.dart';
+import 'package:doctorgpt/services/patient_services.dart';
 
 class AnalysisItem extends StatelessWidget {
   final String doctorName;
@@ -36,9 +37,29 @@ class AnalysisItem extends StatelessWidget {
   }
 }
 
-class PatientHomeScreen extends StatelessWidget {
-  final String username =
-      "Username"; // Ideiglenes felhasználónév, be kell állítani
+class PatientHomeScreen extends StatefulWidget {
+   @override
+  _PatientHomeScreenState createState() =>
+      _PatientHomeScreenState();
+}
+
+class _PatientHomeScreenState extends State<PatientHomeScreen> {
+  String username = "Loading...";
+  final PatientServices userServices = PatientServices();
+
+  //fetch username
+  Future<void> _fetchUsername() async {
+    String fetchedUsername = await userServices.fetchUsername();
+    setState(() {
+      username = fetchedUsername;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUsername();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +156,6 @@ class PatientHomeScreen extends StatelessWidget {
               message: 'Short description of the message...',
               date: '2024-01-17',
             ),
-            
 
             // Itt lehet további AnalysisItem-eket hozzáadni...
           ],
