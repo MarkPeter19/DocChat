@@ -107,7 +107,7 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Analysis', style: TextStyle(fontSize: 32)),
+        title: Text('Add Analysis', style: TextStyle(fontSize: 26)),
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context)),
@@ -128,6 +128,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   : Image.file(File(_image!.path), fit: BoxFit.contain),
             ),
           ),
+          SizedBox(height: 25),
           Text("Add picture to analyze",
               style: TextStyle(
                   fontSize: 26, color: Color.fromRGBO(235, 144, 47, 1))),
@@ -136,7 +137,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 top: 20, bottom: 20), // Gombok közötti távolság
             child: Column(
               mainAxisSize:
-                  MainAxisSize.min, // A gombokat szorosabban egymáshoz igazítja
+                  MainAxisSize.min, 
               children: [
                 _image == null
                     ? ElevatedButton.icon(
@@ -158,6 +159,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       _image == null ? Icons.photo_library : Icons.analytics),
                   label: Text(
                       _image == null ? 'Pick from Gallery' : 'Extract Data'),
+                  
                 ),
               ],
             ),

@@ -132,7 +132,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Personal Datas', style: TextStyle(fontSize: 32)),
+        title: Text('Personal Datas', style: TextStyle(fontSize: 26)),
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context)),
