@@ -94,6 +94,12 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile', style: TextStyle(fontSize: 26)),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context)),
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(26),
         child: Column(
@@ -104,8 +110,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Profile',
-                  style: TextStyle(fontSize: 32),
+                  'My Profile',
+                  style: TextStyle(fontSize: 24),
                 ),
               ),
             ),

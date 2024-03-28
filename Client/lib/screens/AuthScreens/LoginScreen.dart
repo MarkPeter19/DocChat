@@ -2,7 +2,7 @@ import 'package:doctorgpt/services/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '/screens/DoctorScreens/DoctorMainScreen.dart';
-import '/screens/PatientScreens/PatientMainScreen.dart';
+import '/screens/PatientScreens/PatientHomeScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         } else if (userType == 'patient') {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => PatientMainScreen()),
+            MaterialPageRoute(builder: (context) => PatientHomeScreen()),
           );
         }
       } else {

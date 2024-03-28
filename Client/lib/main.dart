@@ -6,7 +6,6 @@ import 'screens/DoctorScreens/DoctorHomeScreen.dart';
 import 'screens/DoctorScreens/DoctorMainScreen.dart';
 import 'screens/DoctorScreens/DoctorProfileScreen.dart';
 import 'screens/PatientScreens/PatientHomeScreen.dart';
-import 'screens/PatientScreens/PatientMainScreen.dart';
 import 'screens/PatientScreens/PatientProfileScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'services/firebase_options.dart';
@@ -42,7 +41,6 @@ class MyApp extends StatelessWidget {
         '/patient_home': (context) => PatientHomeScreen(),
         '/doctor_main' :(context) => DoctorMainScreen(),
         '/doctor_profile' :(context) => DoctorProfileScreen(),
-        '/patient_main' :(context) => PatientMainScreen(),
         '/patient_profile' :(context) => PatientProfileScreen(),
       },
     );

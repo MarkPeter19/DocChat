@@ -103,7 +103,7 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
