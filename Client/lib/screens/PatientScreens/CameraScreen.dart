@@ -103,7 +103,7 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -159,8 +159,12 @@ class _CameraScreenState extends State<CameraScreen> {
                       _image == null ? Icons.photo_library : Icons.analytics),
                   label: Text(
                       _image == null ? 'Pick from Gallery' : 'Extract Data'),
-                  
-                ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).colorScheme.primary,
+                    onPrimary: Colors.white,
+                    minimumSize: Size(95, 45), 
+                  ),
+                )
               ],
             ),
           ),

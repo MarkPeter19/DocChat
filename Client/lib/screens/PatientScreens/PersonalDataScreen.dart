@@ -351,9 +351,10 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               if (!_dataSaved) // Ha az adatok nem lettek mentve
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: _saveDatas,
-                child: Text('Save'),
+                icon: Icon(Icons.done_all),
+                label: Text('Save'),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.lightGreen,
                   onPrimary: Colors.white,
@@ -363,11 +364,12 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 ),
               ),
               if (_dataSaved) // Ha az adatok mentésre kerültek
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(builder: (_) => CameraScreen()));
                 },
-                child: Text('Add Analysis Doc'),
+                icon:Icon(Icons.add_a_photo_outlined),
+                label: Text('Add Analysis Doc'),
                 style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).colorScheme.primary,
                   onPrimary: Colors.white,
