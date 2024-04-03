@@ -1,7 +1,7 @@
 import 'package:doctorgpt/services/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '/screens/DoctorScreens/DoctorMainScreen.dart';
+import '/screens/DoctorScreens/DoctorHomeScreen.dart';
 import '/screens/PatientScreens/PatientHomeScreen.dart';
 
 enum UserType { patient, doctor }
@@ -35,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           MaterialPageRoute(
             builder: (context) => userType == 'patient'
                 ? PatientHomeScreen()
-                : DoctorMainScreen(),
+                : DoctorHomeScreen(),
           ),
         );
       } else {

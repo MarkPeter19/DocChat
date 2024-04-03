@@ -3,7 +3,6 @@ import 'screens/AuthScreens/SplashScreen.dart';
 import 'screens/AuthScreens/LoginScreen.dart';
 import 'screens/AuthScreens/RegisterScreen.dart';
 import 'screens/DoctorScreens/DoctorHomeScreen.dart';
-import 'screens/DoctorScreens/DoctorMainScreen.dart';
 import 'screens/DoctorScreens/DoctorProfileScreen.dart';
 import 'screens/PatientScreens/PatientHomeScreen.dart';
 import 'screens/PatientScreens/PatientProfileScreen.dart';
@@ -39,7 +38,6 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/doctor_home': (context) => DoctorHomeScreen(),
         '/patient_home': (context) => PatientHomeScreen(),
-        '/doctor_main' :(context) => DoctorMainScreen(),
         '/doctor_profile' :(context) => DoctorProfileScreen(),
         '/patient_profile' :(context) => PatientProfileScreen(),
       },
