@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:doctorgpt/services/patient_services.dart';
 
 class ViewAnalysisResultScreen extends StatefulWidget {
   final String result;
@@ -14,7 +15,9 @@ class ViewAnalysisResultScreen extends StatefulWidget {
 
 class _ViewAnalysisResultScreenState extends State<ViewAnalysisResultScreen> {
   final TextEditingController _textEditingController = TextEditingController();
+  final PatientServices patientServices = PatientServices();
   bool _isSaved = false;
+  String? _savedDocumentId;
 
   @override
   void initState() {
@@ -29,29 +32,55 @@ class _ViewAnalysisResultScreenState extends State<ViewAnalysisResultScreen> {
   }
 
   Future<void> _saveDocument() async {
-    String patientId = FirebaseAuth
-        .instance.currentUser!.uid; // A bejelentkezett beteg azonosítója
-    String analysisContent =
-        _textEditingController.text; // A TextField-ből származó szöveg
-    Timestamp uploadTime = Timestamp.now(); //aktualis ido
+    String patientId = FirebaseAuth.instance.currentUser!.uid; 
+    String analysisContent = _textEditingController.text;
+    Timestamp uploadTime = Timestamp.now();
 
-    await FirebaseFirestore.instance
+    DocumentReference docRef = FirebaseFirestore.instance
         .collection('patients')
         .doc(patientId)
         .collection('documents')
-        .add({
-      'analysisResult': analysisContent, // A dokumentum tartalma
+        .doc(); // Létrehozunk egy új DocumentReferencet egy új ID-val
+
+    await docRef.set({
+      'analysisResult': analysisContent,
       'uploadDate': uploadTime,
-      // Itt adhatsz meg további mezőket, ha szükséges
-    }).then((docRef) {
+      // További mezők...
+    }).then((_) {
+      _savedDocumentId = docRef.id; // Elmentjük a dokumentum ID-ját
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Document saved successfully!')));
+      setState(() {
+        _isSaved = true;  // Frissítjük az állapotot, hogy a dokumentum elmentésre került
+      });
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to save document: $error')));
     });
   }
 
+
+ void _sendToDoctor() async {
+    if (_savedDocumentId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No document saved to send')),
+      );
+      return;
+    }
+    
+    try {
+      String patientId = FirebaseAuth.instance.currentUser!.uid;
+      await patientServices.sendDocumentToDoctor(patientId, _savedDocumentId!);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Document sent to doctor for review')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error sending document to doctor: $e')),
+      );
+    }
+  }
   
   @override
 Widget build(BuildContext context) {
@@ -103,8 +132,8 @@ Widget build(BuildContext context) {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: ElevatedButton.icon(
-              onPressed: () {
-                // A "Send to Doctor" logikájának implementálása itt lesz később
+              onPressed: () async {
+                _sendToDoctor();
               },
               icon: Icon(Icons.send),
               label: Text('Send to Doctor'),

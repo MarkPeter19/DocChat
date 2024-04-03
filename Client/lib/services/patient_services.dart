@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+
 class PatientServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -25,7 +26,28 @@ class PatientServices {
     return username;
   }
 
+
+ // A beteghez rendelt orvos azonosítójának lekérdezése
+  Future<String> getAssignedDoctorId() async {
+    String patientId = _auth.currentUser!.uid;
+    DocumentSnapshot patientData = await _firestore.collection('patients').doc(patientId).get();
+    if (patientData.exists && patientData.data() is Map) {
+      Map<String, dynamic> data = patientData.data() as Map<String, dynamic>;
+      return data['assignedDoctorId'] ?? "No assigned doctor";
+    } else {
+      throw Exception('Assigned doctor ID not found');
+    }
+  }
+
+  // A dokumentum forDoctorReview mezőjének beállítása true-ra
+  Future<void> sendDocumentToDoctor(String patientId, String documentId) async {
+    await _firestore.collection('patients')
+      .doc(patientId)
+      .collection('documents')
+      .doc(documentId)
+      .update({'forDoctorReview': true});
+  }
+
   // Itt definiálhatsz több függvényt is, például:
-  // Future<void> updateUserProfile(String username, String bio) async {...}
-  // Future<List<DocumentSnapshot>> fetchUserDocuments() async {...}
+
 }
