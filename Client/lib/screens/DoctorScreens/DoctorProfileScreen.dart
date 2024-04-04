@@ -84,6 +84,12 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile', style: TextStyle(fontSize: 26)),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context)),
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(26),
         child: Column(
@@ -94,8 +100,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Profile',
-                  style: TextStyle(fontSize: 32),
+                  'My Profile',
+                  style: TextStyle(fontSize: 24),
                 ),
               ),
             ),
