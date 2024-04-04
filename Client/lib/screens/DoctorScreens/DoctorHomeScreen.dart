@@ -19,8 +19,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchDoctorData();
     _fetchPatientRequests();
+    _fetchDoctorData();
+    
   }
 
   // Fetch doctor name
@@ -109,7 +110,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                 ),
               ),
 
-              //doctor's response
+              //patient requests
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(

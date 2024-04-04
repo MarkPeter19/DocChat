@@ -27,34 +27,37 @@ class DoctorServices {
     return username;
   }
 
-
   //fetch patient requets for items
   Future<List<Map<String, dynamic>>> fetchPatientRequests(String doctorId) async {
   List<Map<String, dynamic>> requests = [];
-  QuerySnapshot patientSnapshot = await _firestore.collection('patients')
-    .where('assignedDoctorId', isEqualTo: doctorId)
-    .get();
-  
-  for (var patientDoc in patientSnapshot.docs) {
-    var patientData = patientDoc.data() as Map<String, dynamic>;
-    if (patientData != null) {
-      QuerySnapshot documentSnapshot = await patientDoc.reference
+
+  // Először lekérdezzük azokat a pácienseket, akikhez tartozik a megadott orvoshoz rendelt dokumentum
+  QuerySnapshot patientsSnapshot = await _firestore.collection('patients').get();
+
+  for (var patient in patientsSnapshot.docs) {
+    var patientData = patient.data() as Map<String, dynamic>;
+    var patientId = patient.id;
+
+    // Most lekérdezzük a pácienshez tartozó dokumentumokat, amelyek az orvoshoz vannak rendelve
+    QuerySnapshot documentSnapshot = await patient.reference
         .collection('documents')
+        .where('assignedDoctorId', isEqualTo: doctorId)
         .where('forDoctorReview', isEqualTo: true)
         .get();
 
-      for (var document in documentSnapshot.docs) {
-        var documentData = document.data() as Map<String, dynamic>;
-        if (documentData != null) {
-          Timestamp uploadTimestamp = documentData['uploadDate'] as Timestamp;
-          DateTime uploadDate = uploadTimestamp.toDate();
-          String formattedUploadDate = DateFormat('yyyy-MM-dd – kk:mm').format(uploadDate);
-          
-          requests.add({
-            'patientName': patientData['name'],
-            'documentDate': formattedUploadDate,
-          });
-        }
+    for (var document in documentSnapshot.docs) {
+      var documentData = document.data() as Map<String, dynamic>;
+      if (documentData != null) {
+        Timestamp uploadTimestamp = documentData['uploadDate'] as Timestamp;
+        DateTime uploadDate = uploadTimestamp.toDate();
+        String formattedUploadDate = DateFormat('yyyy-MM-dd – kk:mm').format(uploadDate);
+
+        // Mivel a páciens adatokat már lekérdeztük, hozzáadhatjuk a kérés listához
+        requests.add({
+          'patientName': patientData['name'], // A páciens neve
+          'documentDate': formattedUploadDate, // A dokumentum feltöltésének ideje
+          'documentId': document.id, // A dokumentum azonosítója
+        });
       }
     }
   }
