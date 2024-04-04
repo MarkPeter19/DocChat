@@ -40,12 +40,13 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     List<Map<String, dynamic>> requests = await doctorServices.fetchPatientRequests(doctorId);
 
     List<PatientRequestItem> requestItems = requests
-      .map((request) => PatientRequestItem(
-          patientName: request['patientName'],
-          documentDate: request['documentDate'],
-          // További adatok, ha szükséges
-        ))
-      .toList();
+    .map((request) => PatientRequestItem(
+        patientName: request['patientName'],
+        documentDate: request['documentDate'],
+        documentId: request['documentId'],
+        patientId: request['patientId'],
+      ))
+    .toList();
 
     setState(() {
       patientRequests = requestItems;

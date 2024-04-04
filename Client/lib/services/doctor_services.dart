@@ -29,42 +29,68 @@ class DoctorServices {
 
   //fetch patient requets for items
   Future<List<Map<String, dynamic>>> fetchPatientRequests(String doctorId) async {
-  List<Map<String, dynamic>> requests = [];
+    List<Map<String, dynamic>> requests = [];
 
-  // Először lekérdezzük azokat a pácienseket, akikhez tartozik a megadott orvoshoz rendelt dokumentum
-  QuerySnapshot patientsSnapshot = await _firestore.collection('patients').get();
+    // Először lekérdezzük azokat a pácienseket, akikhez tartozik a megadott orvoshoz rendelt dokumentum
+    QuerySnapshot patientsSnapshot = await _firestore.collection('patients').get();
 
-  for (var patient in patientsSnapshot.docs) {
-    var patientData = patient.data() as Map<String, dynamic>;
-    var patientId = patient.id;
+    for (var patient in patientsSnapshot.docs) {
+      var patientData = patient.data() as Map<String, dynamic>;
+      var patientId = patient.id;
 
-    // Most lekérdezzük a pácienshez tartozó dokumentumokat, amelyek az orvoshoz vannak rendelve
-    QuerySnapshot documentSnapshot = await patient.reference
-        .collection('documents')
-        .where('assignedDoctorId', isEqualTo: doctorId)
-        .where('forDoctorReview', isEqualTo: true)
-        .get();
+      // Most lekérdezzük a pácienshez tartozó dokumentumokat, amelyek az orvoshoz vannak rendelve
+      QuerySnapshot documentSnapshot = await patient.reference
+          .collection('documents')
+          .where('assignedDoctorId', isEqualTo: doctorId)
+          .where('forDoctorReview', isEqualTo: true)
+          .get();
 
-    for (var document in documentSnapshot.docs) {
-      var documentData = document.data() as Map<String, dynamic>;
-      if (documentData != null) {
-        Timestamp uploadTimestamp = documentData['uploadDate'] as Timestamp;
-        DateTime uploadDate = uploadTimestamp.toDate();
-        String formattedUploadDate = DateFormat('yyyy-MM-dd – kk:mm').format(uploadDate);
+      for (var document in documentSnapshot.docs) {
+        var documentData = document.data() as Map<String, dynamic>;
+        if (documentData != null) {
+          Timestamp uploadTimestamp = documentData['uploadDate'] as Timestamp;
+          DateTime uploadDate = uploadTimestamp.toDate();
+          String formattedUploadDate = DateFormat('yyyy-MM-dd – kk:mm').format(uploadDate);
 
-        // Mivel a páciens adatokat már lekérdeztük, hozzáadhatjuk a kérés listához
-        requests.add({
-          'patientName': patientData['name'], // A páciens neve
-          'documentDate': formattedUploadDate, // A dokumentum feltöltésének ideje
-          'documentId': document.id, // A dokumentum azonosítója
-        });
+          // Mivel a páciens adatokat már lekérdeztük, hozzáadhatjuk a kérés listához
+          requests.add({
+            'patientName': patientData['name'], // A páciens neve
+            'documentDate': formattedUploadDate, // A dokumentum feltöltésének ideje
+            'documentId': document.id, // A dokumentum azonosítója
+            'patientId': patientId, 
+          });
+        }
       }
     }
-  }
 
-  return requests;
+    return requests;
+  } 
+
+
+  // fetch data for patient data details screen
+  // Beteg adatok lekérdezése a 'patients' kollekcióból
+Future<Map<String, dynamic>> fetchPatientData(String patientId) async {
+  var patientSnapshot = await _firestore.collection('patients').doc(patientId).get();
+  if (!patientSnapshot.exists) {
+    throw Exception('Patient not found');
+  }
+  return patientSnapshot.data() as Map<String, dynamic>;
 }
 
+// Dokumentum adatok lekérdezése egy betegtől a 'documents' kollekcióból
+Future<Map<String, dynamic>> fetchDocumentData(String patientId, String documentId) async {
+  DocumentSnapshot documentSnapshot = await _firestore
+    .collection('patients')
+    .doc(patientId)
+    .collection('documents')
+    .doc(documentId)
+    .get();
+
+  if (!documentSnapshot.exists) {
+    throw Exception('Document not found');
+  }
+  return documentSnapshot.data() as Map<String, dynamic>;
+}
 
   // Itt definiálhatsz több függvényt is
 }
