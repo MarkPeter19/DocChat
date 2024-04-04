@@ -4,11 +4,9 @@ import '/screens/PatientScreens/PatientProfileScreen.dart';
 import 'package:doctorgpt/services/patient_services.dart';
 import '/components/analysis_item.dart';
 
-
 class PatientHomeScreen extends StatefulWidget {
-   @override
-  _PatientHomeScreenState createState() =>
-      _PatientHomeScreenState();
+  @override
+  _PatientHomeScreenState createState() => _PatientHomeScreenState();
 }
 
 class _PatientHomeScreenState extends State<PatientHomeScreen> {

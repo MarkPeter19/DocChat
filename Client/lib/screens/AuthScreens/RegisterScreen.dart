@@ -31,13 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (user != null) {
         // Sikeres regisztráció után navigálás
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => userType == 'patient'
-                ? PatientHomeScreen()
-                : DoctorHomeScreen(),
-          ),
-        );
+        Navigator.of(context).pushNamed('/login');
       } else {
         // Hiba kezelése, ha a user null
         ScaffoldMessenger.of(context)
