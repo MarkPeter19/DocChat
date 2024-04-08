@@ -11,25 +11,25 @@ class DoctorHomeScreen extends StatefulWidget {
 
 class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   String doctorName = "Loading...";
+  String profileImageUrl = "";
   final DoctorServices doctorServices = DoctorServices();
   List<PatientRequestItem> patientRequests = [];
-
-  
 
   @override
   void initState() {
     super.initState();
     _fetchPatientRequests();
     _fetchDoctorData();
-    
   }
 
-  // Fetch doctor name
+  // Fetch doctor data
   Future<void> _fetchDoctorData() async {
-    String fetchedDoctorName = await doctorServices.fetchDoctorName();
-    // Add code to fetch patient requests as well
+    String fetchedDoctorName = await doctorServices.fetchDoctorUserName();
+    Map<String, String> doctorDetails = await doctorServices
+        .fetchDoctorDetails(FirebaseAuth.instance.currentUser!.uid);
     setState(() {
       doctorName = fetchedDoctorName;
+      profileImageUrl = doctorDetails['profilePictureURL'] ?? "";
     });
   }
 
@@ -37,16 +37,17 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   Future<void> _fetchPatientRequests() async {
     DoctorServices doctorServices = DoctorServices();
     String doctorId = FirebaseAuth.instance.currentUser!.uid;
-    List<Map<String, dynamic>> requests = await doctorServices.fetchPatientRequests(doctorId);
+    List<Map<String, dynamic>> requests =
+        await doctorServices.fetchPatientRequests(doctorId);
 
     List<PatientRequestItem> requestItems = requests
-    .map((request) => PatientRequestItem(
-        patientName: request['patientName'],
-        documentDate: request['documentDate'],
-        documentId: request['documentId'],
-        patientId: request['patientId'],
-      ))
-    .toList();
+        .map((request) => PatientRequestItem(
+              patientName: request['patientName'],
+              documentDate: request['documentDate'],
+              documentId: request['documentId'],
+              patientId: request['patientId'],
+            ))
+        .toList();
 
     setState(() {
       patientRequests = requestItems;
@@ -69,8 +70,18 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      radius: 50, // Profilkép mérete
-                      backgroundColor: Colors.grey, // Profilkép háttérszíne
+                      radius: 50,
+                      backgroundColor: Colors.grey,
+                      backgroundImage: profileImageUrl.isNotEmpty
+                          ? NetworkImage(profileImageUrl)
+                          : null,
+                      child: profileImageUrl.isEmpty
+                          ? Icon(
+                              Icons.person,
+                              size: 50,
+                              color: Colors.grey.shade800,
+                            )
+                          : null,
                     ),
                     SizedBox(width: 16),
                     Expanded(

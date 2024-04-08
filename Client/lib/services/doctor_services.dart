@@ -7,7 +7,7 @@ class DoctorServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<String> fetchDoctorName() async {
+  Future<String> fetchDoctorUserName() async {
     String username = "Unknown";
     User? user = _auth.currentUser;
 
@@ -96,6 +96,44 @@ class DoctorServices {
     }
     return documentSnapshot.data() as Map<String, dynamic>;
   }
+
+
+  // fetch doctor profile details
+  Future<Map<String, String>> fetchDoctorDetails(String uid) async {
+    try {
+      // Fetching doctor details from 'doctors' collection
+      DocumentSnapshot doctorData = await _firestore.collection('doctors').doc(uid).get();
+      Map<String, String> details = {};
+
+      if (doctorData.exists && doctorData.data() is Map) {
+        final data = doctorData.data() as Map<String, dynamic>;
+        details['fullName'] = data['fullName'] ?? "No full name";
+        details['specialization'] = data['specialization'] ?? "No specialization";
+        details['profilePictureURL'] = data['profilePictureURL'] ?? "";
+      }
+      
+      // Fetching email from 'users' collection
+      DocumentSnapshot userData = await _firestore.collection('users').doc(uid).get();
+      if (userData.exists && userData.data() is Map) {
+        final data = userData.data() as Map<String, dynamic>;
+        details['email'] = data['email'] ?? "No email";
+      }
+
+      return details;
+    } catch (e) {
+      print('Error fetching doctor details: $e');
+      throw Exception('Error fetching doctor details');
+    }
+  }
+
+
+  Future<void> updateDoctorDetails(Map<String, String> updates) async {
+    User? user = _auth.currentUser;
+    if (user != null && updates.isNotEmpty) {
+      await _firestore.collection('doctors').doc(user.uid).update(updates);
+    }
+  }
+
 
   // Itt definiálhatsz több függvényt is
 }
