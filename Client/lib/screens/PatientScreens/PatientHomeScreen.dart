@@ -3,6 +3,7 @@ import '/screens/PatientScreens/PersonalDataScreen.dart';
 import '/screens/PatientScreens/PatientProfileScreen.dart';
 import 'package:doctorgpt/services/patient_services.dart';
 import '/components/analysis_item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PatientHomeScreen extends StatefulWidget {
   @override
@@ -11,20 +12,25 @@ class PatientHomeScreen extends StatefulWidget {
 
 class _PatientHomeScreenState extends State<PatientHomeScreen> {
   String username = "Loading...";
-  final PatientServices userServices = PatientServices();
+  String profileImageUrl = "";
+  final PatientServices patientServices = PatientServices();
 
-  //fetch username
-  Future<void> _fetchUsername() async {
-    String fetchedUsername = await userServices.fetchUsername();
+  // Fetch patient data
+  Future<void> _fetchPatientData() async {
+    String fetchedPatientUserName =
+        await patientServices.fetchPatientUserName();
+    Map<String, String> patientDetails = await patientServices
+        .fetchPatientDetails(FirebaseAuth.instance.currentUser!.uid);
     setState(() {
-      username = fetchedUsername;
+      username = fetchedPatientUserName;
+      profileImageUrl = patientDetails['profilePictureURL'] ?? "";
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchUsername();
+    _fetchPatientData();
   }
 
   @override
@@ -43,8 +49,18 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
               child: Row(
                 children: [
                   CircleAvatar(
-                    radius: 50, // Profilkép mérete
-                    backgroundColor: Colors.grey, // Profilkép háttérszíne
+                    radius: 50,
+                    backgroundColor: Colors.grey,
+                    backgroundImage: profileImageUrl.isNotEmpty
+                        ? NetworkImage(profileImageUrl)
+                        : null,
+                    child: profileImageUrl.isEmpty
+                        ? Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey.shade800,
+                          )
+                        : null,
                   ),
                   SizedBox(width: 16),
                   Expanded(
