@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/screens/DoctorScreens/PatientDataDetailsScreen.dart';
+import '../screens/DoctorScreens/Requests/PatientDataDetailsScreen.dart';
 
 class PatientRequestItem extends StatelessWidget {
   final String patientName;

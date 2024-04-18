@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
-import 'package:doctorgpt/screens/DoctorScreens/EditDoctorProfileScreen.dart';
+import 'package:doctorgpt/screens/DoctorScreens/Profile/EditDoctorProfileScreen.dart';
 
 class DoctorProfileScreen extends StatefulWidget {
   @override

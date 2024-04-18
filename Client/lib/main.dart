@@ -3,7 +3,7 @@ import 'screens/AuthScreens/SplashScreen.dart';
 import 'screens/AuthScreens/LoginScreen.dart';
 import 'screens/AuthScreens/RegisterScreen.dart';
 import 'screens/DoctorScreens/DoctorHomeScreen.dart';
-import 'screens/DoctorScreens/DoctorProfileScreen.dart';
+import 'screens/DoctorScreens/Profile/DoctorProfileScreen.dart';
 import 'screens/PatientScreens/PatientHomeScreen.dart';
 import 'screens/PatientScreens/PatientProfileScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
