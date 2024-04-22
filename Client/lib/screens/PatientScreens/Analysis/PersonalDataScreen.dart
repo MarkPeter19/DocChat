@@ -1,4 +1,4 @@
-import 'package:doctorgpt/screens/PatientScreens/Analysis/CameraScreen.dart';
+import 'package:doctorgpt/screens/PatientScreens/Analysis/AddPDFScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -366,7 +366,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
               if (_dataSaved) // Ha az adatok mentésre kerültek
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => CameraScreen()));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddPDFScreen()));
                 },
                 icon:Icon(Icons.add_a_photo_outlined),
                 label: Text('Add Analysis Doc'),
