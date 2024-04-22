@@ -181,7 +181,10 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                     // Logic to send message
                   },
                   icon: Icon(Icons.comment), // Ikon hozzáadása
-                  label: Text('Message', style: TextStyle(fontSize: 15),),
+                  label: Text(
+                    'Message',
+                    style: TextStyle(fontSize: 15),
+                  ),
                   style: ElevatedButton.styleFrom(
                     primary: Color.fromARGB(255, 242, 136, 143),
                     onPrimary: Colors.white,
@@ -194,7 +197,8 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                     // Logic to send data to ChatGPT
                   },
                   icon: Icon(Icons.send), // Ikon hozzáadása
-                  label: Text('Send To ChatGPT', style: TextStyle(fontSize: 14)),
+                  label:
+                      Text('Send To ChatGPT', style: TextStyle(fontSize: 14)),
                   style: ElevatedButton.styleFrom(
                     primary: Theme.of(context).colorScheme.secondary,
                     onPrimary: Colors.white,

@@ -5,7 +5,7 @@ import 'screens/AuthScreens/RegisterScreen.dart';
 import 'screens/DoctorScreens/DoctorHomeScreen.dart';
 import 'screens/DoctorScreens/Profile/DoctorProfileScreen.dart';
 import 'screens/PatientScreens/PatientHomeScreen.dart';
-import 'screens/PatientScreens/PatientProfileScreen.dart';
+import 'screens/PatientScreens/Profile/PatientProfileScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'services/firebase_options.dart';
 

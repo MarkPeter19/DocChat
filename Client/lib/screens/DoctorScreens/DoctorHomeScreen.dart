@@ -42,7 +42,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 35,),
+          SizedBox(
+            height: 45,
+          ),
           //profile resz
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -93,19 +95,31 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
             ),
           ),
 
-          // Itt jön a TabBar, a profil rész alatt
+          // TabBar
           PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: TabBar(
-              controller: _tabController,
-              tabs: [
-                Tab(text: 'Requests'),
-                Tab(text: 'Messages'),
-                Tab(text: 'Calendar'),
-                Tab(text: 'ChatPDF'),
-              ],
+            preferredSize: Size.fromHeight(48.0),
+            child: Material(
+              color: Colors.white,
+              child: TabBar(
+                controller: _tabController,
+                labelColor: Theme.of(context).primaryColor,
+                unselectedLabelColor: Colors.grey,
+                labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                tabs: [
+                  Tab(text: 'Requests'),
+                  Tab(text: 'Messages'),
+                  Tab(text: 'Calendar'),
+                  Tab(text: 'ChatPDF'),
+                ],
+                labelStyle: TextStyle(
+                  fontSize: 15,
+                ),
+                indicatorSize: TabBarIndicatorSize.label,
+                indicatorPadding: EdgeInsets.only(bottom: 5.0),
+              ),
             ),
           ),
+
           Expanded(
             child: TabBarView(
               controller: _tabController,
