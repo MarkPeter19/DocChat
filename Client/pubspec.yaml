@@ -82,8 +82,8 @@ flutter:
   assets:
     - lib/assets/placeholder.png
     - lib/assets/stethoscope.png
-    - lib/assets/pdf_logo.jpg
-    
+    - lib/assets/pdf_logo.png
+    - lib/assets/success.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,4 +1,3 @@
-import 'package:doctorgpt/screens/PatientScreens/Analysis/ResponsesScreen.dart';
 import 'package:doctorgpt/screens/PatientScreens/PatientHomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -8,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:doctorgpt/services/patient_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:doctorgpt/components/success_dialog.dart';
 
 class AddPDFScreen extends StatefulWidget {
   @override
@@ -98,12 +98,19 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
       await patientServices.sendDocumentToDoctor(patientId, _savedDocumentId!);
 
       // Visszajelzés a felhasználónak:
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Document sent to doctor for review')));
-
-      // Sikeres küldés után visszanavigálunk a ResponsesScreen-re:
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => PatientHomeScreen()));
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SuccessDialog(
+            message: 'The document was successfully sent to the doctor',
+            onPressed: () {
+              Navigator.of(context).pop(); // Bezárja az ablakot
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => PatientHomeScreen()));
+            },
+          );
+        },
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error during the file upload: $e')));
@@ -122,28 +129,34 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Select a doctor:',
-                  style: TextStyle(fontSize: 22, color: Colors.black)),
+              Text(
+                'Select a doctor:',
+                style: TextStyle(fontSize: 22, color: Colors.black),
+              ),
               SizedBox(height: 10),
-              DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedDoctorId,
-                  icon: Icon(Icons.arrow_drop_down,
-                      color: const Color.fromARGB(255, 76, 227, 81)),
-                  onChanged: (newValue) {
-                    setState(() {
-                      selectedDoctorId = newValue;
-                    });
-                  },
-                  items: doctorsList.map((doctor) {
-                    return DropdownMenuItem<String>(
+              Card(
+                borderOnForeground: true,
+                elevation: 3,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: selectedDoctorId,
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.black,
+                      size: 40,
+                    ),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedDoctorId = newValue;
+                      });
+                    },
+                    items: doctorsList.map((doctor) {
+                      return DropdownMenuItem<String>(
                         value: doctor['id'],
                         child: Row(children: [
                           Text(doctor['name']),
-                          SizedBox(
-                            width: 15,
-                          ),
+                          SizedBox(width: 15),
                           Checkbox(
                             value: selectedDoctorId == doctor['id'],
                             onChanged: (bool? value) {
@@ -152,55 +165,79 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                               });
                             },
                           ),
-                        ]));
-                  }).toList(),
-                  style: Theme.of(context).textTheme.subtitle1,
+                        ]),
+                      );
+                    }).toList(),
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
                 ),
               ),
               SizedBox(height: 20),
 
               // PDF
               if (file != null)
-                Column(
-                  children: [
-                    Text(
-                      'Selected PDF:',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      file!.path.split('/').last,
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(height: 10),
-                    Center(
-                      child: Image.asset(
-                        'lib/assets/pdf_logo.jpg',
-                        height: 200, // Kép magassága
-                        width: 200, // Kép szélessége
+                Card(
+                  borderOnForeground: true,
+                  elevation: 3,
+                  child: Column(
+                    children: [
+                      Text(
+                        'Selected PDF:',
+                        style: TextStyle(fontSize: 20),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 10),
+                      Text(
+                        file!.path.split('/').last,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      SizedBox(height: 10),
+                      Center(
+                        child: Image.asset(
+                          'lib/assets/pdf_logo.png',
+                          height: 200, // Kép magassága
+                          width: 200, // Kép szélessége
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                  ),
                 )
               else
-                SizedBox(
-                  height: MediaQuery.of(context).size.height *
-                      0.5, // Fix magasság a képnek
-                  child: Center(
-                    child: _image == null
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset('lib/assets/placeholder.png',
-                                fit: BoxFit.contain),
-                          )
-                        : Image.file(File(_image!.path), fit: BoxFit.contain),
+                Card(
+                  borderOnForeground: true,
+                  elevation: 3,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height *
+                            0.5, // Fix magasság a képnek
+                        child: Center(
+                          child: _image == null
+                              ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    'lib/assets/placeholder.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                )
+                              : Image.file(
+                                  File(_image!.path),
+                                  fit: BoxFit.contain,
+                                ),
+                        ),
+                      ),
+                      //SizedBox(height: 10),
+                      Center(
+                        child: Text(
+                          "Add a PDF Analysis Document",
+                          style: TextStyle(fontSize: 20, color: Colors.black),
+                        ),
+                      ),
+                      SizedBox(height: 10)
+                    ],
                   ),
                 ),
-              SizedBox(height: 25),
-              Center(
-                child: Text("Add a PDF Analysis Document",
-                    style: TextStyle(fontSize: 22, color: Colors.black)),
-              ),
+
               SizedBox(height: 15),
               if (!_isSelected)
                 ElevatedButton.icon(
@@ -213,17 +250,31 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                     minimumSize: Size(double.infinity, 50),
                   ),
                 ),
-              SizedBox(height: 20),
               if (_isSelected)
-                ElevatedButton.icon(
-                  onPressed: _sendToDoctor,
-                  icon: Icon(Icons.send, size: 24),
-                  label: Text('Send to Doctor'),
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).colorScheme.secondary,
-                    onPrimary: Colors.white,
-                    minimumSize: Size(double.infinity, 50),
-                  ),
+                Column(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: selectFile,
+                      icon: Icon(Icons.change_circle, size: 24),
+                      label: Text('Change PDF'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 255, 198, 11),
+                        onPrimary: Colors.white,
+                        minimumSize: Size(double.infinity, 50),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      onPressed: _sendToDoctor,
+                      icon: Icon(Icons.send, size: 24),
+                      label: Text('Send to Doctor'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).colorScheme.secondary,
+                        onPrimary: Colors.white,
+                        minimumSize: Size(double.infinity, 50),
+                      ),
+                    ),
+                  ],
                 ),
               SizedBox(height: 20),
               if (task != null) buildUploadStatus(task!),

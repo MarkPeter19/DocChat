@@ -67,15 +67,15 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
       ),
 
       //add doc btn
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your logic for navigating to Add Doctor screen
-        },
-        child: Image.asset('lib/assets/stethoscope.png',
-            width: 32, height: 32), // Kép méretének beállítása
-        tooltip: 'Add Doctor',
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // Add your logic for navigating to Add Doctor screen
+      //   },
+      //   child: Image.asset('lib/assets/stethoscope.png',
+      //       width: 32, height: 32), // Kép méretének beállítása
+      //   tooltip: 'Add Doctor',
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
 
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
