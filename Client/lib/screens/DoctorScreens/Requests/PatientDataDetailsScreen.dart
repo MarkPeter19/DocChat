@@ -158,25 +158,42 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                       ),
                       SizedBox(height: 20),
                       Center(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            // Navigate to ViewPDFScreen and pass the URL
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ViewPDFScreen(
-                                  pdfUrl: documentData['PDFUrl'],
-                                ),
+                        child: Column(
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                // Navigate to ViewPDFScreen and pass the URL
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ViewPDFScreen(
+                                      pdfUrl: documentData['PDFUrl'],
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: Icon(Icons.picture_as_pdf),
+                              label: Text('View PDF'),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color.fromARGB(255, 255, 198, 11),
+                                onPrimary: Colors.white,
+                                minimumSize: Size(double.infinity, 50),
                               ),
-                            );
-                          },
-                          icon: Icon(Icons.picture_as_pdf),
-                          label: Text('View PDF'),
-                          style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(255, 255, 198, 11),
-                            onPrimary: Colors.white,
-                            minimumSize: Size(double.infinity, 50),
-                          ),
+                            ),
+                            SizedBox(height: 10),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                // Logic to ask for PDF in chat
+                              },
+                              icon: Icon(Icons.chat),
+                              label: Text('Ask ChatPDF'),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color.fromARGB(255, 0, 0, 0),
+                                onPrimary: Colors.white,
+                                minimumSize: Size(double.infinity, 50),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
