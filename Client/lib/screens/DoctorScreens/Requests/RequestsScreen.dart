@@ -9,8 +9,6 @@ class RequestsScreen extends StatefulWidget {
 }
 
 class _RequestsScreenState extends State<RequestsScreen> {
-  // String doctorName = "Loading...";
-  // String profileImageUrl = "";
   final DoctorServices doctorServices = DoctorServices();
   List<PatientRequestItem> patientRequests = [];
 
@@ -18,19 +16,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
   void initState() {
     super.initState();
     _fetchPatientRequests();
-    //_fetchDoctorData();
   }
-
-  // Fetch doctor data
-  // Future<void> _fetchDoctorData() async {
-  //   String fetchedDoctorName = await doctorServices.fetchDoctorUserName();
-  //   Map<String, String> doctorDetails = await doctorServices
-  //       .fetchDoctorDetails(FirebaseAuth.instance.currentUser!.uid);
-  //   setState(() {
-  //     doctorName = fetchedDoctorName;
-  //     profileImageUrl = doctorDetails['profilePictureURL'] ?? "";
-  //   });
-  // }
 
   // patient requestek betoltese
   Future<void> _fetchPatientRequests() async {
@@ -57,24 +43,23 @@ class _RequestsScreenState extends State<RequestsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              
-              //patient requests
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'There are your patient requests:',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-
-              // Dinamikus lista megjelenítése a betegkérésekről
-              for (var requestItem in patientRequests) requestItem,
-              // Itt jeleníti meg a `PatientRequestItem` komponenseket
-            ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          //patient requests
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'There are your patient requests:',
+              style: TextStyle(fontSize: 18),
+            ),
           ),
-        ));
+
+          // Dinamikus lista megjelenítése a betegkérésekről
+          for (var requestItem in patientRequests) requestItem,
+          // Itt jeleníti meg a `PatientRequestItem` komponenseket
+        ],
+      ),
+    ));
   }
 }

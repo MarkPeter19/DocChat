@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
+import 'ViewPDFScreen.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -60,39 +61,6 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
     );
   }
 
-  Widget _buildAnalysisResultRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          SizedBox(
-            height: 20,
-          ),
-          Text(value ?? 'N/A', style: TextStyle(fontSize: 16)),
-          SizedBox(
-            height: 25,
-          ),
-          Row(
-            children: [
-              Text('Upload Date:',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              Expanded(
-                child: Text(
-                    DateFormat('yyyy-MM-dd – kk:mm').format(
-                        (documentData['uploadDate'] as Timestamp).toDate()),
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.right),
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -144,7 +112,7 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
               ),
               SizedBox(height: 16.0),
 
-              //blood analysis
+              // PDF card
               Card(
                 margin: EdgeInsets.all(8.0),
                 elevation: 3,
@@ -153,61 +121,71 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Blood Analysis Data',
+                      Text('PDF Document',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.bold)),
                       Divider(),
-                      _buildAnalysisResultRow(
-                          'Analysis Result:', documentData['analysisResult']),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Image.asset(
+                            'lib/assets/pdf_logo.png',
+                            height: 50,
+                            width: 50,
+                          ),
+                          SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                documentData['PDFName'],
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                DateFormat('yyyy-MM-dd – kk:mm').format(
+                                    (documentData['uploadDate'] as Timestamp)
+                                        .toDate()),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Center(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            // Navigate to ViewPDFScreen and pass the URL
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewPDFScreen(
+                                  pdfUrl: documentData['PDFUrl'],
+                                ),
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.picture_as_pdf),
+                          label: Text('View PDF'),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(255, 255, 198, 11),
+                            onPrimary: Colors.white,
+                            minimumSize: Size(double.infinity, 50),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
+
               SizedBox(height: 20.0),
             ],
-          ),
-        ),
-        bottomNavigationBar: BottomAppBar(
-          height: 128,
-          child: Padding(
-            padding: const EdgeInsets.all(0),
-            child: Column(
-              mainAxisSize: MainAxisSize
-                  .min, // Csak annyi helyet foglal el, amennyi szükséges
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Logic to send message
-                  },
-                  icon: Icon(Icons.comment), // Ikon hozzáadása
-                  label: Text(
-                    'Message',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 242, 136, 143),
-                    onPrimary: Colors.white,
-                    minimumSize: Size(double.infinity, 47),
-                  ),
-                ),
-                SizedBox(height: 8), // Térköz hozzáadása a gombok közé
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Logic to send data to ChatGPT
-                  },
-                  icon: Icon(Icons.send), // Ikon hozzáadása
-                  label:
-                      Text('Send To ChatGPT', style: TextStyle(fontSize: 14)),
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).colorScheme.secondary,
-                    onPrimary: Colors.white,
-                    minimumSize: Size(double.infinity, 45),
-                    padding: EdgeInsets.symmetric(vertical: 1.0),
-                  ),
-                ),
-              ],
-            ),
           ),
         ));
   }

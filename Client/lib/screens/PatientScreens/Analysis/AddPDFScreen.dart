@@ -88,6 +88,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
           .doc();
 
       await docRef.set({
+        'PDFName': fileName,
         'PDFUrl': urlDownload, // A feltöltött PDF URL-jének mentése
         'uploadDate': uploadTime,
         'assignedDoctorId': selectedDoctorId,
