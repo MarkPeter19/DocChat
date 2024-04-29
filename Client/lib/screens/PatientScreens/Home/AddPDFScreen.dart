@@ -230,7 +230,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                       //SizedBox(height: 10),
                       Center(
                         child: Text(
-                          "Add a PDF Analysis Document",
+                          "Add a Medical PDF Document",
                           style: TextStyle(fontSize: 20, color: Colors.black),
                         ),
                       ),

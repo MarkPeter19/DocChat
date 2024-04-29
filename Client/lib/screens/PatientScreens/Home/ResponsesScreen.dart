@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:doctorgpt/screens/PatientScreens/Analysis/PersonalDataScreen.dart';
+import 'package:doctorgpt/screens/PatientScreens/Home/PersonalDataScreen.dart';
 import 'package:doctorgpt/services/patient_services.dart';
 import '/components/analysis_item.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
@@ -85,7 +85,7 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
                 .push(MaterialPageRoute(builder: (_) => PersonalDataScreen()));
           },
           icon: Icon(Icons.assessment),
-          label: Text('New Analysis'),
+          label: Text('New Request'),
           style: ElevatedButton.styleFrom(
             primary: Theme.of(context).colorScheme.primary,
             onPrimary: Colors.white,

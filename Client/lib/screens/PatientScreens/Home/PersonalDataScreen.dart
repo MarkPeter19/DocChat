@@ -1,4 +1,4 @@
-import 'package:doctorgpt/screens/PatientScreens/Analysis/AddPDFScreen.dart';
+import 'package:doctorgpt/screens/PatientScreens/Home/AddPDFScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +9,6 @@ class PersonalDataScreen extends StatefulWidget {
 }
 
 class _PersonalDataScreenState extends State<PersonalDataScreen> {
-  // ha a user visszalep, akkor kitoldodjon a korabban megirt adatokkal
   @override
   void initState() {
     super.initState();
@@ -22,12 +21,16 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
 
   final TextEditingController _nameController = TextEditingController();
   String gender = '';
-  double age = 20;
+  DateTime? birthDate; // Modified
   double height = 170;
   double weight = 60;
   final TextEditingController _medicalHistoryController =
       TextEditingController();
   final TextEditingController _symptomsController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _currentTreatmentController =
+      TextEditingController();
+  final TextEditingController _allergiesController = TextEditingController();
 
   List<bool> smokingStatusSelections = [true, false, false, false];
   List<bool> alcoholConsumptionSelections = [true, false, false, false];
@@ -36,7 +39,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     'No',
     'Former smoker',
     'Passive smoker',
-    'Yes'
+    'Yes, I smoke'
   ];
   List<String> alcoholOptions = [
     'No',
@@ -45,7 +48,6 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     'I drink daily'
   ];
 
-  // convert List<Bool> -> string
   String getSelectedOption(List<bool> selections, List<String> options) {
     int selectedIndex = selections.indexWhere((element) => element);
     return options[selectedIndex];
@@ -53,7 +55,6 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
 
   bool _dataSaved = false;
 
-  //adatok mentese a DB-be
   void _saveDatas() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -65,7 +66,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           .set({
         'name': _nameController.text,
         'gender': gender,
-        'age': age.toInt(),
+        'birthDate': birthDate,
         'height': height.toInt(),
         'weight': weight.toInt(),
         'smoker': getSelectedOption(smokingStatusSelections, smokingOptions),
@@ -73,11 +74,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
             getSelectedOption(alcoholConsumptionSelections, alcoholOptions),
         'medicalHistory': _medicalHistoryController.text,
         'symptoms': _symptomsController.text,
+        'address': _addressController.text,
+        'currentTreatments': _currentTreatmentController.text,
+        'allergies': _allergiesController.text,
       }, SetOptions(merge: true)).then((_) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Data saved successfully!')));
         setState(() {
-          _dataSaved = true; // Frissítjük az állapotváltozót
+          _dataSaved = true;
         });
       }).catchError((error) {
         ScaffoldMessenger.of(context)
@@ -97,11 +101,16 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         setState(() {
           _nameController.text = data['name'] ?? '';
           gender = data['gender'] ?? '';
-          age = (data['age'] ?? 20).toDouble();
+          birthDate = data['birthDate'] != null
+              ? (data['birthDate'] as Timestamp).toDate() // Modified
+              : null;
           height = (data['height'] ?? 170).toDouble();
           weight = (data['weight'] ?? 60).toDouble();
           _medicalHistoryController.text = data['medicalHistory'] ?? '';
           _symptomsController.text = data['symptoms'] ?? '';
+          _addressController.text = data['address'] ?? '';
+          _currentTreatmentController.text = data['currentTreatments'] ?? '';
+          _allergiesController.text = data['allergies'] ?? '';
 
           int smokingIndex = smokingOptions.indexOf(data['smoker'] ?? 'No');
           smokingStatusSelections = List.generate(
@@ -125,6 +134,9 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     _nameController.dispose();
     _medicalHistoryController.dispose();
     _symptomsController.dispose();
+    _addressController.dispose();
+    _currentTreatmentController.dispose();
+    _allergiesController.dispose();
     super.dispose();
   }
 
@@ -162,7 +174,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 },
               ),
               SizedBox(height: 20),
-
+              //address
+              TextFormField(
+                controller: _addressController,
+                decoration: InputDecoration(
+                    labelText: 'Address', labelStyle: TextStyle(fontSize: 20)),
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 20),
               //gender
               Text('Gender:', style: TextStyle(fontSize: 20)),
               SizedBox(height: 10),
@@ -193,23 +212,42 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
               ),
               SizedBox(height: 20),
 
-              //age
-              Text('Age: ${age.round()}', style: TextStyle(fontSize: 20)),
-              Slider(
-                value: age,
-                min: 0,
-                max: 100,
-                divisions: 100,
-                label: age.round().toString(),
-                onChanged: (double value) {
-                  setState(() {
-                    age = value;
-                  });
+              // Birth Date
+              GestureDetector(
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: birthDate ?? DateTime.now(),
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now(),
+                  );
+                  if (picked != null && picked != birthDate) {
+                    setState(() {
+                      birthDate = picked;
+                    });
+                  }
                 },
-                thumbColor: Color.fromARGB(255, 128, 238, 172),
-                activeColor: Color.fromARGB(255, 128, 238, 172),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Birth Date:',
+                      labelStyle: TextStyle(fontSize: 20),
+                    ),
+                    style: TextStyle(fontSize: 18),
+                    controller: TextEditingController(
+                        text: birthDate != null
+                            ? "${birthDate!.day}/${birthDate!.month}/${birthDate!.year}"
+                            : ""),
+                    validator: (value) {
+                      if (birthDate == null) {
+                        return 'Please select your birth date';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
               ),
-
+              SizedBox(height: 20),
               //height
               SizedBox(height: 20),
               Text('Height: ${height.round()} cm',
@@ -228,7 +266,6 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 thumbColor: Color.fromARGB(255, 243, 93, 153),
                 activeColor: Color.fromARGB(255, 243, 93, 153),
               ),
-
               //weight
               SizedBox(height: 20),
               Text('Weight: ${weight.round()} kg',
@@ -249,84 +286,86 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
               ),
               SizedBox(height: 20),
 
-              //smoking
+              //smoke
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text('Do you smoke?', style: TextStyle(fontSize: 20)),
               ),
-              ToggleButtons(
-                children: smokingOptions
-                    .map((String option) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 7.8),
-                          child: Text(option, style: TextStyle(fontSize: 16)),
-                        ))
-                    .toList(),
-                isSelected: smokingStatusSelections,
-                onPressed: (int index) {
-                  setState(() {
-                    for (int buttonIndex = 0;
-                        buttonIndex < smokingStatusSelections.length;
-                        buttonIndex++) {
-                      smokingStatusSelections[buttonIndex] =
-                          buttonIndex == index;
-                    }
-                  });
-                },
-                borderRadius: BorderRadius.circular(20.0),
-                fillColor: Color.fromARGB(255, 248, 208, 9),
-                selectedBorderColor: Color.fromARGB(255, 248, 208, 9),
-                selectedColor: Color.fromARGB(255, 252, 252, 252),
-                borderColor: Color.fromARGB(255, 248, 208, 9),
-                borderWidth: 2,
-                constraints: BoxConstraints(minHeight: 50.0),
+              Wrap(
+                spacing: 8.0, // horizontal gap between buttons
+                runSpacing: 8.0, // vertical gap between lines
+                children: List.generate(smokingOptions.length, (index) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        for (int buttonIndex = 0;
+                            buttonIndex < smokingStatusSelections.length;
+                            buttonIndex++) {
+                          smokingStatusSelections[buttonIndex] =
+                              buttonIndex == index;
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: smokingStatusSelections[index]
+                          ? Color.fromARGB(255, 255, 229, 28) // selected color
+                          : Color.fromARGB(255, 252, 252, 252), // default color
+                      onPrimary: Colors.black, // text color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                    child: Text(smokingOptions[index]),
+                  );
+                }),
               ),
               SizedBox(height: 20),
 
-              // alcohol consumption
+              //alcohol
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text('Do you drink alcohol?',
                     style: TextStyle(fontSize: 20)),
               ),
-              ToggleButtons(
-                children: alcoholOptions
-                    .map((String option) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 7.8),
-                          child: Text(option, style: TextStyle(fontSize: 16)),
-                        ))
-                    .toList(),
-                isSelected: alcoholConsumptionSelections,
-                onPressed: (int index) {
-                  setState(() {
-                    for (int buttonIndex = 0;
-                        buttonIndex < alcoholConsumptionSelections.length;
-                        buttonIndex++) {
-                      alcoholConsumptionSelections[buttonIndex] =
-                          buttonIndex == index;
-                    }
-                  });
-                },
-                borderRadius: BorderRadius.circular(20.0),
-                fillColor: Color.fromARGB(255, 250, 102, 94),
-                selectedBorderColor: Color.fromARGB(255, 232, 90, 82),
-                selectedColor: Colors.white,
-                borderColor: Color.fromARGB(255, 232, 90, 82),
-                borderWidth: 2,
-                constraints: BoxConstraints(minHeight: 50.0),
+              Wrap(
+                spacing: 8.0, // horizontal gap between buttons
+                runSpacing: 8.0, // vertical gap between lines
+                children: List.generate(alcoholOptions.length, (index) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        for (int buttonIndex = 0;
+                            buttonIndex < alcoholConsumptionSelections.length;
+                            buttonIndex++) {
+                          alcoholConsumptionSelections[buttonIndex] =
+                              buttonIndex == index;
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: alcoholConsumptionSelections[index]
+                          ? Color.fromARGB(255, 249, 101, 101) // selected color
+                          : Color.fromARGB(255, 252, 252, 252), // default color
+                      onPrimary: Colors.black, // text color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                    child: Text(alcoholOptions[index]),
+                  );
+                }),
               ),
 
-              // medical history
+              //medical history
               TextFormField(
                 controller: _medicalHistoryController,
                 decoration: InputDecoration(
                     labelText: 'Medical history',
                     labelStyle: TextStyle(fontSize: 20)),
-                //onSaved: (value) => medicalHistory = value!,
                 style: TextStyle(fontSize: 18),
               ),
               SizedBox(height: 20),
-
-              // symptoms
+              //symptoms
               TextFormField(
                 controller: _symptomsController,
                 decoration: InputDecoration(
@@ -336,13 +375,30 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
               ),
               SizedBox(height: 20),
 
-              
+              //treatments
+              TextFormField(
+                controller: _currentTreatmentController,
+                decoration: InputDecoration(
+                    labelText: 'Current/Previous Treatments',
+                    labelStyle: TextStyle(fontSize: 20)),
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 20),
+              //allergies
+              TextFormField(
+                controller: _allergiesController,
+                decoration: InputDecoration(
+                    labelText: 'Allergies and intolerances',
+                    labelStyle: TextStyle(fontSize: 20)),
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 20),
             ],
           ),
         ),
       ),
 
-      // nav bar
+      //nav bar
       bottomNavigationBar: BottomAppBar(
         height: 65,
         child: Padding(
@@ -350,32 +406,32 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              if (!_dataSaved) // Ha az adatok nem lettek mentve
-              ElevatedButton.icon(
-                onPressed: _saveDatas,
-                icon: Icon(Icons.done_all),
-                label: Text('Save'),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.lightGreen,
-                  onPrimary: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  textStyle: TextStyle(fontSize: 18),
-                
+              if (!_dataSaved)
+                ElevatedButton.icon(
+                  onPressed: _saveDatas,
+                  icon: Icon(Icons.done_all),
+                  label: Text('Save'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.lightGreen,
+                    onPrimary: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                    textStyle: TextStyle(fontSize: 18),
+                  ),
                 ),
-              ),
-              if (_dataSaved) // Ha az adatok mentésre kerültek
+              if (_dataSaved)
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddPDFScreen()));
-                },
-                icon:Icon(Icons.add_a_photo_outlined),
-                label: Text('Add Analysis Doc'),
-                style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).colorScheme.primary,
-                  onPrimary: Colors.white,
-                  textStyle: TextStyle(fontSize: 16),
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => AddPDFScreen()));
+                  },
+                  icon: Icon(Icons.add_a_photo_outlined),
+                  label: Text('Add Medical PDF Doc'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).colorScheme.primary,
+                    onPrimary: Colors.white,
+                    textStyle: TextStyle(fontSize: 16),
+                  ),
                 ),
-              ),
             ],
           ),
         ),

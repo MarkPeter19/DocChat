@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:doctorgpt/screens/PatientScreens/Analysis/ResponsesScreen.dart';
+import 'package:doctorgpt/screens/PatientScreens/Home/ResponsesScreen.dart';
 import 'Profile/PatientProfileScreen.dart';
 import 'Messages/PatientMessagesScreen.dart';
-import 'ChatPDF/PatientChatPDFScreen.dart';
+import 'Doctors/DoctorsScreen.dart';
 import 'package:doctorgpt/services/patient_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -106,9 +106,9 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                 unselectedLabelColor: Colors.grey,
                 labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
                 tabs: [
-                  Tab(text: 'Analysis'),
+                  Tab(text: 'Home'),
                   Tab(text: 'Messages'),
-                  Tab(text: 'ChatPDF'),
+                  Tab(text: 'Doctors'),
                 ],
                 labelStyle: TextStyle(
                   fontSize: 15,
@@ -125,7 +125,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
               children: [
                 ResponsesScreen(),
                 PatientMessagesScreen(),
-                PatientChatPDFScreen(),
+                DoctorsScreen(),
               ],
             ),
           ),
