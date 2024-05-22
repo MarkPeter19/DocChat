@@ -1,5 +1,9 @@
+import 'package:doctorgpt/screens/DoctorScreens/Requests/chatScreen.dart';
+import 'package:doctorgpt/services/api_keys.dart';
+import 'package:doctorgpt/services/chatPDF_services';
 import 'package:flutter/material.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
+import '../../../services/patient_services.dart';
 import 'ViewPDFScreen.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,7 +25,10 @@ class PatientDataDetailsScreen extends StatefulWidget {
 class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
   late Map<String, dynamic> patientData;
   late Map<String, dynamic> documentData;
+  late String doctorId;
   bool isLoading = true;
+
+  final String apiKey = APIKeys.chatPDFKey;
 
   @override
   void initState() {
@@ -35,6 +42,7 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
       patientData = await doctorServices.fetchPatientData(widget.patientId);
       documentData = await doctorServices.fetchDocumentData(
           widget.patientId, widget.documentId);
+      doctorId = await doctorServices.fetchDoctorId();
       setState(() {
         isLoading = false;
       });
@@ -182,8 +190,23 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                             ),
                             SizedBox(height: 10),
                             ElevatedButton.icon(
-                              onPressed: () {
-                                // Logic to ask for PDF in chat
+                              onPressed: () async {
+                                String? pdfUrl = await PatientServices().fetchDocumentPDFUrl(widget.patientId, widget.documentId);
+                                if (pdfUrl != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatScreen(
+                                        pdfUrl: pdfUrl,
+                                        doctorId: doctorId,
+                                        chatPDFService: ChatPDFService(apiKey: APIKeys.chatPDFKey),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  // Kezeljük a null url-t
+                                  print('Null URL received from fetchDocumentPDFUrl');
+                                }
                               },
                               icon: Icon(Icons.chat),
                               label: Text('Ask ChatPDF'),
@@ -193,6 +216,7 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                                 minimumSize: Size(double.infinity, 50),
                               ),
                             ),
+
                           ],
                         ),
                       ),

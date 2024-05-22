@@ -7,6 +7,18 @@ class DoctorServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+
+   // Az aktuális orvos azonosítójának lekérdezése
+  Future<String> fetchDoctorId() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      throw Exception('User not authenticated');
+    }
+  }
+
+  
   Future<String> fetchDoctorUserName() async {
     String username = "Unknown";
     User? user = _auth.currentUser;

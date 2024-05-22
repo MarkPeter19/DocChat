@@ -26,6 +26,28 @@
       return username;
     }
 
+    //pdf url 
+    Future<String?> fetchDocumentPDFUrl(String patientId, String documentId) async {
+    try {
+      DocumentSnapshot documentSnapshot = await _firestore
+          .collection('patients')
+          .doc(patientId)
+          .collection('documents')
+          .doc(documentId)
+          .get();
+
+      if (documentSnapshot.exists && documentSnapshot.data() != null) {
+        Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+        return data['PDFUrl'];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching document PDF URL: $e');
+      return null;
+    }
+  }
+
     // A beteghez rendelt orvos azonosítójának lekérdezése
     Future<String> getAssignedDoctorIdForDocument(
         String patientId, String documentId) async {
