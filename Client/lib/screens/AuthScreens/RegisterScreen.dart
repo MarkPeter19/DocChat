@@ -88,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              SizedBox(height: 60.0),
+              SizedBox(height: 120.0),
               Text(
                 'Register',
                 style: TextStyle(
@@ -97,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 48.0),
+              SizedBox(height: 60.0),
               TextField(
                 controller: _usernameController,
                 decoration: InputDecoration(labelText: 'Username'),
@@ -148,9 +148,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               SizedBox(height: 24.0),
               ElevatedButton(
-                child: Text('Register'),
+                style: ButtonStyle(
+                  fixedSize: MaterialStateProperty.all<Size>(
+                    Size(double.infinity, 50), 
+                  ),
+                ),
+                child: Text(
+                  'Register',
+                  style: TextStyle(fontSize: 16),
+                ),
                 onPressed: _register,
               ),
+              SizedBox(height: 15.0),
               TextButton(
                 child: Text('Already have an account? Login here'),
                 onPressed: () {

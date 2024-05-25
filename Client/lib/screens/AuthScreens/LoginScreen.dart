@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              SizedBox(height: 60.0),
+              SizedBox(height: 120.0),
               Text(
                 'Login',
                 style: TextStyle(
@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 60.0),
+              SizedBox(height: 90.0),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   filled: true,
                   fillColor: Colors.grey[200],
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(12.0),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -119,17 +119,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   filled: true,
                   fillColor: Colors.grey[200],
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(12.0),
                     borderSide: BorderSide.none,
                   ),
                 ),
                 obscureText: true,
               ),
-              SizedBox(height: 24.0),
+              SizedBox(height: 30.0),
               ElevatedButton(
-                child: Text('Login'),
-                onPressed: _login, // Bejelentkezés kezelése
+                style: ButtonStyle(
+                  fixedSize: MaterialStateProperty.all<Size>(
+                    Size(double.infinity, 50), 
+                  ),
+                ),
+                child: Text(
+                  'Login',
+                  style: TextStyle(fontSize: 16),
+                ),
+                onPressed: _login,
               ),
+              SizedBox(height: 15.0),
               TextButton(
                 child: Text('Don\'t have an account? Register here'),
                 onPressed: () {
