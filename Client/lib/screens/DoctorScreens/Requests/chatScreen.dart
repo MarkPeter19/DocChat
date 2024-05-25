@@ -22,12 +22,22 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Map<String, dynamic>> _messages = [];
   late final ScrollController _scrollController;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadChatMessages(); 
-    _scrollController = ScrollController(initialScrollOffset: 10000.0);
-  }
+@override
+void initState() {
+  super.initState();
+  _scrollController = ScrollController(initialScrollOffset: 10000.0);
+  _loadChatMessages(); // Üzenetek betöltése csak az inicializálás után
+
+  // Késleltetett görgetés az üzenetek betöltése után
+  Future.delayed(Duration(milliseconds: 300), () {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  });
+}
+
 
   Widget _buildMessageBubble(Map<String, dynamic> message) {
     final String sender = message['sender'];
