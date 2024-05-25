@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ChatPDFScreen extends StatelessWidget {
+class Chats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

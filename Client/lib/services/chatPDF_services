@@ -85,6 +85,33 @@ Future<void> saveChatMessagesToFirestore(String pdfId, String doctorId, List<Map
   }
 }
 
+// get messages 
+Future<List<Map<String, dynamic>>> getChatMessagesFromFirestore(String pdfUrl, String doctorId) async {
+  try {
+    // Ellenőrizzük, hogy van-e már dokumentum az adott PDF-hez
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection('AIChats').where('pdfId', isEqualTo: pdfUrl).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // Ha van már dokumentum, akkor visszaadjuk az üzeneteket
+      List<Map<String, dynamic>> messages = [];
+      querySnapshot.docs.first.data()['messages'].forEach((message) {
+        messages.add({
+          'sender': message['sender'],
+          'content': message['content'],
+          'timestamp': message['timestamp'].toDate(), // Convert Firestore timestamp to DateTime
+        });
+      });
+      return messages;
+    } else {
+      return [];
+    }
+  } catch (e) {
+    // Hiba kezelése
+    print('Error getting chat messages from Firestore: $e');
+    throw e;
+  }
+}
+
 
 
 

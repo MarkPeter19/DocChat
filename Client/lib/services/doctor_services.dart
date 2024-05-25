@@ -145,5 +145,7 @@ class DoctorServices {
     }
   }
 
+  
+
   // Itt definiálhatsz több függvényt is
 }

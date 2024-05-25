@@ -1,4 +1,4 @@
-import 'package:doctorgpt/screens/DoctorScreens/Requests/chatScreen.dart';
+import 'package:doctorgpt/screens/DoctorScreens/Requests/ChatScreen.dart';
 import 'package:doctorgpt/services/api_keys.dart';
 import 'package:doctorgpt/services/chatPDF_services';
 import 'package:flutter/material.dart';
