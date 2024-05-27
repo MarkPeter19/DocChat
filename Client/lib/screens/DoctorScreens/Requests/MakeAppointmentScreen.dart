@@ -93,31 +93,31 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(Icons.calendar_today),
+                        Icon(Icons.calendar_today, size: 30,),
                         SizedBox(width: 5),
                         Text(
                           'Selected Date:',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 20),
                         ),
                         SizedBox(width: 5),
                         Text(
                           '${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}',
                           style: TextStyle(
                             fontSize: 20,
-                            color: _selectedTime == null ? Colors.red : Colors.black,
+                            color: _selectedTime == null ? Colors.red : Color.fromARGB(255, 31, 160, 119),
                           ),
                         ),
                         SizedBox(width: 10),
-                        Icon(Icons.access_time),
+                        Icon(Icons.access_time, size: 30,),
                         SizedBox(width: 5),
                         Text(
                           _selectedTime ?? '-- : --',
                           style: TextStyle(
                             fontSize: 20,
-                            color: _selectedTime == null ? Colors.red : Colors.black,
+                            color: _selectedTime == null ? Colors.red : Color.fromARGB(255, 31, 160, 119),
                           ),
                         ),
                       ],
@@ -211,7 +211,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                   }
                 },
                 label: const Text('Send Appointment'),
-                icon: const Icon(Icons.send),
+                icon: const Icon(Icons.send,),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: const Color.fromARGB(255, 112, 60, 139),
@@ -248,7 +248,7 @@ List<Widget> _buildTimeButtons(List<String> bookedTimeSlots) {
               : null,
           style: ElevatedButton.styleFrom(
             primary: _selectedTime == time
-                ? Color.fromARGB(255, 231, 114, 56) // Change color to orange if selected
+                ? Color.fromARGB(255, 231, 145, 102) // Change color to orange if selected
                 : isBooked
                     ? Colors.red // Change color to red if booked
                     : Color.fromARGB(255, 85, 194, 143), // Otherwise, keep it green
