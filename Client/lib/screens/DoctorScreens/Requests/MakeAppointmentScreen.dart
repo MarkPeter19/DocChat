@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:doctorgpt/services/booking_services.dart';
 
 class MakeAppointmentScreen extends StatefulWidget {
   final String patientId;
@@ -17,19 +16,10 @@ class MakeAppointmentScreen extends StatefulWidget {
 }
 
 class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
-  late BookingServices bookingServices;
-  String _message = '';
+  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _selectedDay = DateTime.now();
-  late List<DateTime> _bookedTimes;
-  DateTime? _selectedTime;
-  bool _dateSelected = false;
-
-  @override
-  void initState() {
-    super.initState();
-    bookingServices = BookingServices();
-    _bookedTimes = []; // Initialize booked times list
-  }
+  TextEditingController _messageController = TextEditingController();
+  String? _selectedTime;
 
   @override
   Widget build(BuildContext context) {
@@ -37,163 +27,167 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
       appBar: AppBar(
         title: const Text('Make Appointment'),
       ),
-      body: Column(
-        children: [
-          _tableCalendar(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
-            child: Center(
-              child: Text(
-                'Select Consultation Time',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            //calendar
+            Card(
+              margin: EdgeInsets.all(8.0),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TableCalendar(
+                  firstDay: DateTime.now(),
+                  lastDay: DateTime.now().add(Duration(days: 365)),
+                  focusedDay: _selectedDay,
+                  calendarFormat: _calendarFormat,
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDay, day);
+                  },
+                  onFormatChanged: (format) {
+                    setState(() {
+                      _calendarFormat = format;
+                    });
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _selectedTime = null; // Reset selected time when day changes
+                    });
+                  },
                 ),
               ),
             ),
-          ),
-          _dateSelected
-              ? Expanded(child: _buildTimeSlots())
-              : Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 30,
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Please select a date',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+            SizedBox(height: 20),
+
+            //selected date
+            Card(
+              margin: EdgeInsets.all(5.0),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.calendar_today),
+                        SizedBox(width: 5),
+                        Text(
+                          'Selected Date:',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          '${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: _selectedTime == null ? Colors.red : Colors.black,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(Icons.access_time),
+                        SizedBox(width: 5),
+                        Text(
+                          _selectedTime ?? '-- : --',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: _selectedTime == null ? Colors.red : Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
-          const SizedBox(height: 20),
-          Card(
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'Type your message here...',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-                onChanged: (value) {
-                  setState(() {
-                    _message = value;
-                  });
-                },
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton.icon(
-            onPressed: _selectedTime != null ? _uploadBooking : null,
-            label: const Text('Send Appointment'),
-            icon: const Icon(Icons.send),
+            SizedBox(height: 20,),
+
+            // select time
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
+              children: _buildTimeButtons(),
+            ),
+            SizedBox(height: 20),
+
+            //message
+            Card(
+              margin: EdgeInsets.all(8.0),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Message',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    Divider(),
+                    TextFormField(
+                      controller: _messageController,
+                      decoration: InputDecoration(
+                        hintText: 'Type your message here...',
+                        border: OutlineInputBorder(),
+                        hintMaxLines: 5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            //send button
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                onPressed: () => {},
+                label: const Text('Send Appointment'),
+                icon: const Icon(Icons.send),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color.fromARGB(255, 112, 60, 139),
+                  minimumSize: const Size(double.infinity, 50),
+                  padding: EdgeInsets.all(15),
+                ),
+              ),
+            ),
+            SizedBox(height: 20,),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build time buttons
+  List<Widget> _buildTimeButtons() {
+    List<Widget> buttons = [];
+    for (int hour = 8; hour <= 16; hour++) {
+      for (int minute = 0; minute < 60; minute += 30) {
+        String time = '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+        buttons.add(
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _selectedTime = time;
+              });
+            },
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: const Color.fromARGB(255, 112, 60, 139),
-              minimumSize: const Size(double.infinity, 50),
+              primary: _selectedTime == time ? Colors.green : Colors.grey[300],
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Table calendar
-  Widget _tableCalendar() {
-    return TableCalendar(
-      focusedDay: _selectedDay,
-      firstDay: DateTime.now(),
-      lastDay: DateTime(2023, 12, 31),
-      calendarFormat: CalendarFormat.month,
-      rowHeight: 48,
-      calendarStyle: const CalendarStyle(
-        todayDecoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
-      ),
-      availableCalendarFormats: const {
-        CalendarFormat.month: 'Month',
-      },
-      onDaySelected: (selectedDay, focusedDay) {
-        setState(() {
-          _selectedDay = selectedDay;
-          _dateSelected = true;
-        });
-      },
-    );
-  }
-
-  // Build time slots
-  Widget _buildTimeSlots() {
-    final availableTimes = _generateAvailableTimes();
-
-    return ListView.builder(
-      itemCount: availableTimes.length,
-      itemBuilder: (context, index) {
-        final time = availableTimes[index];
-        final isBooked = _bookedTimes.contains(time);
-        final isSelected = _selectedTime == time;
-
-        return InkWell(
-          onTap: isBooked ? null : () => _selectTime(time),
-          child: Container(
-            margin: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: isBooked ? Colors.red : (isSelected ? Colors.yellow : Colors.green),
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            alignment: Alignment.center,
             child: Text(
-              '${time.hour}:${time.minute}',
+              time,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isBooked ? Colors.white : null,
+                color: _selectedTime == time ? Colors.white : Colors.black,
               ),
             ),
           ),
         );
-      },
-    );
-  }
-
-  // Generate available times for selected day
-  List<DateTime> _generateAvailableTimes() {
-    // Example: Generating available times from 9 AM to 5 PM with 30 min interval
-    final startTime = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day, 9);
-    final endTime = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day, 17);
-    final List<DateTime> times = [];
-    for (var time = startTime; time.isBefore(endTime); time = time.add(const Duration(minutes: 30))) {
-      times.add(time);
+      }
     }
-    return times;
-  }
-
-  // Select time slot
-  void _selectTime(DateTime time) {
-    setState(() {
-      _selectedTime = time;
-    });
-  }
-
-  // Upload booking
-  Future<void> _uploadBooking() async {
-    try {
-      await bookingServices.uploadBooking(
-        doctorId: widget.doctorId,
-        patientId: widget.patientId,
-        bookingStart: _selectedTime!,
-        bookingEnd: _selectedTime!.add(const Duration(minutes: 30)),
-        message: _message,
-      );
-
-      //Navigator.of(context).pushNamed('success_booking');
-    } catch (e) {
-      print('Error uploading booking: $e');
-    }
+    return buttons;
   }
 }
