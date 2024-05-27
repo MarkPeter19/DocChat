@@ -1,3 +1,5 @@
+import 'package:doctorgpt/screens/DoctorScreens/DoctorHomeScreen.dart';
+import 'package:doctorgpt/services/booking_services.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -20,6 +22,28 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
   DateTime _selectedDay = DateTime.now();
   TextEditingController _messageController = TextEditingController();
   String? _selectedTime;
+  List<String> _bookedTimeSlots = [];
+
+  final BookingServices _bookingServices = BookingServices();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBookedTimeSlots();
+  }
+
+  // Fetch booked time slots for the selected day
+  Future<void> _fetchBookedTimeSlots() async {
+    List<String> bookedTimeSlots = await _bookingServices.getBookedTimeSlots(
+      doctorId: widget.doctorId,
+      year: _selectedDay.year,
+      month: _selectedDay.month,
+      day: _selectedDay.day,
+    );
+    setState(() {
+      _bookedTimeSlots = bookedTimeSlots;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +77,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                     setState(() {
                       _selectedDay = selectedDay;
                       _selectedTime = null; // Reset selected time when day changes
+                      _fetchBookedTimeSlots(); // Fetch booked time slots for the selected day
                     });
                   },
                 ),
@@ -107,8 +132,9 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children: _buildTimeButtons(),
+              children: _buildTimeButtons(_bookedTimeSlots), 
             ),
+
             SizedBox(height: 20),
 
             //message
@@ -143,7 +169,47 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton.icon(
-                onPressed: () => {},
+                onPressed: () async {
+                  if (_selectedTime != null && _messageController.text.isNotEmpty) {
+                    // Ellenőrizzük, hogy az adott időpontra már van-e foglalás
+                    bool isAvailable = await _bookingServices.isAppointmentAvailable(
+                      doctorId: widget.doctorId,
+                      year: _selectedDay.year,
+                      month: _selectedDay.month,
+                      day: _selectedDay.day,
+                      hourMinute: _selectedTime!,
+                    );
+
+                    if (isAvailable) {
+                      // Ha elérhető az időpont, mentjük a foglalást
+                      _bookingServices.saveAppointment(
+                        doctorId: widget.doctorId,
+                        patientId: widget.patientId,
+                        year: _selectedDay.year,
+                        month: _selectedDay.month,
+                        day: _selectedDay.day,
+                        hourMinute: _selectedTime!,
+                        message: _messageController.text,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Appointment saved successfully')),
+                      );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => DoctorHomeScreen()),
+                      );
+                    } else {
+                      // Ha már foglalt az időpont, megjelenítünk egy üzenetet és nem engedjük a mentést
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('This time slot is already booked')),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please select a time and enter a message')),
+                    );
+                  }
+                },
                 label: const Text('Send Appointment'),
                 icon: const Icon(Icons.send),
                 style: ElevatedButton.styleFrom(
@@ -162,32 +228,45 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
   }
 
   // Build time buttons
-  List<Widget> _buildTimeButtons() {
-    List<Widget> buttons = [];
-    for (int hour = 8; hour <= 16; hour++) {
-      for (int minute = 0; minute < 60; minute += 30) {
-        String time = '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
-        buttons.add(
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _selectedTime = time;
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              primary: _selectedTime == time ? Colors.green : Colors.grey[300],
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-            ),
-            child: Text(
-              time,
-              style: TextStyle(
-                color: _selectedTime == time ? Colors.white : Colors.black,
-              ),
+  // Build time buttons
+List<Widget> _buildTimeButtons(List<String> bookedTimeSlots) {
+  List<Widget> buttons = [];
+  for (int hour = 8; hour <= 16; hour++) {
+    for (int minute = 0; minute < 60; minute += 30) {
+      String minuteString = minute.toString().padLeft(2, '0');
+      String time = '$hour:$minuteString';
+      bool isBooked = bookedTimeSlots.contains(time); // Check if time is in bookedTimeSlots
+
+      buttons.add(
+        ElevatedButton(
+          onPressed: !isBooked
+              ? () {
+                  setState(() {
+                    _selectedTime = time;
+                  });
+                }
+              : null,
+          style: ElevatedButton.styleFrom(
+            primary: _selectedTime == time
+                ? Color.fromARGB(255, 231, 114, 56) // Change color to orange if selected
+                : isBooked
+                    ? Colors.red // Change color to red if booked
+                    : Color.fromARGB(255, 85, 194, 143), // Otherwise, keep it green
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
             ),
           ),
-        );
-      }
+          child: Text(
+            time,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
     }
-    return buttons;
   }
+  return buttons;
+}
+
 }
