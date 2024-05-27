@@ -1,4 +1,5 @@
 import 'package:doctorgpt/screens/DoctorScreens/Requests/ChatScreen.dart';
+import 'package:doctorgpt/screens/DoctorScreens/Requests/MakeAppointmentScreen.dart';
 import 'package:doctorgpt/services/api_keys.dart';
 import 'package:doctorgpt/services/chatPDF_services';
 import 'package:flutter/material.dart';
@@ -224,8 +225,51 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: 20.0),
+
+              //appointement card
+              Card(
+                margin: EdgeInsets.all(8.0),
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Make Appointment',
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold)),
+                      Divider(),
+                      Center(
+                        child: Column(
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MakeAppointmentScreen( 
+                                      patientId: widget.patientId,
+                                      doctorId: doctorId,),
+                                  ),
+                                );
+                              },
+                              icon: Icon(Icons.calendar_month),
+                              label: Text('Make Appointment'),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color.fromARGB(255, 99, 217, 40),
+                                onPrimary: Colors.white,
+                                minimumSize: Size(double.infinity, 50),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    ]
+                  )
+                ),
+              ),
             ],
           ),
         ));
