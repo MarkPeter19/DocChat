@@ -6,6 +6,17 @@
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final FirebaseAuth _auth = FirebaseAuth.instance;
 
+
+    // Beteg azonosítójának lekérdezése
+    Future<String> fetchPatientId() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      throw Exception('User not authenticated');
+    }
+  }
+
     Future<String> fetchPatientUserName() async {
       String username = "Unknown";
       User? user = _auth.currentUser;

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class BookingServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -14,9 +13,8 @@ class BookingServices {
 
     try {
       QuerySnapshot querySnapshot = await _firestore
-          .collection('doctors')
-          .doc(doctorId)
           .collection('appointments')
+          .where('doctorId', isEqualTo: doctorId)
           .where('date.year', isEqualTo: year)
           .where('date.month', isEqualTo: month)
           .where('date.day', isEqualTo: day)
@@ -33,32 +31,34 @@ class BookingServices {
     return bookedTimeSlots;
   }
 
-  // Check if appointment slot is available
   Future<bool> isAppointmentAvailable({
-    required String doctorId,
-    required int year,
-    required int month,
-    required int day,
-    required String hourMinute,
-  }) async {
-    try {
-      DocumentSnapshot documentSnapshot = await _firestore
-          .collection('doctors')
-          .doc(doctorId)
-          .collection('appointments')
-          .doc('$year-$month-$day $hourMinute')
-          .get();
+  required String doctorId,
+  required int year,
+  required int month,
+  required int day,
+  required String hourMinute,
+}) async {
+  try {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('appointments')
+        .where('doctorId', isEqualTo: doctorId)
+        .where('date.year', isEqualTo: year)
+        .where('date.month', isEqualTo: month)
+        .where('date.day', isEqualTo: day)
+        .where('hourMinute', isEqualTo: hourMinute)
+        .get();
 
-      // If document does not exist, slot is available
-      return !documentSnapshot.exists;
-    } catch (e) {
-      // Handle any potential errors here
-      print('Error checking appointment availability: $e');
-      return false; // Return false in case of error
-    }
+    // Ha nincs találat, akkor az időpont elérhető
+    return querySnapshot.docs.isEmpty;
+  } catch (e) {
+    // Kezeljük az esetleges hibákat
+    print('Hiba az időpont elérhetőség ellenőrzésekor: $e');
+    return false; // Hiba esetén false értékkel térünk vissza
   }
+}
 
-  //save appointments
+
+
   Future<void> saveAppointment({
     required String doctorId,
     required String patientId,
@@ -69,10 +69,9 @@ class BookingServices {
     required String message,
   }) async {
     await _firestore
-        .collection('doctors')
-        .doc(doctorId)
         .collection('appointments')
         .add({
+      'doctorId': doctorId,
       'patientId': patientId,
       'date': {
         'year': year,
@@ -83,4 +82,46 @@ class BookingServices {
       'message': message,
     });
   }
+
+  Future<List<Map<String, dynamic>>> fetchAppointments({
+    required String patientId,
+  }) async {
+    List<Map<String, dynamic>> appointments = [];
+
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('appointments')
+          .where('patientId', isEqualTo: patientId)
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        var appointmentData = doc.data() as Map<String, dynamic>;
+        var doctorId = appointmentData['doctorId'];
+        var appointmentId = doc.id; // Az appointment dokumentumának id-ja
+
+        Map<String, dynamic> appointment = {
+          'id': appointmentId, // Hozzáadva az appointment id-ja
+          'doctorId': doctorId,
+          'date': {
+            'year': appointmentData['date']['year'],
+            'month': appointmentData['date']['month'],
+            'day': appointmentData['date']['day'],
+          },
+          'hourMinute': appointmentData['hourMinute'],
+          'message': appointmentData['message'],
+        };
+
+        appointments.add(appointment);
+      }
+
+      if (appointments.isEmpty) {
+        print('No appointments found for the patient');
+      }
+    } catch (e) {
+      print('Error fetching appointments: $e');
+    }
+
+    return appointments;
+  }
+
 }

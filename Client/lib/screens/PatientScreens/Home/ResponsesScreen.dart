@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:doctorgpt/screens/PatientScreens/Home/PersonalDataScreen.dart';
+import 'package:doctorgpt/screens/PatientScreens/Home/ViewAppointmentScreen.dart';
 import 'package:doctorgpt/services/patient_services.dart';
-import '/components/analysis_item.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:doctorgpt/services/booking_services.dart';
+import 'package:doctorgpt/screens/PatientScreens/Home/PersonalDataScreen.dart';
+import 'package:doctorgpt/components/appointment_item.dart';
 
 class ResponsesScreen extends StatefulWidget {
   @override
@@ -10,87 +11,72 @@ class ResponsesScreen extends StatefulWidget {
 }
 
 class _ResponsesScreenState extends State<ResponsesScreen> {
-  final PatientServices patientServices = PatientServices();
-
+  final BookingServices _bookingServices = BookingServices();
+  List<Map<String, dynamic>> _appointments = [];
 
   @override
   void initState() {
     super.initState();
-    //_fetchPatientData();
+    _fetchAppointments();
+  }
+
+  Future<void> _fetchAppointments() async {
+    try {
+      String patientId = await PatientServices().fetchPatientId();
+      _appointments = await _bookingServices.fetchAppointments(patientId: patientId);
+      setState(() {});
+    } catch (e) {
+      print('Error fetching patient ID: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          //doctor's response
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'There are your doctor’s response:',
-              style: TextStyle(fontSize: 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Your doctor’s responses:',
+                style: TextStyle(fontSize: 18),
+              ),
             ),
-          ),
-          AnalysisItem(
-            doctorName: 'Dr. Doctor message',
-            message: 'Short description of the message...',
-            date: '2024-04-01',
-          ),
-
-          //previous analyses
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Previous analyses:',
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-          AnalysisItem(
-            doctorName: 'Dr. Doctor message',
-            message: 'Short description of the message...',
-            date: '2024-02-13',
-          ),
-          AnalysisItem(
-            doctorName: 'Dr. Doctor message',
-            message: 'Short description of the message...',
-            date: '2024-01-17',
-          ),
-          AnalysisItem(
-            doctorName: 'Dr. Doctor message',
-            message: 'Short description of the message...',
-            date: '2024-01-17',
-          ),
-
-          // Itt lehet további AnalysisItem-eket hozzáadni...
-        ]),
+            for (var appointment in _appointments)
+              AppointmentItem(
+                doctorId: appointment['doctorId'],
+                message: appointment['message'],
+                date: appointment['date'],
+                hourMinute: appointment['hourMinute'],
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => ViewAppointmentScreen(
+                      appointmentId: appointment['id'],
+                      doctorId: appointment['doctorId'],
+                      date: appointment['date'],
+                      hourMinute: appointment['hourMinute'],
+                      message: appointment['message'],
+                    ),
+                  ));
+                },
+              ),
+          ],
+        ),
       ),
-
-      //add doc btn
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     // Add your logic for navigating to Add Doctor screen
-      //   },
-      //   child: Image.asset('lib/assets/stethoscope.png',
-      //       width: 32, height: 32), // Kép méretének beállítása
-      //   tooltip: 'Add Doctor',
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton.icon(
           onPressed: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => PersonalDataScreen()));
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => PersonalDataScreen()));
           },
-          icon: Icon(Icons.assessment),
-          label: Text('New Request'),
+          icon: const Icon(Icons.assessment),
+          label: const Text('New Request'),
           style: ElevatedButton.styleFrom(
-            primary: Theme.of(context).colorScheme.primary,
-            onPrimary: Colors.white,
-            minimumSize: Size(double.infinity,
-                50),
+            foregroundColor: Colors.white,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            minimumSize: const Size(double.infinity, 50),
           ),
         ),
       ),

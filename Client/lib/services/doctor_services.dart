@@ -17,6 +17,24 @@ class DoctorServices {
     }
   }
 
+  Future<String> getDoctorName(String doctorId) async {
+    try {
+      // Orvos adatainak lekérdezése a 'doctors' kollekcióból
+      DocumentSnapshot doctorData =
+          await _firestore.collection('doctors').doc(doctorId).get();
+
+      if (doctorData.exists && doctorData.data() is Map) {
+        final data = doctorData.data() as Map<String, dynamic>;
+        return data['fullName'] ?? "Unknown";
+      } else {
+        return "Unknown";
+      }
+    } catch (e) {
+      print('Error fetching doctor name: $e');
+      return "Unknown";
+    }
+  }
+
   Future<String> fetchDoctorUserName() async {
     String username = "Unknown";
     User? user = _auth.currentUser;

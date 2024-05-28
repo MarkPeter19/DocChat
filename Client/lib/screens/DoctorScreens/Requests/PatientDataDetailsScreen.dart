@@ -257,7 +257,7 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                               icon: Icon(Icons.calendar_month),
                               label: Text('Make Appointment'),
                               style: ElevatedButton.styleFrom(
-                                primary: Color.fromARGB(255, 99, 217, 40),
+                                primary: Color.fromARGB(255, 104, 168, 72),
                                 onPrimary: Colors.white,
                                 minimumSize: Size(double.infinity, 50),
                               ),
