@@ -66,7 +66,7 @@ class BookingServices {
     required int month,
     required int day,
     required String hourMinute,
-    required String message,
+    required String message, required Timestamp sendTime,
   }) async {
     await _firestore
         .collection('appointments')
@@ -80,6 +80,7 @@ class BookingServices {
       },
       'hourMinute': hourMinute,
       'message': message,
+      'sendTime': sendTime,
     });
   }
 
@@ -109,6 +110,7 @@ class BookingServices {
           },
           'hourMinute': appointmentData['hourMinute'],
           'message': appointmentData['message'],
+          'sendTime': appointmentData['sendTime'],
         };
 
         appointments.add(appointment);

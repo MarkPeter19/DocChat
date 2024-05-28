@@ -35,6 +35,25 @@ class DoctorServices {
     }
   }
 
+  //address
+  Future<String> getDoctorAddress(String doctorId) async {
+  try {
+    // Az orvos címének lekérése a 'doctors' kollekcióból
+    DocumentSnapshot doctorData =
+        await _firestore.collection('doctors').doc(doctorId).get();
+
+    if (doctorData.exists && doctorData.data() is Map) {
+      final data = doctorData.data() as Map<String, dynamic>;
+      return data['address'] ?? "Unknown";
+    } else {
+      return "Unknown";
+    }
+  } catch (e) {
+    print('Error fetching doctor address: $e');
+    return "Unknown";
+  }
+}
+
   Future<String> fetchDoctorUserName() async {
     String username = "Unknown";
     User? user = _auth.currentUser;

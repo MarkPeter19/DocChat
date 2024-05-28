@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctorgpt/screens/DoctorScreens/DoctorHomeScreen.dart';
 import 'package:doctorgpt/services/booking_services.dart';
 import 'package:flutter/material.dart';
@@ -181,7 +182,8 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                     );
 
                     if (isAvailable) {
-                      // Ha elérhető az időpont, mentjük a foglalást
+                      Timestamp sendTime = Timestamp.now();
+                      // save appointment
                       _bookingServices.saveAppointment(
                         doctorId: widget.doctorId,
                         patientId: widget.patientId,
@@ -190,6 +192,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                         day: _selectedDay.day,
                         hourMinute: _selectedTime!,
                         message: _messageController.text,
+                        sendTime: sendTime, 
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Appointment saved successfully')),
@@ -199,7 +202,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                         MaterialPageRoute(builder: (context) => DoctorHomeScreen()),
                       );
                     } else {
-                      // Ha már foglalt az időpont, megjelenítünk egy üzenetet és nem engedjük a mentést
+                      // if not available
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('This time slot is already booked')),
                       );
@@ -210,6 +213,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                     );
                   }
                 },
+
                 label: const Text('Send Appointment'),
                 icon: const Icon(Icons.send,),
                 style: ElevatedButton.styleFrom(

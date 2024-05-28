@@ -50,6 +50,7 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
                 message: appointment['message'],
                 date: appointment['date'],
                 hourMinute: appointment['hourMinute'],
+                sendTime: appointment['sendTime'],
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => ViewAppointmentScreen(
