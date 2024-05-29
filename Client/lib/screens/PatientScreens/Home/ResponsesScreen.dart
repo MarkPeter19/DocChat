@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:doctorgpt/screens/PatientScreens/Home/ViewAppointmentScreen.dart';
 import 'package:doctorgpt/services/patient_services.dart';
-import 'package:doctorgpt/services/booking_services.dart';
+import 'package:doctorgpt/services/appointments_services.dart';
 import 'package:doctorgpt/screens/PatientScreens/Home/PersonalDataScreen.dart';
 import 'package:doctorgpt/components/appointment_item.dart';
 
 class ResponsesScreen extends StatefulWidget {
+  const ResponsesScreen({super.key});
+
   @override
   _ResponsesScreenState createState() => _ResponsesScreenState();
 }
 
 class _ResponsesScreenState extends State<ResponsesScreen> {
-  final BookingServices _bookingServices = BookingServices();
+  final AppointmentServices _AppointmentServices = AppointmentServices();
   List<Map<String, dynamic>> _appointments = [];
 
   @override
@@ -23,7 +25,7 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
   Future<void> _fetchAppointments() async {
     try {
       String patientId = await PatientServices().fetchPatientId();
-      _appointments = await _bookingServices.fetchAppointments(patientId: patientId);
+      _appointments = await _AppointmentServices.fetchAppointments(patientId: patientId);
       setState(() {});
     } catch (e) {
       print('Error fetching patient ID: $e');

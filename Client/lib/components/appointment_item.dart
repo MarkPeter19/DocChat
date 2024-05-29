@@ -41,9 +41,12 @@ class AppointmentItem extends StatelessWidget {
         }
         return Card(
           elevation: 2,
+          color: Color.fromRGBO(212, 255, 219, 1),
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
             leading: Container(
+              width: 50,
+              height: 50,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.green,
@@ -63,7 +66,7 @@ class AppointmentItem extends StatelessWidget {
                 if (sendTime != null) // Csak akkor jelenítsd meg, ha nem null
                   Text(
                     'Sent at: $sentAt',
-                    style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 122, 121, 121)),
+                    style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 103, 101, 101)),
                   ),
               ],
             ),

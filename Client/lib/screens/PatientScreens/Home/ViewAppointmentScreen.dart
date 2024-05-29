@@ -1,7 +1,9 @@
+import 'package:doctorgpt/components/success_dialog.dart';
+import 'package:doctorgpt/services/appointments_services.dart';
 import 'package:flutter/material.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
 
-class ViewAppointmentScreen extends StatelessWidget {
+class ViewAppointmentScreen extends StatefulWidget {
   final String appointmentId;
   final String doctorId;
   final Map<String, dynamic> date;
@@ -18,6 +20,20 @@ class ViewAppointmentScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ViewAppointmentScreenState createState() => _ViewAppointmentScreenState();
+}
+
+class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
+  bool isDeclined = false;
+  final TextEditingController declineReasonController = TextEditingController();
+
+  @override
+  void dispose() {
+    declineReasonController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +43,8 @@ class ViewAppointmentScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Card(
-            elevation: 2,
+            elevation: 3,
+            color: const Color.fromARGB(255, 223, 255, 228),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -40,9 +57,8 @@ class ViewAppointmentScreen extends StatelessWidget {
                         width: 90,
                         height: 90,
                         decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color.fromARGB(255, 69, 167, 83)
-                        ),
+                            shape: BoxShape.circle,
+                            color: Color.fromARGB(255, 69, 167, 83)),
                         child: const Padding(
                           padding: EdgeInsets.all(16.0),
                           child: Icon(
@@ -63,11 +79,8 @@ class ViewAppointmentScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   FutureBuilder<String>(
-                    future: DoctorServices().getDoctorName(doctorId),
+                    future: DoctorServices().getDoctorName(widget.doctorId),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      }
                       if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       }
@@ -76,24 +89,22 @@ class ViewAppointmentScreen extends StatelessWidget {
                           width: 45,
                           height: 45,
                           decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromARGB(255, 123, 203, 247), // Változtatható szín
-                          ),
+                              shape: BoxShape.circle,
+                              color: Color.fromARGB(255, 123, 203, 247)),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Icon(Icons.person, color: Colors.white),
                           ),
                         ),
-                        title: Text(snapshot.data ?? "Unknown", style: const TextStyle(fontSize: 18),),
+                        title: Text(snapshot.data ?? "Unknown",
+                            style: const TextStyle(fontSize: 18)),
                       );
                     },
                   ),
                   FutureBuilder<String>(
-                    future: DoctorServices().getDoctorAddress(doctorId),
+                    future:
+                        DoctorServices().getDoctorAddress(widget.doctorId),
                     builder: (context, addressSnapshot) {
-                      if (addressSnapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      }
                       if (addressSnapshot.hasError) {
                         return Text('Error: ${addressSnapshot.error}');
                       }
@@ -103,14 +114,16 @@ class ViewAppointmentScreen extends StatelessWidget {
                           height: 45,
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Color.fromARGB(255, 235, 164, 58), 
+                            color: Color.fromARGB(255, 235, 164, 58),
                           ),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Icon(Icons.location_on, color: Colors.white),
+                            child:
+                                Icon(Icons.location_on, color: Colors.white),
                           ),
                         ),
-                        title: Text(addressSnapshot.data ?? "Unknown Address", style: const TextStyle(fontSize: 18)),
+                        title: Text(addressSnapshot.data ?? "Unknown Address",
+                            style: const TextStyle(fontSize: 18)),
                       );
                     },
                   ),
@@ -119,79 +132,153 @@ class ViewAppointmentScreen extends StatelessWidget {
                       width: 45,
                       height: 45,
                       decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color.fromARGB(255, 125, 211, 75), // Változtatható szín
-                      ),
+                          shape: BoxShape.circle,
+                          color: Color.fromARGB(255, 125, 211, 75)),
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Icon(Icons.calendar_today, color: Colors.white),
                       ),
                     ),
-                    title: Text('Date: ${date['year']}-${date['month']}-${date['day']}', style: const TextStyle(fontSize: 18)),
+                    title: Text(
+                        'Date: ${widget.date['year']}-${widget.date['month']}-${widget.date['day']}',
+                        style: const TextStyle(fontSize: 18)),
                   ),
                   ListTile(
                     leading: Container(
                       width: 45,
                       height: 45,
                       decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color.fromARGB(255, 209, 103, 128),
-                      ),
+                          shape: BoxShape.circle,
+                          color: Color.fromARGB(255, 209, 103, 128)),
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Icon(Icons.access_time, color: Colors.white),
                       ),
                     ),
-                    title: Text('Time: $hourMinute', style: const TextStyle(fontSize: 18)),
+                    title: Text('Time: ${widget.hourMinute}',
+                        style: const TextStyle(fontSize: 18)),
                   ),
                   ListTile(
                     leading: Container(
                       width: 45,
                       height: 45,
                       decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color.fromARGB(255, 184, 78, 203), // Változtatható szín
-                      ),
+                          shape: BoxShape.circle,
+                          color: Color.fromARGB(255, 184, 78, 203)),
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Icon(Icons.message, color: Colors.white),
                       ),
                     ),
-                    title: Text(message, style: const TextStyle(fontSize: 18)),
+                    title: Text(widget.message,
+                        style: const TextStyle(fontSize: 18)),
                   ),
                   const SizedBox(height: 20),
+
+                  //buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Add logic for accept button
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          setState(() {
+                            isDeclined = false;
+                          });
+                          try {
+                            await AppointmentServices().acceptAppointment(widget.appointmentId);
+
+                            // success dialog
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SuccessDialog(
+                                  message: 'Appointment accepted successfully!',
+                                  onPressed: () {
+                                    Navigator.pop(context); // Dialógus bezárása
+                                    Navigator.pop(context); // Visszalépés a PatientHomeScreen-re
+                                  },
+                                );
+                              },
+                            );
+                          } catch (e) {
+                            print('Error accepting appointment: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Error accepting appointment')),
+                            );
+                          }
                         },
-                        child: const Text('Accept'),
+                        icon: const Icon(Icons.check, size: 30, color: Colors.white),
+                        label: const Text('Accept', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        ),
                       ),
-                      ElevatedButton(
+                      ElevatedButton.icon(
                         onPressed: () {
-                          // Add logic for decline button
+                          setState(() {
+                            isDeclined = true;
+                          });
                         },
-                        child: const Text('Decline'),
+                        icon: const Icon(Icons.close, size: 30, color: Colors.white),
+                        label: const Text('Decline', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  // Text input for decline reason
-                  const TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Reason for Decline',
-                      border: OutlineInputBorder(),
+                  if (isDeclined)
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: declineReasonController,
+                          decoration: const InputDecoration(
+                            labelText: 'Type reason for decline...',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            setState(() {
+                              isDeclined = false;
+                            });
+                            try {
+                              String declineReason = declineReasonController.text;
+                              await AppointmentServices().declineAppointment(widget.appointmentId, declineReason);
+                              showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SuccessDialog(
+                                  message: 'Decline message sent successfully!',
+                                  onPressed: () {
+                                    Navigator.pop(context); // Dialógus bezárása
+                                    Navigator.pop(context); // Visszalépés a PatientHomeScreen-re
+                                  },
+                                );
+                              },
+                            );
+                             // Navigator.pop(context); // Navigálás a PatientHomeScreen-re
+                            } catch (e) {
+                              print('Error declining appointment: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Error declining appointment')),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.send, size: 30, color: Colors.white),
+                          label: const Text('Send Respond', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 231, 185, 60),
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Add logic for send respond button
-                    },
-                    child: const Text('Send Respond'),
-                  ),
+
                 ],
               ),
             ),

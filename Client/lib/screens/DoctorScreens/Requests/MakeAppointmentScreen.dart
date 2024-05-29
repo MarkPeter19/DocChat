@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctorgpt/screens/DoctorScreens/DoctorHomeScreen.dart';
-import 'package:doctorgpt/services/booking_services.dart';
+import 'package:doctorgpt/services/appointments_services.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -25,7 +25,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
   String? _selectedTime;
   List<String> _bookedTimeSlots = [];
 
-  final BookingServices _bookingServices = BookingServices();
+  final AppointmentServices _AppointmentServices = AppointmentServices();
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
 
   // Fetch booked time slots for the selected day
   Future<void> _fetchBookedTimeSlots() async {
-    List<String> bookedTimeSlots = await _bookingServices.getBookedTimeSlots(
+    List<String> bookedTimeSlots = await _AppointmentServices.getBookedTimeSlots(
       doctorId: widget.doctorId,
       year: _selectedDay.year,
       month: _selectedDay.month,
@@ -57,13 +57,13 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
           children: [
             //calendar
             Card(
-              margin: EdgeInsets.all(8.0),
+              margin: const EdgeInsets.all(8.0),
               elevation: 3,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TableCalendar(
                   firstDay: DateTime.now(),
-                  lastDay: DateTime.now().add(Duration(days: 365)),
+                  lastDay: DateTime.now().add(const Duration(days: 365)),
                   focusedDay: _selectedDay,
                   calendarFormat: _calendarFormat,
                   selectedDayPredicate: (day) {
@@ -84,11 +84,11 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             //selected date
             Card(
-              margin: EdgeInsets.all(5.0),
+              margin: const EdgeInsets.all(5.0),
               elevation: 3,
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -97,28 +97,28 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(Icons.calendar_today, size: 30,),
-                        SizedBox(width: 5),
-                        Text(
+                        const Icon(Icons.calendar_today, size: 30,),
+                        const SizedBox(width: 5),
+                        const Text(
                           'Selected Date:',
                           style: TextStyle(fontSize: 20),
                         ),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 5),
                         Text(
                           '${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}',
                           style: TextStyle(
                             fontSize: 20,
-                            color: _selectedTime == null ? Colors.red : Color.fromARGB(255, 31, 160, 119),
+                            color: _selectedTime == null ? Colors.red : const Color.fromARGB(255, 31, 160, 119),
                           ),
                         ),
-                        SizedBox(width: 10),
-                        Icon(Icons.access_time, size: 30,),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 10),
+                        const Icon(Icons.access_time, size: 30,),
+                        const SizedBox(width: 5),
                         Text(
                           _selectedTime ?? '-- : --',
                           style: TextStyle(
                             fontSize: 20,
-                            color: _selectedTime == null ? Colors.red : Color.fromARGB(255, 31, 160, 119),
+                            color: _selectedTime == null ? Colors.red : const Color.fromARGB(255, 31, 160, 119),
                           ),
                         ),
                       ],
@@ -127,7 +127,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
 
             // select time
             Wrap(
@@ -136,25 +136,25 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
               children: _buildTimeButtons(_bookedTimeSlots), 
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             //message
             Card(
-              margin: EdgeInsets.all(8.0),
+              margin: const EdgeInsets.all(8.0),
               elevation: 3,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Message',
                       style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     Divider(),
                     TextFormField(
                       controller: _messageController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Type your message here...',
                         border: OutlineInputBorder(),
                         hintMaxLines: 5,
@@ -173,7 +173,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                 onPressed: () async {
                   if (_selectedTime != null && _messageController.text.isNotEmpty) {
                     // Ellenőrizzük, hogy az adott időpontra már van-e foglalás
-                    bool isAvailable = await _bookingServices.isAppointmentAvailable(
+                    bool isAvailable = await _AppointmentServices.isAppointmentAvailable(
                       doctorId: widget.doctorId,
                       year: _selectedDay.year,
                       month: _selectedDay.month,
@@ -184,7 +184,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                     if (isAvailable) {
                       Timestamp sendTime = Timestamp.now();
                       // save appointment
-                      _bookingServices.saveAppointment(
+                      _AppointmentServices.saveAppointment(
                         doctorId: widget.doctorId,
                         patientId: widget.patientId,
                         year: _selectedDay.year,

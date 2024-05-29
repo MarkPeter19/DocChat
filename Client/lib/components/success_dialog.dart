@@ -4,7 +4,7 @@ class SuccessDialog extends StatelessWidget {
   final String message;
   final VoidCallback onPressed;
 
-  SuccessDialog({required this.message, required this.onPressed});
+  const SuccessDialog({super.key, required this.message, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class SuccessDialog extends StatelessWidget {
             height: 100,
             width: 100,
           ),
-          SizedBox(height: 10),
-          Text(
+          const SizedBox(height: 10),
+          const Text(
             'Success!',
             style: TextStyle(
               fontSize: 20,
@@ -34,7 +34,7 @@ class SuccessDialog extends StatelessWidget {
         Center(
           child: TextButton(
             onPressed: onPressed,
-            child: Text('Okay'),
+            child: const Text('Okay'),
           ),
         ),
       ],

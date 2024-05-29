@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class BookingServices {
+class AppointmentServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<String>> getBookedTimeSlots({
@@ -124,6 +124,29 @@ class BookingServices {
     }
 
     return appointments;
+  }
+
+  Future<void> acceptAppointment(String appointmentId) async {
+    try {
+      await _firestore.collection('appointments').doc(appointmentId).update({
+        'isAccepted': true,
+      });
+    } catch (e) {
+      print('Error accepting appointment: $e');
+      throw Exception('Error accepting appointment');
+    }
+  }
+
+  Future<void> declineAppointment(String appointmentId, String declineMessage) async {
+    try {
+      await _firestore.collection('appointments').doc(appointmentId).update({
+        'isAccepted': false,
+        'declineMessage': declineMessage,
+      });
+    } catch (e) {
+      print('Error declining appointment: $e');
+      throw Exception('Error declining appointment');
+    }
   }
 
 }
