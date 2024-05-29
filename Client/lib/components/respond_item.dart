@@ -40,7 +40,7 @@ class RespondItem extends StatelessWidget {
         }
         return Card(
           elevation: 2,
-          color: Color.fromRGBO(212, 255, 219, 1),
+          color: const Color.fromARGB(255, 102, 148, 109),
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
             leading: Container(
@@ -48,7 +48,7 @@ class RespondItem extends StatelessWidget {
               height: 50,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.green,
+                color: Color.fromARGB(255, 133, 199, 136),
               ),
               child: const Padding(
                 padding: EdgeInsets.all(8.0),
@@ -61,22 +61,22 @@ class RespondItem extends StatelessWidget {
                 Text(
                   snapshot.data ?? 'Unknown',
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18),
+                      fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                 ),
                 if (sendTime != null) // Csak akkor jelenítsd meg, ha nem null
                   Text(
                     'Sent at: $sentAt',
                     style: const TextStyle(
                         fontSize: 18,
-                        color: Color.fromARGB(255, 103, 101, 101)),
+                        color: Colors.white),
                   ),
               ],
             ),
             subtitle: Text(
               'Appointment: $formattedDate',
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 190, 255, 194)),
             ),
-            trailing: const Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right, color: Colors.white),
             onTap: onTap,
           ),
         );

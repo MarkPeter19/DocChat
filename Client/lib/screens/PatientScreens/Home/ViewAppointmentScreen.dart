@@ -43,8 +43,9 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Card(
-            elevation: 3,
-            color: const Color.fromARGB(255, 223, 255, 228),
+            elevation: 5,
+            shadowColor: Colors.green,
+            color: const Color.fromARGB(255, 102, 148, 109),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -58,7 +59,7 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                         height: 90,
                         decoration: const BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Color.fromARGB(255, 69, 167, 83)),
+                            color: Color.fromARGB(255, 135, 208, 146)),
                         child: const Padding(
                           padding: EdgeInsets.all(16.0),
                           child: Icon(
@@ -74,7 +75,10 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                   const Center(
                     child: Text(
                       'Hi, you have got an appointment, is it suitable for you?',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -97,7 +101,10 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                           ),
                         ),
                         title: Text(snapshot.data ?? "Unknown",
-                            style: const TextStyle(fontSize: 18)),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            )),
                       );
                     },
                   ),
@@ -121,7 +128,10 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                           ),
                         ),
                         title: Text(addressSnapshot.data ?? "Unknown Address",
-                            style: const TextStyle(fontSize: 18)),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            )),
                       );
                     },
                   ),
@@ -139,7 +149,10 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                     ),
                     title: Text(
                         'Date: ${widget.date['year']}-${widget.date['month']}-${widget.date['day']}',
-                        style: const TextStyle(fontSize: 18)),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        )),
                   ),
                   ListTile(
                     leading: Container(
@@ -154,7 +167,10 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                       ),
                     ),
                     title: Text('Time: ${widget.hourMinute}',
-                        style: const TextStyle(fontSize: 18)),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        )),
                   ),
                   ListTile(
                     leading: Container(
@@ -169,7 +185,10 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                       ),
                     ),
                     title: Text(widget.message,
-                        style: const TextStyle(fontSize: 18)),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        )),
                   ),
                   const SizedBox(height: 20),
 
@@ -213,7 +232,8 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                         label: const Text('Accept',
                             style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor:
+                              const Color.fromARGB(255, 114, 196, 117),
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 20),
                         ),
@@ -229,7 +249,8 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                         label: const Text('Decline',
                             style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor:
+                              const Color.fromARGB(255, 245, 111, 102),
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 20),
                         ),

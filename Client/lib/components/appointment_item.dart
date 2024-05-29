@@ -37,6 +37,7 @@ class AppointmentItem extends StatelessWidget {
         final doctorAddress = snapshot.data?['address'] ?? 'Unknown';
 
         return Card(
+          color: Color.fromARGB(255, 64, 44, 86),
           elevation: 2,
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
@@ -48,16 +49,16 @@ class AppointmentItem extends StatelessWidget {
                   children: [
                     Text(
                       _getDayOfWeek(appointmentDate), // nap
-                      style: const TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 14,  color: Color.fromARGB(255, 211, 100, 236)),
                     ),
                     Text(
                       appointmentDate.day.toString(), // Nap
                       style: const TextStyle(
-                          fontSize: 34, fontWeight: FontWeight.bold),
+                          fontSize: 34, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 211, 100, 236)),
                     ),
                     Text(
                       _getMonth(appointmentDate), // Hónap
-                      style: const TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 211, 100, 236)),
                     ),
                   ],
                 ),
@@ -68,7 +69,7 @@ class AppointmentItem extends StatelessWidget {
                 Text(
                   hourMinute,
                   style: const TextStyle(
-                      fontSize: 35, fontWeight: FontWeight.bold),
+                      fontSize: 35, fontWeight: FontWeight.bold,  color: Color.fromARGB(255, 255, 6, 126)),
                 ),
 
                 const SizedBox(width: 15),
@@ -79,14 +80,14 @@ class AppointmentItem extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.person),
+                          const Icon(Icons.person, color: Color.fromARGB(255, 211, 100, 236),),
                           const SizedBox(
                             width: 10,
                           ),
                           Text(
                             doctorName,
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
+                                fontWeight: FontWeight.bold, fontSize: 18,  color: Colors.white),
                           ),
                         ],
                       ),
@@ -96,7 +97,7 @@ class AppointmentItem extends StatelessWidget {
                       // Address megjelenítése két sorban, ha hosszabb, mint a megadott maximális hossz
                       Row(
                         children: [
-                          const Icon(Icons.location_on),
+                          const Icon(Icons.location_on, color: Color.fromARGB(255, 211, 100, 236),),
                           const SizedBox(
                             width: 10,
                           ),
@@ -105,7 +106,7 @@ class AppointmentItem extends StatelessWidget {
                               height: 40, // Két sor maximális magassága
                               child: Text(
                                 doctorAddress,
-                                style: const TextStyle(fontSize: 14),
+                                style: const TextStyle(fontSize: 14,  color: Colors.white),
                                 maxLines: 2, // Maximum két sor
                                 overflow: TextOverflow
                                     .ellipsis, // Több sor esetén ellipszist jelenít meg
