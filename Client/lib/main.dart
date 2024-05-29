@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
         '/doctor_home': (context) => DoctorHomeScreen(),
-        '/patient_home': (context) => PatientHomeScreen(),
+        '/patient_home': (context) => const PatientHomeScreen(),
         '/doctor_profile' :(context) => DoctorProfileScreen(),
         '/patient_profile' :(context) => PatientProfileScreen(),
       },
