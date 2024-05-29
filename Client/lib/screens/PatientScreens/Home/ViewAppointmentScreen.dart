@@ -102,8 +102,7 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                     },
                   ),
                   FutureBuilder<String>(
-                    future:
-                        DoctorServices().getDoctorAddress(widget.doctorId),
+                    future: DoctorServices().getDoctorAddress(widget.doctorId),
                     builder: (context, addressSnapshot) {
                       if (addressSnapshot.hasError) {
                         return Text('Error: ${addressSnapshot.error}');
@@ -118,8 +117,7 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                           ),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
-                            child:
-                                Icon(Icons.location_on, color: Colors.white),
+                            child: Icon(Icons.location_on, color: Colors.white),
                           ),
                         ),
                         title: Text(addressSnapshot.data ?? "Unknown Address",
@@ -185,7 +183,8 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                             isDeclined = false;
                           });
                           try {
-                            await AppointmentServices().acceptAppointment(widget.appointmentId);
+                            await AppointmentServices()
+                                .acceptAppointment(widget.appointmentId);
 
                             // success dialog
                             showDialog(
@@ -195,7 +194,8 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                                   message: 'Appointment accepted successfully!',
                                   onPressed: () {
                                     Navigator.pop(context); // Dialógus bezárása
-                                    Navigator.pop(context); // Visszalépés a PatientHomeScreen-re
+                                    Navigator.pop(
+                                        context); // Visszalépés a PatientHomeScreen-re
                                   },
                                 );
                               },
@@ -203,15 +203,19 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                           } catch (e) {
                             print('Error accepting appointment: $e');
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Error accepting appointment')),
+                              const SnackBar(
+                                  content: Text('Error accepting appointment')),
                             );
                           }
                         },
-                        icon: const Icon(Icons.check, size: 30, color: Colors.white),
-                        label: const Text('Accept', style: TextStyle(color: Colors.white)),
+                        icon: const Icon(Icons.check,
+                            size: 30, color: Colors.white),
+                        label: const Text('Accept',
+                            style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
                         ),
                       ),
                       ElevatedButton.icon(
@@ -220,11 +224,14 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                             isDeclined = true;
                           });
                         },
-                        icon: const Icon(Icons.close, size: 30, color: Colors.white),
-                        label: const Text('Decline', style: TextStyle(color: Colors.white)),
+                        icon: const Icon(Icons.close,
+                            size: 30, color: Colors.white),
+                        label: const Text('Decline',
+                            style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
                         ),
                       ),
                     ],
@@ -247,38 +254,48 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                               isDeclined = false;
                             });
                             try {
-                              String declineReason = declineReasonController.text;
-                              await AppointmentServices().declineAppointment(widget.appointmentId, declineReason);
+                              String declineReason =
+                                  declineReasonController.text;
+                              await AppointmentServices().declineAppointment(
+                                  widget.appointmentId, declineReason);
                               showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return SuccessDialog(
-                                  message: 'Decline message sent successfully!',
-                                  onPressed: () {
-                                    Navigator.pop(context); // Dialógus bezárása
-                                    Navigator.pop(context); // Visszalépés a PatientHomeScreen-re
-                                  },
-                                );
-                              },
-                            );
-                             // Navigator.pop(context); // Navigálás a PatientHomeScreen-re
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SuccessDialog(
+                                    message:
+                                        'Decline message sent successfully!',
+                                    onPressed: () {
+                                      Navigator.pop(
+                                          context); // Dialógus bezárása
+                                      Navigator.pop(
+                                          context); // Visszalépés a PatientHomeScreen-re
+                                    },
+                                  );
+                                },
+                              );
+                              // Navigator.pop(context); // Navigálás a PatientHomeScreen-re
                             } catch (e) {
                               print('Error declining appointment: $e');
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Error declining appointment')),
+                                const SnackBar(
+                                    content:
+                                        Text('Error declining appointment')),
                               );
                             }
                           },
-                          icon: const Icon(Icons.send, size: 30, color: Colors.white),
-                          label: const Text('Send Respond', style: TextStyle(color: Colors.white)),
+                          icon: const Icon(Icons.send,
+                              size: 30, color: Colors.white),
+                          label: const Text('Send Respond',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 231, 185, 60),
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            backgroundColor:
+                                const Color.fromARGB(255, 231, 185, 60),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
                           ),
                         ),
                       ],
                     ),
-
                 ],
               ),
             ),

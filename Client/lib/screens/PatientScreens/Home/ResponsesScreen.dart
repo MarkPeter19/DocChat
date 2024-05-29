@@ -3,17 +3,17 @@ import 'package:doctorgpt/screens/PatientScreens/Home/ViewAppointmentScreen.dart
 import 'package:doctorgpt/services/patient_services.dart';
 import 'package:doctorgpt/services/appointments_services.dart';
 import 'package:doctorgpt/screens/PatientScreens/Home/PersonalDataScreen.dart';
-import 'package:doctorgpt/components/appointment_item.dart';
+import 'package:doctorgpt/components/respond_item.dart';
 
 class ResponsesScreen extends StatefulWidget {
-  const ResponsesScreen({super.key});
+  const ResponsesScreen({Key? key}) : super(key: key);
 
   @override
   _ResponsesScreenState createState() => _ResponsesScreenState();
 }
 
 class _ResponsesScreenState extends State<ResponsesScreen> {
-  final AppointmentServices _AppointmentServices = AppointmentServices();
+  final AppointmentServices _appointmentServices = AppointmentServices();
   List<Map<String, dynamic>> _appointments = [];
 
   @override
@@ -25,7 +25,8 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
   Future<void> _fetchAppointments() async {
     try {
       String patientId = await PatientServices().fetchPatientId();
-      _appointments = await _AppointmentServices.fetchAppointments(patientId: patientId);
+      _appointments =
+          await _appointmentServices.fetchAppointments(patientId: patientId);
       setState(() {});
     } catch (e) {
       print('Error fetching patient ID: $e');
@@ -47,24 +48,26 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
               ),
             ),
             for (var appointment in _appointments)
-              AppointmentItem(
-                doctorId: appointment['doctorId'],
-                message: appointment['message'],
-                date: appointment['date'],
-                hourMinute: appointment['hourMinute'],
-                sendTime: appointment['sendTime'],
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => ViewAppointmentScreen(
-                      appointmentId: appointment['id'],
-                      doctorId: appointment['doctorId'],
-                      date: appointment['date'],
-                      hourMinute: appointment['hourMinute'],
-                      message: appointment['message'],
-                    ),
-                  ));
-                },
-              ),
+              if (appointment['isAccepted'] ==
+                  null) // Csak az elfogadott vagy elutasított időpontokat jelenítjük meg
+                RespondItem(
+                  doctorId: appointment['doctorId'],
+                  message: appointment['message'],
+                  date: appointment['date'],
+                  hourMinute: appointment['hourMinute'],
+                  sendTime: appointment['sendTime'],
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => ViewAppointmentScreen(
+                        appointmentId: appointment['id'],
+                        doctorId: appointment['doctorId'],
+                        date: appointment['date'],
+                        hourMinute: appointment['hourMinute'],
+                        message: appointment['message'],
+                      ),
+                    ));
+                  },
+                ),
           ],
         ),
       ),
@@ -72,9 +75,10 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton.icon(
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => PersonalDataScreen()));
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => PersonalDataScreen()));
           },
-          icon: const Icon(Icons.assessment),
+          icon: Icon(Icons.assessment),
           label: const Text('New Request'),
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,

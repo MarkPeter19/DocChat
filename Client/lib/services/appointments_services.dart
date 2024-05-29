@@ -32,32 +32,30 @@ class AppointmentServices {
   }
 
   Future<bool> isAppointmentAvailable({
-  required String doctorId,
-  required int year,
-  required int month,
-  required int day,
-  required String hourMinute,
-}) async {
-  try {
-    QuerySnapshot querySnapshot = await _firestore
-        .collection('appointments')
-        .where('doctorId', isEqualTo: doctorId)
-        .where('date.year', isEqualTo: year)
-        .where('date.month', isEqualTo: month)
-        .where('date.day', isEqualTo: day)
-        .where('hourMinute', isEqualTo: hourMinute)
-        .get();
+    required String doctorId,
+    required int year,
+    required int month,
+    required int day,
+    required String hourMinute,
+  }) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('appointments')
+          .where('doctorId', isEqualTo: doctorId)
+          .where('date.year', isEqualTo: year)
+          .where('date.month', isEqualTo: month)
+          .where('date.day', isEqualTo: day)
+          .where('hourMinute', isEqualTo: hourMinute)
+          .get();
 
-    // Ha nincs találat, akkor az időpont elérhető
-    return querySnapshot.docs.isEmpty;
-  } catch (e) {
-    // Kezeljük az esetleges hibákat
-    print('Hiba az időpont elérhetőség ellenőrzésekor: $e');
-    return false; // Hiba esetén false értékkel térünk vissza
+      // Ha nincs találat, akkor az időpont elérhető
+      return querySnapshot.docs.isEmpty;
+    } catch (e) {
+      // Kezeljük az esetleges hibákat
+      print('Hiba az időpont elérhetőség ellenőrzésekor: $e');
+      return false; // Hiba esetén false értékkel térünk vissza
+    }
   }
-}
-
-
 
   Future<void> saveAppointment({
     required String doctorId,
@@ -66,11 +64,10 @@ class AppointmentServices {
     required int month,
     required int day,
     required String hourMinute,
-    required String message, required Timestamp sendTime,
+    required String message,
+    required Timestamp sendTime,
   }) async {
-    await _firestore
-        .collection('appointments')
-        .add({
+    await _firestore.collection('appointments').add({
       'doctorId': doctorId,
       'patientId': patientId,
       'date': {
@@ -84,6 +81,7 @@ class AppointmentServices {
     });
   }
 
+  // fetch appointments sent by doctor
   Future<List<Map<String, dynamic>>> fetchAppointments({
     required String patientId,
   }) async {
@@ -100,20 +98,23 @@ class AppointmentServices {
         var doctorId = appointmentData['doctorId'];
         var appointmentId = doc.id; // Az appointment dokumentumának id-ja
 
-        Map<String, dynamic> appointment = {
-          'id': appointmentId, // Hozzáadva az appointment id-ja
-          'doctorId': doctorId,
-          'date': {
-            'year': appointmentData['date']['year'],
-            'month': appointmentData['date']['month'],
-            'day': appointmentData['date']['day'],
-          },
-          'hourMinute': appointmentData['hourMinute'],
-          'message': appointmentData['message'],
-          'sendTime': appointmentData['sendTime'],
-        };
+        // Ellenőrizzük, hogy az 'isAccepted' mező nem létezik-e
+        if (!appointmentData.containsKey('isAccepted')) {
+          Map<String, dynamic> appointment = {
+            'id': appointmentId, // Hozzáadva az appointment id-ja
+            'doctorId': doctorId,
+            'date': {
+              'year': appointmentData['date']['year'],
+              'month': appointmentData['date']['month'],
+              'day': appointmentData['date']['day'],
+            },
+            'hourMinute': appointmentData['hourMinute'],
+            'message': appointmentData['message'],
+            'sendTime': appointmentData['sendTime'],
+          };
 
-        appointments.add(appointment);
+          appointments.add(appointment);
+        }
       }
 
       if (appointments.isEmpty) {
@@ -137,7 +138,8 @@ class AppointmentServices {
     }
   }
 
-  Future<void> declineAppointment(String appointmentId, String declineMessage) async {
+  Future<void> declineAppointment(
+      String appointmentId, String declineMessage) async {
     try {
       await _firestore.collection('appointments').doc(appointmentId).update({
         'isAccepted': false,
@@ -149,4 +151,20 @@ class AppointmentServices {
     }
   }
 
+  //get accepted appointments
+  Future<List<DocumentSnapshot>> getAcceptedAppointments(
+      String patientId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('appointments')
+          .where('patientId', isEqualTo: patientId)
+          .where('isAccepted', isEqualTo: true)
+          .get();
+
+      return querySnapshot.docs;
+    } catch (e) {
+      print('Error fetching accepted appointments: $e');
+      throw Exception('Error fetching accepted appointments');
+    }
+  }
 }

@@ -21,7 +21,7 @@ class MakeAppointmentScreen extends StatefulWidget {
 class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _selectedDay = DateTime.now();
-  TextEditingController _messageController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
   String? _selectedTime;
   List<String> _bookedTimeSlots = [];
 
@@ -62,6 +62,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TableCalendar(
+                  startingDayOfWeek: StartingDayOfWeek.monday,
                   firstDay: DateTime.now(),
                   lastDay: DateTime.now().add(const Duration(days: 365)),
                   focusedDay: _selectedDay,
@@ -151,20 +152,20 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                       'Message',
                       style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
-                    Divider(),
                     TextFormField(
                       controller: _messageController,
                       decoration: const InputDecoration(
                         hintText: 'Type your message here...',
-                        border: OutlineInputBorder(),
-                        hintMaxLines: 5,
+                        //border: OutlineInputBorder(),
+                        //hintMaxLines: 5,
                       ),
                     ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             //send button
             Padding(
@@ -195,7 +196,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                         sendTime: sendTime, 
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Appointment saved successfully')),
+                        const SnackBar(content: Text('Appointment saved successfully')),
                       );
                       Navigator.pushReplacement(
                         context,
@@ -204,27 +205,27 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                     } else {
                       // if not available
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('This time slot is already booked')),
+                        const SnackBar(content: Text('This time slot is already booked')),
                       );
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please select a time and enter a message')),
+                      const SnackBar(content: Text('Please select a time and enter a message')),
                     );
                   }
                 },
 
-                label: const Text('Send Appointment'),
+                label: const Text('Send Appointment', style: TextStyle(fontSize: 16),),
                 icon: const Icon(Icons.send,),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: const Color.fromARGB(255, 112, 60, 139),
                   minimumSize: const Size(double.infinity, 50),
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                 ),
               ),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
           ],
         ),
       ),
@@ -251,18 +252,18 @@ List<Widget> _buildTimeButtons(List<String> bookedTimeSlots) {
                 }
               : null,
           style: ElevatedButton.styleFrom(
-            primary: _selectedTime == time
-                ? Color.fromARGB(255, 231, 145, 102) // Change color to orange if selected
+            backgroundColor: _selectedTime == time
+                ? const Color.fromARGB(255, 231, 145, 102) // Change color to orange if selected
                 : isBooked
                     ? Colors.red // Change color to red if booked
-                    : Color.fromARGB(255, 85, 194, 143), // Otherwise, keep it green
+                    : const Color.fromARGB(255, 85, 194, 143), // Otherwise, keep it green
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
             ),
           ),
           child: Text(
             time,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
             ),
           ),

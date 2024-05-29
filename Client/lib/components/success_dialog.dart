@@ -29,12 +29,18 @@ class SuccessDialog extends StatelessWidget {
           ),
         ],
       ),
-      content: Text(message),
+      content: Text(message, style: const TextStyle(fontSize: 16),),
       actions: <Widget>[
         Center(
-          child: TextButton(
+          child: ElevatedButton(
             onPressed: onPressed,
-            child: const Text('Okay'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromARGB(255, 68, 144, 101),
+              padding: const EdgeInsets.symmetric(
+                  vertical: 10, horizontal: 20),
+            ),
+            child: const Text('Okay',
+                style: TextStyle(color: Colors.white)),
           ),
         ),
       ],
