@@ -5,21 +5,25 @@ import 'package:doctorgpt/services/appointments_services.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class MakeAppointmentScreen extends StatefulWidget {
+class RescheduleAppointmentScreen extends StatefulWidget {
   final String patientId;
   final String doctorId;
+  final String oldAppointmentId;
 
-  const MakeAppointmentScreen({
+  const RescheduleAppointmentScreen({
     Key? key,
     required this.patientId,
     required this.doctorId,
+    required this.oldAppointmentId,
   }) : super(key: key);
 
   @override
-  State<MakeAppointmentScreen> createState() => _MakeAppointmentScreenState();
+  _RescheduleAppointmentScreenState createState() =>
+      _RescheduleAppointmentScreenState();
 }
 
-class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
+class _RescheduleAppointmentScreenState
+    extends State<RescheduleAppointmentScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _selectedDay = DateTime.now();
   final TextEditingController _messageController = TextEditingController();
@@ -52,7 +56,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Make Appointment'),
+        title: const Text('Reschedule Appointment'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -172,8 +176,6 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                       controller: _messageController,
                       decoration: const InputDecoration(
                         hintText: 'Type your message here...',
-                        //border: OutlineInputBorder(),
-                        //hintMaxLines: 5,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -202,14 +204,19 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
 
                     if (isAvailable) {
                       Timestamp sendTime = Timestamp.now();
-                      // save appointment
-                      _AppointmentServices.saveAppointment(
+                      // save rescheduled appointment
+                      await _AppointmentServices.rescheduleAppointment(
                         doctorId: widget.doctorId,
                         patientId: widget.patientId,
-                        year: _selectedDay.year,
-                        month: _selectedDay.month,
-                        day: _selectedDay.day,
-                        hourMinute: _selectedTime!,
+                        oldAppointmentId: widget.oldAppointmentId,
+                        oldYear: _selectedDay.year,
+                        oldMonth: _selectedDay.month,
+                        oldDay: _selectedDay.day,
+                        oldHourMinute: _selectedTime!,
+                        newYear: _selectedDay.year,
+                        newMonth: _selectedDay.month,
+                        newDay: _selectedDay.day,
+                        newHourMinute: _selectedTime!,
                         message: _messageController.text,
                         sendTime: sendTime,
                       );
@@ -218,7 +225,8 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return SuccessDialog(
-                            message: 'Appointment sent  successfully!',
+                            message:
+                                'Appointment rescheduled successfully!',
                             onPressed: () {
                               Navigator.pop(context); // Dialógus bezárása
                               Navigator.pushReplacement(
@@ -229,7 +237,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                             },
                           );
                         },
-                      );                      
+                      );
                     } else {
                       // if not available
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -246,7 +254,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                   }
                 },
                 label: const Text(
-                  'Send Appointment',
+                  'Reschedule Appointment',
                   style: TextStyle(fontSize: 16),
                 ),
                 icon: const Icon(
@@ -254,7 +262,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                 ),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: const Color.fromARGB(255, 112, 60, 139),
+                  backgroundColor: const Color.fromARGB(255, 155, 138, 71),
                   minimumSize: const Size(double.infinity, 50),
                   padding: const EdgeInsets.all(15),
                 ),
@@ -269,7 +277,6 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
     );
   }
 
-  // Build time buttons
   // Build time buttons
   List<Widget> _buildTimeButtons(List<String> bookedTimeSlots) {
     List<Widget> buttons = [];

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'Requests/RequestsScreen.dart';
 import 'Profile/DoctorProfileScreen.dart';
 import 'Messages/DoctorMessagesScreen.dart';
-import 'Calendar/CalendarScreen.dart';
+import 'Appointments/DoctorAppointmentsScreen.dart';
 import 'ChatPDF/Chats.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,7 +42,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 45,
           ),
           //profile resz
@@ -64,14 +64,14 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                         )
                       : null,
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Hi, $doctorName!',
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       ElevatedButton.icon(
@@ -80,12 +80,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                           MaterialPageRoute(
                               builder: (context) => DoctorProfileScreen()),
                         ),
-                        icon: Icon(Icons.person_outline),
-                        label: Text('View Profile'),
+                        icon: const Icon(Icons.person_outline),
+                        label: const Text('View Profile'),
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).colorScheme.secondary,
-                          onPrimary: Colors.white,
-                          minimumSize: Size(double.infinity, 35),
+                          foregroundColor: Colors.white, backgroundColor: Theme.of(context).colorScheme.secondary,
+                          minimumSize: const Size(double.infinity, 35),
                         ),
                       ),
                     ],
@@ -97,25 +96,25 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
 
           // TabBar
           PreferredSize(
-            preferredSize: Size.fromHeight(48.0),
+            preferredSize: const Size.fromHeight(48.0),
             child: Material(
               color: Colors.white,
               child: TabBar(
                 controller: _tabController,
                 labelColor: Theme.of(context).primaryColor,
                 unselectedLabelColor: Colors.grey,
-                labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                tabs: [
-                  Tab(text: 'Requests'),
-                  Tab(text: 'Messages'),
-                  Tab(text: 'Calendar'),
-                  Tab(text: 'ChatPDF'),
+                labelPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+                tabs: const [
+                  Tab(icon: Icon(Icons.home)),
+                  Tab(icon: Icon(Icons.calendar_today)),
+                  Tab(icon: Icon(Icons.message)),
+                  Tab(icon: Icon(Icons.people)),
                 ],
-                labelStyle: TextStyle(
+                labelStyle: const TextStyle(
                   fontSize: 15,
                 ),
                 indicatorSize: TabBarIndicatorSize.label,
-                indicatorPadding: EdgeInsets.only(bottom: 5.0),
+                indicatorPadding: const EdgeInsets.only(bottom: 5.0),
               ),
             ),
           ),
@@ -125,8 +124,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
               controller: _tabController,
               children: [
                 RequestsScreen(),
+                const DoctorAppointmentsScreen(),
                 DoctorMessagesScreen(),
-                CalendarScreen(),
                 Chats(),
               ],
             ),

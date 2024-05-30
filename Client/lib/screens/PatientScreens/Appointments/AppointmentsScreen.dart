@@ -38,9 +38,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Appointments'),
-      ),
       body: _patientId !=
               null // Ellenőrizzük, hogy a beteg azonosítója készen áll-e
           ? FutureBuilder<List<DocumentSnapshot>>(

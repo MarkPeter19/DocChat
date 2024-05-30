@@ -197,6 +197,23 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            isDeclined = true;
+                          });
+                        },
+                        icon: const Icon(Icons.close,
+                            size: 30, color: Colors.white),
+                        label: const Text('Decline',
+                            style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 245, 111, 102),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
+                        ),
+                      ),
+                      ElevatedButton.icon(
                         onPressed: () async {
                           setState(() {
                             isDeclined = false;
@@ -238,23 +255,6 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                               vertical: 10, horizontal: 20),
                         ),
                       ),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            isDeclined = true;
-                          });
-                        },
-                        icon: const Icon(Icons.close,
-                            size: 30, color: Colors.white),
-                        label: const Text('Decline',
-                            style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 245, 111, 102),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 20),
-                        ),
-                      ),
                     ],
                   ),
                   if (isDeclined)
@@ -262,10 +262,21 @@ class _ViewAppointmentScreenState extends State<ViewAppointmentScreen> {
                       children: [
                         const SizedBox(height: 20),
                         TextField(
+                          style: const TextStyle(color: Colors.white),
                           controller: declineReasonController,
+                          cursorColor: Colors.white,
                           decoration: const InputDecoration(
                             labelText: 'Type reason for decline...',
-                            border: OutlineInputBorder(),
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            border: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 10),

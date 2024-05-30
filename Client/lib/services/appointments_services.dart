@@ -151,7 +151,7 @@ class AppointmentServices {
     }
   }
 
-  //get accepted appointments
+  //get accepted appointments for patient
   Future<List<DocumentSnapshot>> getAcceptedAppointments(
       String patientId) async {
     try {
@@ -167,4 +167,81 @@ class AppointmentServices {
       throw Exception('Error fetching accepted appointments');
     }
   }
+
+
+
+  //get declined and accepted appointments for doctor
+  Future<List<DocumentSnapshot>> getDeclinedAppointmentsforDoctor(
+      String doctorId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('appointments')
+          .where('doctorId', isEqualTo: doctorId)
+          .where('isAccepted', isEqualTo: false)
+          .get();
+
+      return querySnapshot.docs;
+    } catch (e) {
+      print('Error fetching declined appointments: $e');
+      throw Exception('Error fetching declined appointments');
+    }
+  }
+
+  Future<List<DocumentSnapshot>> getAcceptedAppointmentsForDoctor(
+      String doctorId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('appointments')
+          .where('doctorId', isEqualTo: doctorId)
+          .where('isAccepted', isEqualTo: true)
+          .get();
+
+      return querySnapshot.docs;
+    } catch (e) {
+      print('Error fetching accepted appointments for doctor: $e');
+      throw Exception('Error fetching accepted appointments for doctor');
+    }
+  }
+
+
+  //reschedule
+  
+  Future<void> rescheduleAppointment({
+  required String doctorId,
+  required String patientId,
+  required String oldAppointmentId,
+  required int oldYear,
+  required int oldMonth,
+  required int oldDay,
+  required String oldHourMinute,
+  required int newYear,
+  required int newMonth,
+  required int newDay,
+  required String newHourMinute,
+  required String message,
+  required Timestamp sendTime,
+}) async {
+  try {
+    // Töröljük az előzőleg visszamondott időpontot
+    await _firestore.collection('appointments').doc(oldAppointmentId).delete();
+
+    // Mentjük az új időpontot és üzenetet
+    await saveAppointment(
+      doctorId: doctorId,
+      patientId: patientId,
+      year: newYear,
+      month: newMonth,
+      day: newDay,
+      hourMinute: newHourMinute,
+      message: message,
+      sendTime: sendTime,
+    );
+  } catch (e) {
+    print('Error rescheduling appointment: $e');
+    throw Exception('Error rescheduling appointment');
+  }
+}
+
+
+
 }

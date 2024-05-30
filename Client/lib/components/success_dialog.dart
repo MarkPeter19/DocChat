@@ -35,7 +35,7 @@ class SuccessDialog extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 68, 144, 101),
+              backgroundColor: const Color.fromARGB(255, 68, 144, 101),
               padding: const EdgeInsets.symmetric(
                   vertical: 10, horizontal: 20),
             ),
