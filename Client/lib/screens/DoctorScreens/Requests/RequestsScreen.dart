@@ -11,6 +11,7 @@ class RequestsScreen extends StatefulWidget {
 class _RequestsScreenState extends State<RequestsScreen> {
   final DoctorServices doctorServices = DoctorServices();
   List<PatientRequestItem> patientRequests = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -20,46 +21,56 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   // patient requestek betoltese
   Future<void> _fetchPatientRequests() async {
-    DoctorServices doctorServices = DoctorServices();
-    String doctorId = FirebaseAuth.instance.currentUser!.uid;
-    List<Map<String, dynamic>> requests =
-        await doctorServices.fetchPatientRequests(doctorId);
+    try {
+      DoctorServices doctorServices = DoctorServices();
+      String doctorId = FirebaseAuth.instance.currentUser!.uid;
+      List<Map<String, dynamic>> requests =
+          await doctorServices.fetchPatientRequests(doctorId);
 
-    List<PatientRequestItem> requestItems = requests
-        .map((request) => PatientRequestItem(
-              patientName: request['patientName'],
-              documentDate: request['documentDate'],
-              documentId: request['documentId'],
-              patientId: request['patientId'],
-            ))
-        .toList();
+      List<PatientRequestItem> requestItems = requests
+          .map((request) => PatientRequestItem(
+                patientName: request['patientName'],
+                documentDate: request['documentDate'],
+                documentId: request['documentId'],
+                patientId: request['patientId'],
+              ))
+          .toList();
 
-    setState(() {
-      patientRequests = requestItems;
-    });
+      setState(() {
+        patientRequests = requestItems;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching patient requests: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //patient requests
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'There are your patient requests:',
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //patient requests
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'There are your patient requests:',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
 
-          // Dinamikus lista megjelenítése a betegkérésekről
-          for (var requestItem in patientRequests) requestItem,
-          // Itt jeleníti meg a `PatientRequestItem` komponenseket
-        ],
-      ),
-    ));
+                    // Dinamikus lista megjelenítése a betegkérésekről
+                    for (var requestItem in patientRequests) requestItem,
+                    // Itt jeleníti meg a `PatientRequestItem` komponenseket
+                  ],
+                ),
+              ));
   }
 }

@@ -47,7 +47,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
   //load doctors
   Future<void> _loadDoctors() async {
     try {
-      var fetchedDoctors = await patientServices.fetchDoctors();
+      var fetchedDoctors = await patientServices.fetchDoctorsToChoose();
       if (fetchedDoctors.isNotEmpty) {
         setState(() {
           doctorsList = fetchedDoctors;
@@ -64,7 +64,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
   void _sendToDoctor() async {
     if (selectedDoctorId == null || file == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select a doctor and a PDF to send')));
+          const SnackBar(content: Text('Please select a doctor and a PDF to send')));
       return;
     }
 
@@ -107,7 +107,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
             onPressed: () {
               Navigator.of(context).pop(); // Bezárja az ablakot
               Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => PatientHomeScreen()));
+                  MaterialPageRoute(builder: (context) => const PatientHomeScreen()));
             },
           );
         },
@@ -122,19 +122,19 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add PDF Document'),
+        title: const Text('Add PDF Document'),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Select a doctor:',
                 style: TextStyle(fontSize: 22, color: Colors.black),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Card(
                 borderOnForeground: true,
                 elevation: 3,
@@ -142,7 +142,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: selectedDoctorId,
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_drop_down,
                       color: Colors.black,
                       size: 40,
@@ -157,7 +157,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                         value: doctor['id'],
                         child: Row(children: [
                           Text(doctor['name']),
-                          SizedBox(width: 15),
+                          const SizedBox(width: 15),
                           Checkbox(
                             value: selectedDoctorId == doctor['id'],
                             onChanged: (bool? value) {
@@ -169,11 +169,11 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                         ]),
                       );
                     }).toList(),
-                    style: Theme.of(context).textTheme.subtitle1,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // PDF
               if (file != null)
@@ -182,16 +182,16 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                   elevation: 3,
                   child: Column(
                     children: [
-                      Text(
+                      const Text(
                         'Selected PDF:',
                         style: TextStyle(fontSize: 20),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
                         file!.path.split('/').last,
-                        style: TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Center(
                         child: Image.asset(
                           'lib/assets/pdf_logo.png',
@@ -199,7 +199,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                           width: 200, // Kép szélessége
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 )
@@ -228,27 +228,26 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                         ),
                       ),
                       //SizedBox(height: 10),
-                      Center(
+                      const Center(
                         child: Text(
                           "Add a Medical PDF Document",
                           style: TextStyle(fontSize: 20, color: Colors.black),
                         ),
                       ),
-                      SizedBox(height: 10)
+                      const SizedBox(height: 10)
                     ],
                   ),
                 ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               if (!_isSelected)
                 ElevatedButton.icon(
                   onPressed: selectFile,
-                  icon: Icon(Icons.vertical_align_bottom, size: 24),
-                  label: Text('Select PDF'),
+                  icon: const Icon(Icons.vertical_align_bottom, size: 24),
+                  label: const Text('Select PDF'),
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 255, 198, 11),
-                    onPrimary: Colors.white,
-                    minimumSize: Size(double.infinity, 50),
+                    foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 255, 198, 11),
+                    minimumSize: const Size(double.infinity, 50),
                   ),
                 ),
               if (_isSelected)
@@ -256,28 +255,26 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: selectFile,
-                      icon: Icon(Icons.change_circle, size: 24),
-                      label: Text('Change PDF'),
+                      icon: const Icon(Icons.change_circle, size: 24),
+                      label: const Text('Change PDF'),
                       style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 255, 198, 11),
-                        onPrimary: Colors.white,
-                        minimumSize: Size(double.infinity, 50),
+                        foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 255, 198, 11),
+                        minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     ElevatedButton.icon(
                       onPressed: _sendToDoctor,
-                      icon: Icon(Icons.send, size: 24),
-                      label: Text('Send to Doctor'),
+                      icon: const Icon(Icons.send, size: 24),
+                      label: const Text('Send to Doctor'),
                       style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).colorScheme.secondary,
-                        onPrimary: Colors.white,
-                        minimumSize: Size(double.infinity, 50),
+                        foregroundColor: Colors.white, backgroundColor: Theme.of(context).colorScheme.secondary,
+                        minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
                   ],
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               if (task != null) buildUploadStatus(task!),
             ],
           ),
@@ -297,7 +294,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
 
           return Text(
             '$percentage %',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           );
         } else {
           return Container();

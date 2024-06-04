@@ -15,6 +15,7 @@ class ResponsesScreen extends StatefulWidget {
 class _ResponsesScreenState extends State<ResponsesScreen> {
   final AppointmentServices _appointmentServices = AppointmentServices();
   List<Map<String, dynamic>> _appointments = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -27,9 +28,12 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
       String patientId = await PatientServices().fetchPatientId();
       _appointments =
           await _appointmentServices.fetchAppointments(patientId: patientId);
-      setState(() {});
     } catch (e) {
       print('Error fetching patient ID: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -37,39 +41,41 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Your doctor’s responses:',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-            for (var appointment in _appointments)
-              if (appointment['isAccepted'] ==
-                  null) // Csak az elfogadott vagy elutasított időpontokat jelenítjük meg
-                RespondItem(
-                  doctorId: appointment['doctorId'],
-                  message: appointment['message'],
-                  date: appointment['date'],
-                  hourMinute: appointment['hourMinute'],
-                  sendTime: appointment['sendTime'],
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ViewAppointmentScreen(
-                        appointmentId: appointment['id'],
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'Your doctor’s responses:',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  for (var appointment in _appointments)
+                    if (appointment['isAccepted'] ==
+                        null) // Csak az elfogadott vagy elutasított időpontokat jelenítjük meg
+                      RespondItem(
                         doctorId: appointment['doctorId'],
+                        message: appointment['message'],
                         date: appointment['date'],
                         hourMinute: appointment['hourMinute'],
-                        message: appointment['message'],
+                        sendTime: appointment['sendTime'],
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => ViewAppointmentScreen(
+                              appointmentId: appointment['id'],
+                              doctorId: appointment['doctorId'],
+                              date: appointment['date'],
+                              hourMinute: appointment['hourMinute'],
+                              message: appointment['message'],
+                            ),
+                          ));
+                        },
                       ),
-                    ));
-                  },
-                ),
-          ],
-        ),
+                ],
+              ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),

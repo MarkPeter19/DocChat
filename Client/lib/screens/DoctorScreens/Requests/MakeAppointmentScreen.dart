@@ -229,7 +229,7 @@ class _MakeAppointmentScreenState extends State<MakeAppointmentScreen> {
                             },
                           );
                         },
-                      );                      
+                      );
                     } else {
                       // if not available
                       ScaffoldMessenger.of(context).showSnackBar(

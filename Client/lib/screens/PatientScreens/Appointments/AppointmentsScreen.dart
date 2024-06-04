@@ -15,6 +15,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   late String
       _patientId; // Hozzunk létre egy változót a beteg azonosítójának tárolására
   late final AppointmentServices _appointmentServices = AppointmentServices();
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -22,55 +23,61 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     _fetchPatientId(); // Hívjuk meg a beteg azonosítójának lekérdezését
   }
 
-  // Beteg azonosítójának lekérdezése
   Future<void> _fetchPatientId() async {
     try {
       String patientId = await PatientServices().fetchPatientId();
       setState(() {
-        _patientId = patientId; // Állítsuk be a beteg azonosítóját a változóba
+        _patientId = patientId;
       });
     } catch (e) {
       print('Error fetching patient id: $e');
-      // Kezeljük az esetleges hibákat
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _patientId !=
-              null // Ellenőrizzük, hogy a beteg azonosítója készen áll-e
-          ? FutureBuilder<List<DocumentSnapshot>>(
-              future: AppointmentServices().getAcceptedAppointments(_patientId),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-                if (snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No accepted appointments'));
-                }
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return AppointmentItem(
-                      doctorId: snapshot.data![index]['doctorId'],
-                      date: snapshot.data![index]['date'],
-                      hourMinute: snapshot.data![index]['hourMinute'],
-                      onTap: () {
-                        _showDeclineDialog(snapshot.data![index]
-                            .id); // Meghívjuk a dialógust az appointment ID-vel
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _patientId != null
+              ? FutureBuilder<List<DocumentSnapshot>>(
+                  future:
+                      AppointmentServices().getAcceptedAppointments(_patientId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+                    if (snapshot.data!.isEmpty) {
+                      return const Center(
+                          child: Text('No accepted appointments'));
+                    }
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return AppointmentItem(
+                          doctorId: snapshot.data![index]['doctorId'],
+                          date: snapshot.data![index]['date'],
+                          hourMinute: snapshot.data![index]['hourMinute'],
+                          onTap: () {
+                            _showDeclineDialog(snapshot.data![index]
+                                .id); // Meghívjuk a dialógust az appointment ID-vel
+                          },
+                        );
                       },
                     );
                   },
-                );
-              },
-            )
-          : const Center(
-              child:
-                  CircularProgressIndicator()), // Ha még nincs beteg azonosítója, jelenítsük meg a körbetekerőt
+                )
+              : const Center(
+                  child:
+                      CircularProgressIndicator()), // Ha még nincs beteg azonosítója, jelenítsük meg a körbetekerőt
     );
   }
 

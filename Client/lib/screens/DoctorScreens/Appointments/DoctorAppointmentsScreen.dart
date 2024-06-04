@@ -1,4 +1,4 @@
-import 'package:doctorgpt/components/accepted_itmes.dart';
+import 'package:doctorgpt/components/accepted_items.dart';
 import 'package:doctorgpt/components/declined_items.dart';
 import 'package:doctorgpt/screens/DoctorScreens/Appointments/RescheduleAppointmentScreen.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
@@ -19,6 +19,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
   late TabController _tabController;
   final AppointmentServices _appointmentServices = AppointmentServices();
   late String _doctorId;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
           length: 2,
           vsync: this,
         );
+        _isLoading = false;
       });
     } catch (e) {
       print('Error fetching doctor id: $e');
@@ -57,14 +59,17 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
               ],
             ),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildAppointmentsList(true), // Elfogadott időpontok listája
-                  _buildAppointmentsList(
-                      false), // Visszamondott időpontok listája
-                ],
-              ),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildAppointmentsList(
+                            true), // Elfogadott időpontok listája
+                        _buildAppointmentsList(
+                            false), // Visszamondott időpontok listája
+                      ],
+                    ),
             ),
           ],
         ),

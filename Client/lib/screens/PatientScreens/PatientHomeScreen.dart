@@ -129,7 +129,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                 const ResponsesScreen(),
                 const AppointmentsScreen(),
                 PatientMessagesScreen(),
-                const DoctorsScreen(),
+                DoctorsScreen(),
               ],
             ),
           ),

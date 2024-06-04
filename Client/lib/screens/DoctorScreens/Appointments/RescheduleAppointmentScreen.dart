@@ -29,7 +29,7 @@ class _RescheduleAppointmentScreenState
   final TextEditingController _messageController = TextEditingController();
   String? _selectedTime;
   List<String> _bookedTimeSlots = [];
-
+  bool _isLoading = true;
   final AppointmentServices _AppointmentServices = AppointmentServices();
 
   @override
@@ -49,6 +49,7 @@ class _RescheduleAppointmentScreenState
     );
     setState(() {
       _bookedTimeSlots = bookedTimeSlots;
+      _isLoading = false;
     });
   }
 
@@ -58,222 +59,227 @@ class _RescheduleAppointmentScreenState
       appBar: AppBar(
         title: const Text('Reschedule Appointment'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            //calendar
-            Card(
-              margin: const EdgeInsets.all(8.0),
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TableCalendar(
-                  startingDayOfWeek: StartingDayOfWeek.monday,
-                  firstDay: DateTime.now(),
-                  lastDay: DateTime.now().add(const Duration(days: 365)),
-                  focusedDay: _selectedDay,
-                  calendarFormat: _calendarFormat,
-                  selectedDayPredicate: (day) {
-                    return isSameDay(_selectedDay, day);
-                  },
-                  onFormatChanged: (format) {
-                    setState(() {
-                      _calendarFormat = format;
-                    });
-                  },
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() {
-                      _selectedDay = selectedDay;
-                      _selectedTime =
-                          null; // Reset selected time when day changes
-                      _fetchBookedTimeSlots(); // Fetch booked time slots for the selected day
-                    });
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            //selected date
-            Card(
-              margin: const EdgeInsets.all(5.0),
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.calendar_today,
-                          size: 30,
-                        ),
-                        const SizedBox(width: 5),
-                        const Text(
-                          'Selected Date:',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          '${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: _selectedTime == null
-                                ? Colors.red
-                                : const Color.fromARGB(255, 31, 160, 119),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Icon(
-                          Icons.access_time,
-                          size: 30,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          _selectedTime ?? '-- : --',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: _selectedTime == null
-                                ? Colors.red
-                                : const Color.fromARGB(255, 31, 160, 119),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-
-            // select time
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: _buildTimeButtons(_bookedTimeSlots),
-            ),
-
-            const SizedBox(height: 20),
-
-            //message
-            Card(
-              margin: const EdgeInsets.all(8.0),
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Message',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    TextFormField(
-                      controller: _messageController,
-                      decoration: const InputDecoration(
-                        hintText: 'Type your message here...',
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  //calendar
+                  Card(
+                    margin: const EdgeInsets.all(8.0),
+                    elevation: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TableCalendar(
+                        startingDayOfWeek: StartingDayOfWeek.monday,
+                        firstDay: DateTime.now(),
+                        lastDay: DateTime.now().add(const Duration(days: 365)),
+                        focusedDay: _selectedDay,
+                        calendarFormat: _calendarFormat,
+                        selectedDayPredicate: (day) {
+                          return isSameDay(_selectedDay, day);
+                        },
+                        onFormatChanged: (format) {
+                          setState(() {
+                            _calendarFormat = format;
+                          });
+                        },
+                        onDaySelected: (selectedDay, focusedDay) {
+                          setState(() {
+                            _selectedDay = selectedDay;
+                            _selectedTime =
+                                null; // Reset selected time when day changes
+                            _fetchBookedTimeSlots(); // Fetch booked time slots for the selected day
+                          });
+                        },
                       ),
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
+                  ),
+                  const SizedBox(height: 20),
 
-            //send button
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  if (_selectedTime != null &&
-                      _messageController.text.isNotEmpty) {
-                    // Ellenőrizzük, hogy az adott időpontra már van-e foglalás
-                    bool isAvailable =
-                        await _AppointmentServices.isAppointmentAvailable(
-                      doctorId: widget.doctorId,
-                      year: _selectedDay.year,
-                      month: _selectedDay.month,
-                      day: _selectedDay.day,
-                      hourMinute: _selectedTime!,
-                    );
+                  //selected date
+                  Card(
+                    margin: const EdgeInsets.all(5.0),
+                    elevation: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.calendar_today,
+                                size: 30,
+                              ),
+                              const SizedBox(width: 5),
+                              const Text(
+                                'Selected Date:',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                '${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: _selectedTime == null
+                                      ? Colors.red
+                                      : const Color.fromARGB(255, 31, 160, 119),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              const Icon(
+                                Icons.access_time,
+                                size: 30,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                _selectedTime ?? '-- : --',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: _selectedTime == null
+                                      ? Colors.red
+                                      : const Color.fromARGB(255, 31, 160, 119),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
 
-                    if (isAvailable) {
-                      Timestamp sendTime = Timestamp.now();
-                      // save rescheduled appointment
-                      await _AppointmentServices.rescheduleAppointment(
-                        doctorId: widget.doctorId,
-                        patientId: widget.patientId,
-                        oldAppointmentId: widget.oldAppointmentId,
-                        oldYear: _selectedDay.year,
-                        oldMonth: _selectedDay.month,
-                        oldDay: _selectedDay.day,
-                        oldHourMinute: _selectedTime!,
-                        newYear: _selectedDay.year,
-                        newMonth: _selectedDay.month,
-                        newDay: _selectedDay.day,
-                        newHourMinute: _selectedTime!,
-                        message: _messageController.text,
-                        sendTime: sendTime,
-                      );
-                      // success dialog
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return SuccessDialog(
-                            message:
-                                'Appointment rescheduled successfully!',
-                            onPressed: () {
-                              Navigator.pop(context); // Dialógus bezárása
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => DoctorHomeScreen()),
-                              );
-                            },
+                  // select time
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    children: _buildTimeButtons(_bookedTimeSlots),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  //message
+                  Card(
+                    margin: const EdgeInsets.all(8.0),
+                    elevation: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Message',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.bold),
+                          ),
+                          TextFormField(
+                            controller: _messageController,
+                            decoration: const InputDecoration(
+                              hintText: 'Type your message here...',
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  //send button
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        if (_selectedTime != null &&
+                            _messageController.text.isNotEmpty) {
+                          // Ellenőrizzük, hogy az adott időpontra már van-e foglalás
+                          bool isAvailable =
+                              await _AppointmentServices.isAppointmentAvailable(
+                            doctorId: widget.doctorId,
+                            year: _selectedDay.year,
+                            month: _selectedDay.month,
+                            day: _selectedDay.day,
+                            hourMinute: _selectedTime!,
                           );
-                        },
-                      );
-                    } else {
-                      // if not available
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('This time slot is already booked')),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content:
-                              Text('Please select a time and enter a message')),
-                    );
-                  }
-                },
-                label: const Text(
-                  'Reschedule Appointment',
-                  style: TextStyle(fontSize: 16),
-                ),
-                icon: const Icon(
-                  Icons.send,
-                ),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: const Color.fromARGB(255, 155, 138, 71),
-                  minimumSize: const Size(double.infinity, 50),
-                  padding: const EdgeInsets.all(15),
-                ),
+
+                          if (isAvailable) {
+                            Timestamp sendTime = Timestamp.now();
+                            // save rescheduled appointment
+                            await _AppointmentServices.rescheduleAppointment(
+                              doctorId: widget.doctorId,
+                              patientId: widget.patientId,
+                              oldAppointmentId: widget.oldAppointmentId,
+                              oldYear: _selectedDay.year,
+                              oldMonth: _selectedDay.month,
+                              oldDay: _selectedDay.day,
+                              oldHourMinute: _selectedTime!,
+                              newYear: _selectedDay.year,
+                              newMonth: _selectedDay.month,
+                              newDay: _selectedDay.day,
+                              newHourMinute: _selectedTime!,
+                              message: _messageController.text,
+                              sendTime: sendTime,
+                            );
+                            // success dialog
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SuccessDialog(
+                                  message:
+                                      'Appointment rescheduled successfully!',
+                                  onPressed: () {
+                                    Navigator.pop(context); // Dialógus bezárása
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DoctorHomeScreen()),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          } else {
+                            // if not available
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('This time slot is already booked')),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Please select a time and enter a message')),
+                          );
+                        }
+                      },
+                      label: const Text(
+                        'Reschedule Appointment',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      icon: const Icon(
+                        Icons.send,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            const Color.fromARGB(255, 155, 138, 71),
+                        minimumSize: const Size(double.infinity, 50),
+                        padding: const EdgeInsets.all(15),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
