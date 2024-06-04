@@ -255,5 +255,40 @@ class PatientServices {
     }
   }
 
+  Future<bool> isContactRequestSent(String doctorId, String patientId) async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('contactRequests')
+              .where('doctorId', isEqualTo: doctorId)
+              .where('patientId', isEqualTo: patientId)
+              .get();
+
+      // Ellenőrizze, hogy a kapcsolatfelvételi kérelem megtalálható-e
+      return snapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking if contact request is sent: $e');
+      throw Exception('Error checking if contact request is sent');
+    }
+  }
+
+  Future<bool> isContactRequestAccepted(
+      String doctorId, String patientId) async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('contactRequests')
+              .where('doctorId', isEqualTo: doctorId)
+              .where('patientId', isEqualTo: patientId)
+              .where('isAccepted', isEqualTo: true)
+              .get();
+
+      // Ellenőrizze, hogy a kapcsolatfelvétel elfogadva van-e
+      return snapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking if contact request is accepted: $e');
+      throw Exception('Error checking if contact request is accepted');
+    }
+  }
   // Itt definiálhatsz több függvényt is, például:
 }
