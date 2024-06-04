@@ -37,22 +37,22 @@ class DoctorServices {
 
   //address
   Future<String> getDoctorAddress(String doctorId) async {
-  try {
-    // Az orvos címének lekérése a 'doctors' kollekcióból
-    DocumentSnapshot doctorData =
-        await _firestore.collection('doctors').doc(doctorId).get();
+    try {
+      // Az orvos címének lekérése a 'doctors' kollekcióból
+      DocumentSnapshot doctorData =
+          await _firestore.collection('doctors').doc(doctorId).get();
 
-    if (doctorData.exists && doctorData.data() is Map) {
-      final data = doctorData.data() as Map<String, dynamic>;
-      return data['address'] ?? "Unknown";
-    } else {
+      if (doctorData.exists && doctorData.data() is Map) {
+        final data = doctorData.data() as Map<String, dynamic>;
+        return data['address'] ?? "Unknown";
+      } else {
+        return "Unknown";
+      }
+    } catch (e) {
+      print('Error fetching doctor address: $e');
       return "Unknown";
     }
-  } catch (e) {
-    print('Error fetching doctor address: $e');
-    return "Unknown";
   }
-}
 
   Future<String> fetchDoctorUserName() async {
     String username = "Unknown";
@@ -182,7 +182,143 @@ class DoctorServices {
     }
   }
 
-  
+  // Fetch all doctor data by doctorId
+  Future<Map<String, dynamic>> getAllDoctorDatas(String doctorId) async {
+    try {
+      DocumentSnapshot doctorData =
+          await _firestore.collection('doctors').doc(doctorId).get();
+
+      if (doctorData.exists && doctorData.data() is Map) {
+        return doctorData.data() as Map<String, dynamic>;
+      } else {
+        throw Exception('Doctor data not found');
+      }
+    } catch (e) {
+      print('Error fetching all doctor datas: $e');
+      throw Exception('Error fetching all doctor datas');
+    }
+  }
+
+  //fetch patient requets for items
+  // Future<List<Map<String, dynamic>>> fetchContactRequests(
+  //     String doctorId) async {
+  //   List<Map<String, dynamic>> requests = [];
+
+  //   try {
+  //     QuerySnapshot requestsSnapshot = await _firestore
+  //         .collection('contactRequests')
+  //         .where('doctorId', isEqualTo: doctorId)
+  //         .where('isAccepted', isEqualTo: false)
+  //         .get();
+
+  //     for (var request in requestsSnapshot.docs) {
+  //       var requestData = request.data() as Map<String, dynamic>;
+  //       requests.add(requestData);
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching contact requests: $e');
+  //   }
+
+  //   return requests;
+  // }
+
+  // Kontakt kérések lekérdezése
+  //fetch patient requets for items
+  Future<List<DocumentSnapshot>> fetchContactRequests(String doctorId) async {
+    try {
+      QuerySnapshot requestsSnapshot = await _firestore
+          .collection('contactRequests')
+          .where('doctorId', isEqualTo: doctorId)
+          .where('isAccepted', isEqualTo: false)
+          .get();
+
+      return requestsSnapshot.docs;
+    } catch (e) {
+      print('Error fetching contact requests: $e');
+      throw e;
+    }
+  }
+
+  // Future<List<Map<String, dynamic>>> fetchMyPatients(String doctorId) async {
+  //   List<Map<String, dynamic>> patients = [];
+
+  //   try {
+  //     QuerySnapshot patientsSnapshot = await _firestore
+  //         .collection('contactRequests')
+  //         .where('doctorId', isEqualTo: doctorId)
+  //         .where('isAccepted', isEqualTo: true)
+  //         .get();
+
+  //     for (var patient in patientsSnapshot.docs) {
+  //       var patientData = patient.data() as Map<String, dynamic>;
+  //       patients.add(patientData);
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching my patients: $e');
+  //   }
+
+  //   return patients;
+  // }
+
+  Future<List<Map<String, dynamic>>> fetchMyPatients(String doctorId) async {
+    List<Map<String, dynamic>> patients = [];
+    try {
+      // Lekérjük az elfogadott kapcsolatfelvételi kérelmeket
+      QuerySnapshot requestSnapshot = await _firestore
+          .collection('contactRequests')
+          .where('doctorId', isEqualTo: doctorId)
+          .where('isAccepted', isEqualTo: true)
+          .get();
+
+      // Az elfogadott kapcsolatfelvételi kérésekhez tartozó páciensek id-jainak lekérdezése
+      List<String> acceptedPatientIds = requestSnapshot.docs
+          .map<String>((doc) => doc['patientId'] as String)
+          .toList();
+
+      // A páciensek adatainak lekérése a kapcsolatfelvételi kéréseik alapján
+      QuerySnapshot patientSnapshot = await _firestore
+          .collection('patients')
+          .where(FieldPath.documentId, whereIn: acceptedPatientIds)
+          .get();
+
+      for (var doc in patientSnapshot.docs) {
+        var data = doc.data() as Map<String, dynamic>;
+        patients.add({
+          'id': doc.id,
+          'name': data['name'],
+          'address': data['address'],
+          'profilePictureURL': data['profilePictureURL'],
+          'birthDate': data['birthDate'],
+          'gender': data['gender'],
+          'height': data['height'],
+          'weight': data['weight'],
+          'symptoms': data['symptoms'],
+          'medicalHistory': data['medicalHistory'],
+          'currentTreatments': data['currentTreatments'],
+          'allergies': data['allergies'],
+          'smoker': data['smoker'],
+          'alcohol': data['alcohol'],
+        });
+      }
+      return patients;
+    } catch (e) {
+      print('Error fetching my patients: $e');
+      throw Exception('Error fetching my patients');
+    }
+  }
+
+  // Elutasítja vagy elfogadja a kapcsolatfelvételi kérelmet
+  Future<void> updateContactRequestStatus(
+      String requestId, bool isAccepted) async {
+    try {
+      await _firestore.collection('contactRequests').doc(requestId).update({
+        'isAccepted': isAccepted,
+      });
+    } catch (e) {
+      print('Error updating contact request status: $e');
+      throw Exception('Error updating contact request status');
+    }
+  }
 
   // Itt definiálhatsz több függvényt is
 }

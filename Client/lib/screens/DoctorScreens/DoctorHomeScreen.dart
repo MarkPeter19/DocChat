@@ -3,7 +3,7 @@ import 'Requests/RequestsScreen.dart';
 import 'Profile/DoctorProfileScreen.dart';
 import 'Messages/DoctorMessagesScreen.dart';
 import 'Appointments/DoctorAppointmentsScreen.dart';
-import 'ChatPDF/Chats.dart';
+import 'Patients/PatientsScreen.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -126,7 +126,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                 RequestsScreen(),
                 const DoctorAppointmentsScreen(),
                 DoctorMessagesScreen(),
-                Chats(),
+                PatientsScreen(),
               ],
             ),
           ),

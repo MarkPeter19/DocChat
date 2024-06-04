@@ -189,10 +189,19 @@ class DeclinedAppointmentItem extends StatelessWidget {
             style: const TextStyle(fontSize: 16),
           ),
           actions: <Widget>[
-            Column(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Close',
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                ),
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -207,15 +216,6 @@ class DeclinedAppointmentItem extends StatelessWidget {
                     foregroundColor: Colors.black,
                     backgroundColor: const Color.fromARGB(255, 255, 227, 190),
                     elevation: 3,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text(
-                    'Close',
-                    style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
                 ),
               ],

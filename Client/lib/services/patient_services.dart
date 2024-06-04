@@ -16,6 +16,23 @@ class PatientServices {
     }
   }
 
+  // Beteg adatok lekérdezése
+  Future<Map<String, dynamic>> fetchPatientData(String patientId) async {
+    try {
+      DocumentSnapshot patientSnapshot =
+          await _firestore.collection('patients').doc(patientId).get();
+
+      if (patientSnapshot.exists && patientSnapshot.data() is Map) {
+        return patientSnapshot.data() as Map<String, dynamic>;
+      } else {
+        throw Exception('Patient data not found');
+      }
+    } catch (e) {
+      print('Error fetching patient data: $e');
+      throw Exception('Error fetching patient data');
+    }
+  }
+
   Future<String> getPatientName(String patientId) async {
     try {
       DocumentSnapshot patientData =
@@ -107,7 +124,7 @@ class PatientServices {
   }
 
   //fetch doctors
-  Future<List<Map<String, dynamic>>> fetchDoctors() async {
+  Future<List<Map<String, dynamic>>> fetchDoctorsToChoose() async {
     List<Map<String, dynamic>> doctors = [];
     QuerySnapshot snapshot = await _firestore.collection('doctors').get();
     for (var doc in snapshot.docs) {
@@ -152,6 +169,89 @@ class PatientServices {
     User? user = _auth.currentUser;
     if (user != null && updates.isNotEmpty) {
       await _firestore.collection('patients').doc(user.uid).update(updates);
+    }
+  }
+
+  // Fetch all doctors
+  Future<List<Map<String, dynamic>>> fetchAllDoctors() async {
+    List<Map<String, dynamic>> doctors = [];
+    try {
+      QuerySnapshot snapshot = await _firestore.collection('doctors').get();
+      for (var doc in snapshot.docs) {
+        var data = doc.data() as Map<String, dynamic>;
+        doctors.add({
+          'id': doc.id,
+          'fullName': data['fullName'],
+          'specialization': data['specialization'],
+          'clinic': data['clinic'],
+          'address': data['address'],
+          'experience': data['experience'],
+          'about': data['about'],
+          'profilePictureURL': data['profilePictureURL'],
+        });
+      }
+      return doctors;
+    } catch (e) {
+      print('Error fetching all doctors: $e');
+      throw Exception('Error fetching all doctors');
+    }
+  }
+
+  //fetch my doctors
+  Future<List<Map<String, dynamic>>> fetchMyDoctors(String patientId) async {
+    List<Map<String, dynamic>> doctors = [];
+    try {
+      QuerySnapshot requestSnapshot = await _firestore
+          .collection('contactRequests')
+          .where('patientId', isEqualTo: patientId)
+          .where('isAccepted', isEqualTo: true)
+          .get();
+
+      // Az elfogadott kapcsolatfelvételi kérésekhez tartozó orvosok id-jainak lekérdezése
+      List<String> acceptedDoctorIds = requestSnapshot.docs
+          .map<String>(
+              (doc) => doc['doctorId'] as String) // Átkonvertáljuk a típust
+          .toList();
+
+      // Az orvosok adatainak lekérése a kapcsolatfelvételi kéréseik alapján
+      QuerySnapshot doctorSnapshot = await _firestore
+          .collection('doctors')
+          .where(FieldPath.documentId, whereIn: acceptedDoctorIds)
+          .get();
+
+      for (var doc in doctorSnapshot.docs) {
+        var data = doc.data() as Map<String, dynamic>;
+        doctors.add({
+          'id': doc.id,
+          'fullName': data['fullName'],
+          'specialization': data['specialization'],
+          'clinic': data['clinic'],
+          'address': data['address'],
+          'experience': data['experience'],
+          'about': data['about'],
+          'profilePictureURL': data['profilePictureURL'],
+        });
+      }
+      return doctors;
+    } catch (e) {
+      print('Error fetching my doctors: $e');
+      throw Exception('Error fetching my doctors');
+    }
+  }
+
+  // Orvosnak küldött kapcsolatfelvétel kérés küldése
+  Future<void> sendContactRequest(String doctorId, String patientId) async {
+    try {
+      // Hozzáadjuk a kapcsolatfelvétel kérést a contactRequests kollekcióhoz
+      await _firestore.collection('contactRequests').add({
+        'doctorId': doctorId,
+        'patientId': patientId,
+        'timestamp': DateTime.now(),
+        'isAccepted': false, // Alapértelmezetten még nem elfogadott
+      });
+    } catch (e) {
+      print('Error sending contact request: $e');
+      throw Exception('Error sending contact request');
     }
   }
 
