@@ -84,7 +84,7 @@ class _ResponsesScreenState extends State<ResponsesScreen> {
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => PersonalDataScreen()));
           },
-          icon: Icon(Icons.assessment),
+          icon: const Icon(Icons.assessment),
           label: const Text('New Request'),
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,

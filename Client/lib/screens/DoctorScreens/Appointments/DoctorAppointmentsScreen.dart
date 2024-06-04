@@ -25,6 +25,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
   void initState() {
     super.initState();
     _fetchDoctorId();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   // Az orvos azonosítójának lekérdezése
@@ -33,10 +34,6 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen>
       String doctorId = await DoctorServices().fetchDoctorId();
       setState(() {
         _doctorId = doctorId;
-        _tabController = TabController(
-          length: 2,
-          vsync: this,
-        );
         _isLoading = false;
       });
     } catch (e) {
