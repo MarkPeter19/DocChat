@@ -123,20 +123,6 @@ class PatientServices {
         .update({'forDoctorReview': true});
   }
 
-  //fetch doctors
-  Future<List<Map<String, dynamic>>> fetchDoctorsToChoose() async {
-    List<Map<String, dynamic>> doctors = [];
-    QuerySnapshot snapshot = await _firestore.collection('doctors').get();
-    for (var doc in snapshot.docs) {
-      var data = doc.data() as Map<String, dynamic>;
-      doctors.add({
-        'name': data['fullName'],
-        'id': doc.id,
-      });
-    }
-    return doctors;
-  }
-
   Future<Map<String, String>> fetchPatientDetails(String uid) async {
     try {
       // Fetching doctor details from 'doctors' collection

@@ -96,22 +96,20 @@ class DoctorServices {
 
       for (var document in documentSnapshot.docs) {
         var documentData = document.data() as Map<String, dynamic>;
-        if (documentData != null) {
-          Timestamp uploadTimestamp = documentData['uploadDate'] as Timestamp;
-          DateTime uploadDate = uploadTimestamp.toDate();
-          String formattedUploadDate =
-              DateFormat('yyyy-MM-dd – kk:mm').format(uploadDate);
+        Timestamp uploadTimestamp = documentData['uploadDate'] as Timestamp;
+        DateTime uploadDate = uploadTimestamp.toDate();
+        String formattedUploadDate =
+            DateFormat('yyyy-MM-dd – kk:mm').format(uploadDate);
 
-          // Mivel a páciens adatokat már lekérdeztük, hozzáadhatjuk a kérés listához
-          requests.add({
-            'patientName': patientData['name'], // A páciens neve
-            'documentDate':
-                formattedUploadDate, // A dokumentum feltöltésének ideje
-            'documentId': document.id, // A dokumentum azonosítója
-            'patientId': patientId,
-          });
-        }
-      }
+        // Mivel a páciens adatokat már lekérdeztük, hozzáadhatjuk a kérés listához
+        requests.add({
+          'patientName': patientData['name'], // A páciens neve
+          'documentDate':
+              formattedUploadDate, // A dokumentum feltöltésének ideje
+          'documentId': document.id, // A dokumentum azonosítója
+          'patientId': patientId,
+        });
+            }
     }
 
     return requests;

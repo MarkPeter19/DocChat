@@ -4,7 +4,8 @@ class SuccessDialog extends StatelessWidget {
   final String message;
   final VoidCallback onPressed;
 
-  const SuccessDialog({super.key, required this.message, required this.onPressed});
+  const SuccessDialog(
+      {super.key, required this.message, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -29,18 +30,24 @@ class SuccessDialog extends StatelessWidget {
           ),
         ],
       ),
-      content: Text(message, style: const TextStyle(fontSize: 16),),
+      content: Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: Text(
+          message,
+          style: const TextStyle(fontSize: 16),
+          textAlign: TextAlign.center, // Szöveg középre igazítása
+        ),
+      ),
       actions: <Widget>[
-        Center(
+        Container(
+          alignment: Alignment.center,
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 68, 144, 101),
-              padding: const EdgeInsets.symmetric(
-                  vertical: 10, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             ),
-            child: const Text('Okay',
-                style: TextStyle(color: Colors.white)),
+            child: const Text('Okay', style: TextStyle(color: Colors.white)),
           ),
         ),
       ],

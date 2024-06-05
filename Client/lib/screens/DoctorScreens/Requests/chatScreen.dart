@@ -29,10 +29,10 @@ void initState() {
   _loadChatMessages(); // Üzenetek betöltése csak az inicializálás után
 
   // Késleltetett görgetés az üzenetek betöltése után
-  Future.delayed(Duration(milliseconds: 300), () {
+  Future.delayed(const Duration(milliseconds: 300), () {
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
   });
@@ -44,7 +44,7 @@ void initState() {
     final String content = message['content'];
     final DateTime timestamp = message['timestamp'];
     final bool isAI = sender == 'AI';
-    final Color bubbleColor = isAI ? Color.fromARGB(255, 0, 0, 0) : Color.fromARGB(255, 133, 62, 255);
+    final Color bubbleColor = isAI ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(255, 133, 62, 255);
 
     return Align(
       alignment: isAI ? Alignment.topLeft : Alignment.topRight,
@@ -60,12 +60,12 @@ void initState() {
           children: [
             Text(
               content,
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               '${timestamp.hour}:${timestamp.minute}', // Display only hour and minute
-              style: TextStyle(color: Color.fromARGB(255, 187, 186, 186), fontSize: 12),
+              style: const TextStyle(color: Color.fromARGB(255, 187, 186, 186), fontSize: 12),
             ),
           ],
         ),
@@ -128,7 +128,7 @@ void initState() {
         ),
         backgroundColor: const Color.fromARGB(255, 14, 9, 26),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           color: Colors.white,
           onPressed: () {
             Navigator.of(context).pop();
@@ -162,7 +162,7 @@ void initState() {
                           hintText: 'Type your message...',
                           hintStyle: const TextStyle(color: Colors.white),
                           filled: true,
-                          fillColor: Color.fromARGB(255, 85, 47, 155),
+                          fillColor: const Color.fromARGB(255, 85, 47, 155),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide.none,

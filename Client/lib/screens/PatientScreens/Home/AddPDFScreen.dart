@@ -47,7 +47,8 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
   //load doctors
   Future<void> _loadDoctors() async {
     try {
-      var fetchedDoctors = await patientServices.fetchDoctorsToChoose();
+      String patientId = await patientServices.fetchPatientId();
+      var fetchedDoctors = await patientServices.fetchMyDoctors(patientId);
       if (fetchedDoctors.isNotEmpty) {
         setState(() {
           doctorsList = fetchedDoctors;
@@ -63,8 +64,8 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
 
   void _sendToDoctor() async {
     if (selectedDoctorId == null || file == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a doctor and a PDF to send')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please select a doctor and a PDF to send')));
       return;
     }
 
@@ -106,8 +107,8 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
             message: 'The document was successfully sent to the doctor',
             onPressed: () {
               Navigator.of(context).pop(); // Bezárja az ablakot
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const PatientHomeScreen()));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const PatientHomeScreen()));
             },
           );
         },
@@ -130,46 +131,62 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Select a doctor:',
-                style: TextStyle(fontSize: 22, color: Colors.black),
+              const Padding(
+                padding: EdgeInsets.all(2.0),
+                child: Text(
+                  'Select a doctor:',
+                  style: TextStyle(fontSize: 22, color: Colors.black),
+                ),
               ),
               const SizedBox(height: 10),
               Card(
                 borderOnForeground: true,
                 elevation: 3,
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isExpanded: true,
-                    value: selectedDoctorId,
-                    icon: const Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.black,
-                      size: 40,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      value: selectedDoctorId,
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black,
+                        size: 40,
+                      ),
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedDoctorId = newValue;
+                        });
+                      },
+                      items: doctorsList.map((doctor) {
+                        return DropdownMenuItem<String>(
+                          value: doctor['id'],
+                          child: Row(children: [
+                            Text(
+                              '${doctor['fullName']} -',
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              doctor['specialization'],
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(width: 15),
+                            Checkbox(
+                              activeColor: Colors.green,
+                              value: selectedDoctorId == doctor['id'],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  selectedDoctorId = doctor['id'];
+                                });
+                              },
+                            ),
+                          ]),
+                        );
+                      }).toList(),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedDoctorId = newValue;
-                      });
-                    },
-                    items: doctorsList.map((doctor) {
-                      return DropdownMenuItem<String>(
-                        value: doctor['id'],
-                        child: Row(children: [
-                          Text(doctor['name']),
-                          const SizedBox(width: 15),
-                          Checkbox(
-                            value: selectedDoctorId == doctor['id'],
-                            onChanged: (bool? value) {
-                              setState(() {
-                                selectedDoctorId = doctor['id'];
-                              });
-                            },
-                          ),
-                        ]),
-                      );
-                    }).toList(),
-                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
               ),
@@ -209,6 +226,14 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                   elevation: 3,
                   child: Column(
                     children: [
+                      const SizedBox(height: 15),
+                      const Center(
+                        child: Text(
+                          "Add a Medical PDF Document",
+                          style: TextStyle(fontSize: 20, color: Colors.black),
+                        ),
+                      ),
+
                       SizedBox(
                         height: MediaQuery.of(context).size.height *
                             0.5, // Fix magasság a képnek
@@ -228,13 +253,6 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                         ),
                       ),
                       //SizedBox(height: 10),
-                      const Center(
-                        child: Text(
-                          "Add a Medical PDF Document",
-                          style: TextStyle(fontSize: 20, color: Colors.black),
-                        ),
-                      ),
-                      const SizedBox(height: 10)
                     ],
                   ),
                 ),
@@ -246,7 +264,8 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                   icon: const Icon(Icons.vertical_align_bottom, size: 24),
                   label: const Text('Select PDF'),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 255, 198, 11),
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 255, 198, 11),
                     minimumSize: const Size(double.infinity, 50),
                   ),
                 ),
@@ -258,7 +277,9 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                       icon: const Icon(Icons.change_circle, size: 24),
                       label: const Text('Change PDF'),
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 255, 198, 11),
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 198, 11),
                         minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
@@ -268,7 +289,9 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                       icon: const Icon(Icons.send, size: 24),
                       label: const Text('Send to Doctor'),
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white, backgroundColor: Theme.of(context).colorScheme.secondary,
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
                         minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
