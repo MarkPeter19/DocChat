@@ -109,7 +109,7 @@ class DoctorServices {
           'documentId': document.id, // A dokumentum azonosítója
           'patientId': patientId,
         });
-            }
+      }
     }
 
     return requests;
@@ -197,31 +197,7 @@ class DoctorServices {
     }
   }
 
-  //fetch patient requets for items
-  // Future<List<Map<String, dynamic>>> fetchContactRequests(
-  //     String doctorId) async {
-  //   List<Map<String, dynamic>> requests = [];
-
-  //   try {
-  //     QuerySnapshot requestsSnapshot = await _firestore
-  //         .collection('contactRequests')
-  //         .where('doctorId', isEqualTo: doctorId)
-  //         .where('isAccepted', isEqualTo: false)
-  //         .get();
-
-  //     for (var request in requestsSnapshot.docs) {
-  //       var requestData = request.data() as Map<String, dynamic>;
-  //       requests.add(requestData);
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching contact requests: $e');
-  //   }
-
-  //   return requests;
-  // }
-
-  // Kontakt kérések lekérdezése
-  //fetch patient requets for items
+  //fetch patient contact requests for items
   Future<List<DocumentSnapshot>> fetchContactRequests(String doctorId) async {
     try {
       QuerySnapshot requestsSnapshot = await _firestore
@@ -236,27 +212,6 @@ class DoctorServices {
       throw e;
     }
   }
-
-  // Future<List<Map<String, dynamic>>> fetchMyPatients(String doctorId) async {
-  //   List<Map<String, dynamic>> patients = [];
-
-  //   try {
-  //     QuerySnapshot patientsSnapshot = await _firestore
-  //         .collection('contactRequests')
-  //         .where('doctorId', isEqualTo: doctorId)
-  //         .where('isAccepted', isEqualTo: true)
-  //         .get();
-
-  //     for (var patient in patientsSnapshot.docs) {
-  //       var patientData = patient.data() as Map<String, dynamic>;
-  //       patients.add(patientData);
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching my patients: $e');
-  //   }
-
-  //   return patients;
-  // }
 
   Future<List<Map<String, dynamic>>> fetchMyPatients(String doctorId) async {
     List<Map<String, dynamic>> patients = [];

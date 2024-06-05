@@ -17,6 +17,8 @@ class PatientDetailScreen extends StatelessWidget {
       ),
       body: Card(
         elevation: 3,
+        color: const Color.fromARGB(255, 230, 94, 98),
+        shadowColor: const Color.fromARGB(255, 255, 85, 7),
         child: FutureBuilder<Map<String, dynamic>>(
           future: _fetchPatientData(patientId),
           builder: (context, snapshot) {
@@ -36,8 +38,17 @@ class PatientDetailScreen extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 60,
-                            backgroundImage:
-                                NetworkImage(patientData['profilePictureURL']),
+                            backgroundColor:
+                                const Color.fromARGB(255, 156, 111, 116),
+                            backgroundImage: patientData['profilePictureURL'] !=
+                                    null
+                                ? NetworkImage(patientData['profilePictureURL'])
+                                : null,
+                            child: patientData['profilePictureURL'] == ""
+                                ? const Icon(Icons.person,
+                                    size: 60,
+                                    color: Color.fromARGB(255, 216, 209, 209))
+                                : null,
                           ),
                           const SizedBox(width: 20),
                           Expanded(
@@ -49,12 +60,14 @@ class PatientDetailScreen extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 23,
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
                                   patientData['address'],
-                                  style: const TextStyle(fontSize: 16),
+                                  style: const TextStyle(
+                                      fontSize: 17, color: Color.fromARGB(255, 248, 216, 219)),
                                   overflow: TextOverflow.visible,
                                 ),
                               ],
@@ -63,7 +76,7 @@ class PatientDetailScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      const Divider(),
+                      const Divider(color: Color.fromARGB(255, 255, 203, 227),),
                       _buildDetailRow(
                         'Gender:',
                         patientData['gender'].toString(),
@@ -130,18 +143,16 @@ class PatientDetailScreen extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 255, 216, 216)),
             ),
           ),
           const SizedBox(width: 20),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 18,
-              ),
+              style: const TextStyle(fontSize: 18, color: Colors.white),
             ),
           ),
         ],
