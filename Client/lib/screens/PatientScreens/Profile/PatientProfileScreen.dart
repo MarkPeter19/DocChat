@@ -19,7 +19,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   final PatientServices _patientServices = PatientServices();
 
-  String _name = ''; 
+  String _name = '';
   String _email = '';
   String _profileImageUrl = '';
   String _username = '';
@@ -60,8 +60,10 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
       await _auth.currentUser!.delete();
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Error deleting account'), backgroundColor: Colors.red,));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Error deleting account'),
+        backgroundColor: Colors.red,
+      ));
     }
   }
 
@@ -128,8 +130,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                     ),
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -231,7 +233,9 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                             icon: const Icon(Icons.edit),
                             label: const Text('Edit Profile'),
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white, backgroundColor: Theme.of(context).colorScheme.primary,
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               textStyle: const TextStyle(fontSize: 16),
                               minimumSize: const Size(double.infinity, 40),
                             ),
@@ -255,7 +259,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                   icon: const Icon(Icons.exit_to_app),
                   label: const Text('Log Out'),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 252, 171, 50),
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 252, 171, 50),
                     textStyle: const TextStyle(fontSize: 16),
                     minimumSize: const Size(double.infinity, 50),
                   ),
@@ -266,7 +271,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                   icon: const Icon(Icons.delete_forever),
                   label: const Text('Delete Account'),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 255, 106, 96),
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 255, 106, 96),
                     textStyle: const TextStyle(fontSize: 16),
                     minimumSize: const Size(double.infinity, 50),
                   ),

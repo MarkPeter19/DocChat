@@ -4,22 +4,45 @@ class PatientsItem extends StatelessWidget {
   final Map<String, dynamic> patientData;
   final VoidCallback onTap;
 
-  const PatientsItem({super.key, 
+  const PatientsItem({
+    Key? key,
     required this.patientData,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: patientData['profilePictureURL'] != null
-          ? CircleAvatar(
-              backgroundImage: NetworkImage(patientData['profilePictureURL']),
-            )
-          : const CircleAvatar(child: Icon(Icons.person)),
-      title: Text(patientData['name'] ?? 'Unknown Name'),
-      subtitle: Text(patientData['address'] ?? 'Unknown Address'),
-      onTap: onTap,
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ListTile(
+        leading: CircleAvatar(
+          radius: 30, 
+          backgroundColor: const Color.fromARGB(255, 80, 80, 80),
+          backgroundImage: patientData['profilePictureURL'] != null
+              ? NetworkImage(patientData['profilePictureURL'])
+              : null,
+          child: patientData['profilePictureURL'] == null
+              ? const Icon(Icons.person, color: Colors.white)
+              : null,
+        ),
+        title: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
+          children: [
+            Text(
+              patientData['name'] ?? 'Unknown Name',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        subtitle: Wrap(children: [
+          Text(
+            patientData['address'] ?? 'Unknown Address',
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ]),
+        onTap: onTap,
+      ),
     );
   }
 }
