@@ -1,7 +1,7 @@
 import 'package:doctorgpt/screens/DoctorScreens/Requests/ChatScreen.dart';
 import 'package:doctorgpt/screens/DoctorScreens/Requests/MakeAppointmentScreen.dart';
 import 'package:doctorgpt/services/api_keys.dart';
-import 'package:doctorgpt/services/chatPDF_services';
+import 'package:doctorgpt/services/chatPDF_services.dart';
 import 'package:flutter/material.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
 import '../../../services/patient_services.dart';
@@ -13,7 +13,8 @@ class PatientDataDetailsScreen extends StatefulWidget {
   final String patientId;
   final String documentId;
 
-  PatientDataDetailsScreen({
+  const PatientDataDetailsScreen({
+    super.key,
     required this.patientId,
     required this.documentId,
   });
@@ -49,7 +50,10 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching data: $e')),
+        SnackBar(
+          content: Text('Error fetching data: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -61,10 +65,12 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
         children: [
           Expanded(
               child: Text(label,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16))),
           Expanded(
               child: Text(value.toString(),
-                  textAlign: TextAlign.right, style: TextStyle(fontSize: 16))),
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 16))),
         ],
       ),
     );
@@ -74,43 +80,49 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text('Patient Details')),
-        body: Center(child: CircularProgressIndicator()),
+        appBar: AppBar(title: const Text('Patient Details')),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     // Gather all data labels and values
     List<Map<String, dynamic>> personalDataLabels = [
       {'label': 'Name:', 'value': patientData['name']},
-      {'label': 'Age:', 'value': patientData['age'].toString()},
+      {
+        'label': 'Birth Date:',
+        'value': DateFormat('yyyy-MM-dd')
+            .format((patientData['birthDate'] as Timestamp).toDate()),
+      },
       {'label': 'Gender:', 'value': patientData['gender']},
-      {'label': 'Height:', 'value': patientData['height']},
-      {'label': 'Weight:', 'value': patientData['weight']},
+      {'label': 'Height (cm):', 'value': patientData['height']},
+      {'label': 'Weight (kg):', 'value': patientData['weight']},
       {'label': 'Smoker:', 'value': patientData['smoker']},
       {'label': 'Alcohol consumption:', 'value': patientData['alcohol']},
+      {'label': 'Allergies:', 'value': patientData['allergies']},
       {'label': 'Symptoms:', 'value': patientData['symptoms']},
+      {'label': 'Current treatments:', 'value': patientData['currentTreatments']},
       {'label': 'Medical history:', 'value': patientData['medicalHistory']},
     ];
 
     return Scaffold(
-        appBar: AppBar(title: Text('Patient Details')),
+        appBar: AppBar(title: const Text('Patient Details')),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Card(
-                margin: EdgeInsets.all(8.0),
+                margin: const EdgeInsets.all(8.0),
                 elevation: 3,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Patient Data',
+                      const Text('Patient Data',
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.bold)),
-                      Divider(),
+                      const Divider(),
                       ...personalDataLabels
                           .map((data) =>
                               _buildDataRow(data['label'], data['value']))
@@ -119,23 +131,23 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
 
               // PDF card
               Card(
-                margin: EdgeInsets.all(8.0),
+                margin: const EdgeInsets.all(8.0),
                 elevation: 3,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('PDF Document',
+                      const Text('PDF Document',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.bold)),
-                      Divider(),
-                      SizedBox(height: 10),
+                      const Divider(),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Image.asset(
@@ -143,21 +155,21 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                             height: 50,
                             width: 50,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 documentData['PDFName'],
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Text(
                                 DateFormat('yyyy-MM-dd – kk:mm').format(
                                     (documentData['uploadDate'] as Timestamp)
                                         .toDate()),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14,
                                 ),
                               ),
@@ -165,7 +177,7 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Center(
                         child: Column(
                           children: [
@@ -181,18 +193,21 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                                   ),
                                 );
                               },
-                              icon: Icon(Icons.picture_as_pdf),
-                              label: Text('View PDF'),
+                              icon: const Icon(Icons.picture_as_pdf),
+                              label: const Text('View PDF'),
                               style: ElevatedButton.styleFrom(
-                                primary: Color.fromARGB(255, 255, 198, 11),
-                                onPrimary: Colors.white,
-                                minimumSize: Size(double.infinity, 50),
+                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    Color.fromARGB(255, 213, 78, 78),
+                                minimumSize: const Size(double.infinity, 50),
                               ),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             ElevatedButton.icon(
                               onPressed: () async {
-                                String? pdfUrl = await PatientServices().fetchDocumentPDFUrl(widget.patientId, widget.documentId);
+                                String? pdfUrl = await PatientServices()
+                                    .fetchDocumentPDFUrl(
+                                        widget.patientId, widget.documentId);
                                 if (pdfUrl != null) {
                                   Navigator.push(
                                     context,
@@ -200,24 +215,26 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                                       builder: (context) => ChatScreen(
                                         pdfUrl: pdfUrl,
                                         doctorId: doctorId,
-                                        chatPDFService: ChatPDFService(apiKey: APIKeys.chatPDFKey),
+                                        chatPDFService: ChatPDFService(
+                                            apiKey: APIKeys.chatPDFKey),
                                       ),
                                     ),
                                   );
                                 } else {
                                   // Kezeljük a null url-t
-                                  print('Null URL received from fetchDocumentPDFUrl');
+                                  print(
+                                      'Null URL received from fetchDocumentPDFUrl');
                                 }
                               },
-                              icon: Icon(Icons.chat),
-                              label: Text('Ask ChatPDF'),
+                              icon: const Icon(Icons.chat),
+                              label: const Text('Ask ChatPDF'),
                               style: ElevatedButton.styleFrom(
-                                primary: Color.fromARGB(255, 0, 0, 0),
-                                onPrimary: Colors.white,
-                                minimumSize: Size(double.infinity, 50),
+                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    const Color.fromARGB(255, 0, 0, 0),
+                                minimumSize: const Size(double.infinity, 50),
                               ),
                             ),
-
                           ],
                         ),
                       ),
@@ -225,50 +242,54 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
 
               //appointement card
               Card(
-                margin: EdgeInsets.all(8.0),
+                margin: const EdgeInsets.all(8.0),
                 elevation: 3,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Make Appointment',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold)),
-                      Divider(),
-                      Center(
-                        child: Column(
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MakeAppointmentScreen( 
-                                      patientId: widget.patientId,
-                                      doctorId: doctorId,),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Make Appointment',
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.bold)),
+                          const Divider(),
+                          Center(
+                            child: Column(
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            MakeAppointmentScreen(
+                                          patientId: widget.patientId,
+                                          doctorId: doctorId,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.calendar_today),
+                                  label: const Text('Make Appointment'),
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor:
+                                        Color.fromARGB(255, 78, 182, 116),
+                                    minimumSize:
+                                        const Size(double.infinity, 50),
                                   ),
-                                );
-                              },
-                              icon: Icon(Icons.calendar_month),
-                              label: Text('Make Appointment'),
-                              style: ElevatedButton.styleFrom(
-                                primary: Color.fromARGB(255, 104, 168, 72),
-                                onPrimary: Colors.white,
-                                minimumSize: Size(double.infinity, 50),
-                              ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-
-                    ]
-                  )
-                ),
+                          ),
+                        ])),
               ),
             ],
           ),

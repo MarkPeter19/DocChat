@@ -82,6 +82,8 @@ class _PatientsScreenState extends State<PatientsScreen>
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            return const Center(child: Text("There aren't any new requests"));
           } else if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -138,6 +140,8 @@ class _PatientsScreenState extends State<PatientsScreen>
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            return const Center(child: Text("You don't have any patients yet"));
           } else if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data!.length,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:doctorgpt/services/chatPDF_services';
+import 'package:doctorgpt/services/chatPDF_services.dart';
 
 class ChatScreen extends StatefulWidget {
   final String pdfUrl;
