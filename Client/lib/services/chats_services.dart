@@ -2,19 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatServices {
   // Save chat messages to Firestore
-  Future<void> saveChatMessagesToFirestore(String patientId, String doctorId, List<Map<String, dynamic>> messages) async {
+  Future<void> saveChatMessagesToFirestore(String patientId, String doctorId,
+      List<Map<String, dynamic>> messages) async {
     try {
       // Check if there's already a document for the given patient and doctor
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-          .collection('chats')
-          .where('patientId', isEqualTo: patientId)
-          .where('doctorId', isEqualTo: doctorId)
-          .get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('chats')
+              .where('patientId', isEqualTo: patientId)
+              .where('doctorId', isEqualTo: doctorId)
+              .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         // If there's a document, update the messages
         DocumentReference docRef = querySnapshot.docs.first.reference;
-        List<Map<String, dynamic>> existingMessages = List.from(querySnapshot.docs.first.data()['messages']);
+        List<Map<String, dynamic>> existingMessages =
+            List.from(querySnapshot.docs.first.data()['messages']);
         existingMessages.addAll(messages);
         await docRef.update({'messages': existingMessages});
       } else {
@@ -31,13 +34,15 @@ class ChatServices {
   }
 
   // Get chat messages from Firestore
-  Future<List<Map<String, dynamic>>> getChatMessagesFromFirestore(String patientId, String doctorId) async {
+  Future<List<Map<String, dynamic>>> getChatMessagesFromFirestore(
+      String patientId, String doctorId) async {
     try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-          .collection('chats')
-          .where('patientId', isEqualTo: patientId)
-          .where('doctorId', isEqualTo: doctorId)
-          .get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('chats')
+              .where('patientId', isEqualTo: patientId)
+              .where('doctorId', isEqualTo: doctorId)
+              .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         List<Map<String, dynamic>> messages = [];
@@ -45,6 +50,7 @@ class ChatServices {
           messages.add({
             'sender': message['sender'],
             'content': message['content'],
+            'imageUrl': message['imageUrl'],
             'timestamp': message['timestamp'].toDate(),
           });
         });
