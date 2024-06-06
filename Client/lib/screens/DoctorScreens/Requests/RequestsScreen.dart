@@ -58,17 +58,14 @@ class _RequestsScreenState extends State<RequestsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     //patient requests
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
                       child: Text(
                         'There are your patient requests:',
                         style: TextStyle(fontSize: 18),
                       ),
                     ),
-
-                    // Dinamikus lista megjelenítése a betegkérésekről
                     for (var requestItem in patientRequests) requestItem,
-                    // Itt jeleníti meg a `PatientRequestItem` komponenseket
                   ],
                 ),
               ));

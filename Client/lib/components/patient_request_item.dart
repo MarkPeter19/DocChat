@@ -7,7 +7,8 @@ class PatientRequestItem extends StatelessWidget {
   final String documentId;
   final String patientId;
 
-  PatientRequestItem({
+  const PatientRequestItem({
+    super.key,
     required this.patientName,
     required this.documentDate,
     required this.documentId,
@@ -17,27 +18,32 @@ class PatientRequestItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8.0),
-      color: Color.fromARGB(255, 240, 250, 255),
+      margin: const EdgeInsets.all(8.0),
+      color: const Color.fromARGB(255, 191, 56, 65),
       elevation: 5.0,
       child: ListTile(
           leading: CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            child: Text(patientName[0],
-                style:
-                    TextStyle(fontSize: 18)), // A páciens nevének első betűje
+            backgroundColor: const Color.fromARGB(255, 205, 55, 100),
             foregroundColor: Colors.white,
             radius: 25,
+            child: Text(patientName[0], style: const TextStyle(fontSize: 18)),
           ),
           title: Text(
             patientName,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Color.fromARGB(255, 246, 221, 221)),
           ),
           subtitle: Text(
             documentDate,
-            style: TextStyle(fontSize: 16),
-          ), // A dokumentum feltöltési idejének megjelenítése
-          trailing: Icon(Icons.keyboard_arrow_right),
+            style: const TextStyle(
+                fontSize: 16, color: Color.fromARGB(255, 255, 181, 181)),
+          ),
+          trailing: const Icon(
+            Icons.keyboard_arrow_right,
+            color: Colors.white,
+          ),
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(

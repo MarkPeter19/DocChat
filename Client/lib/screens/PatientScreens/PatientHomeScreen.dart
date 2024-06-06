@@ -128,7 +128,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
               children: [
                 const ResponsesScreen(),
                 const AppointmentsScreen(),
-                PatientMessagesScreen(),
+                const PatientMessagesScreen(),
                 DoctorsScreen(),
               ],
             ),

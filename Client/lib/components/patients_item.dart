@@ -13,6 +13,7 @@ class PatientsItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: const Color.fromARGB(255, 249, 40, 78),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
         leading: CircleAvatar(
@@ -31,14 +32,14 @@ class PatientsItem extends StatelessWidget {
           children: [
             Text(
               patientData['name'] ?? 'Unknown Name',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ],
         ),
         subtitle: Wrap(children: [
           Text(
             patientData['address'] ?? 'Unknown Address',
-            style: const TextStyle(fontSize: 16, color: Colors.grey),
+            style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 209, 209)),
           ),
         ]),
         onTap: onTap,

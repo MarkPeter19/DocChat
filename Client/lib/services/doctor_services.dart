@@ -74,6 +74,23 @@ class DoctorServices {
     return username;
   }
 
+  // doctor adatok lekérdezése
+  Future<Map<String, dynamic>> fetchDoctorData(String doctorId) async {
+    try {
+      DocumentSnapshot doctorSnapshot =
+          await _firestore.collection('doctors').doc(doctorId).get();
+
+      if (doctorSnapshot.exists && doctorSnapshot.data() is Map) {
+        return doctorSnapshot.data() as Map<String, dynamic>;
+      } else {
+        throw Exception('Doctor data not found');
+      }
+    } catch (e) {
+      print('Error fetching patient data: $e');
+      throw Exception('Error fetching patient data');
+    }
+  }
+
   //fetch patient requets for items
   Future<List<Map<String, dynamic>>> fetchPatientRequests(
       String doctorId) async {
