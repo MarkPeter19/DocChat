@@ -1,7 +1,14 @@
-import 'package:doctorgpt/services/doctor_services.dart';
+import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:doctorgpt/screens/PatientScreens/Messages/ImagePreviewScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:doctorgpt/services/chats_services.dart';
+import 'package:doctorgpt/services/doctor_services.dart';
 import 'package:doctorgpt/services/patient_services.dart';
+import 'package:path/path.dart' as Path;
 
 class DoctorChatScreen extends StatefulWidget {
   final String patientId;
@@ -24,6 +31,8 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
   final ChatServices _chatServices = ChatServices();
   final PatientServices _patientServices = PatientServices();
   final DoctorServices _doctorServices = DoctorServices();
+  final ImagePicker _picker = ImagePicker();
+  final _auth = FirebaseAuth.instance;
 
   Map<String, dynamic>? _patientData;
   Map<String, dynamic>? _doctorData;
@@ -71,32 +80,89 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
     }
   }
 
-  void _sendMessage() async {
-    String message = _messageController.text.trim();
-    if (message.isNotEmpty) {
-      Map<String, dynamic> newMessage = {
-        'sender': 'Doctor',
-        'content': message,
-        'timestamp': DateTime.now()
-      };
-      setState(() {
-        _messages.add(newMessage);
-      });
+  void _getImageFromCamera() async {
+    final pickedFile = await _picker.getImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      _sendMessage(imageFile);
+    }
+  }
 
-      try {
-        await _chatServices.saveChatMessagesToFirestore(
-            widget.patientId, widget.doctorId, [newMessage]);
-      } catch (e) {
-        print('Error sending message: $e');
+  void _getImageFromGallery() async {
+    final pickedFile = await _picker.getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      _sendMessage(imageFile);
+    }
+  }
+
+  void _sendMessage(File? imageFile) async {
+    String message = _messageController.text.trim();
+    if (message.isNotEmpty || imageFile != null) {
+      if (imageFile != null) {
+        _uploadImageAndSendMessage(imageFile);
+      } else {
+        Map<String, dynamic> newMessage = {
+          'sender': 'Doctor',
+          'content': message,
+          'imageUrl': '', // Üres kép URL, mivel ez egy szöveg üzenet
+          'timestamp': DateTime.now()
+        };
+
+        setState(() {
+          _messages.add(newMessage);
+        });
+
+        try {
+          await _chatServices.saveChatMessagesToFirestore(
+              widget.patientId, widget.doctorId, [newMessage]);
+        } catch (e) {
+          print('Error sending message: $e');
+        }
       }
 
       _messageController.clear();
     }
   }
 
+  Future<void> _uploadImageAndSendMessage(File imageFile) async {
+    String fileName = Path.basename(imageFile.path);
+    Reference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('chatImages/${_auth.currentUser!.uid}/$fileName');
+
+    UploadTask uploadTask = storageReference.putFile(imageFile);
+    await uploadTask.whenComplete(() async {
+      String downloadUrl = await storageReference.getDownloadURL();
+
+      Map<String, dynamic> newMessage = {
+        'sender': 'Doctor',
+        'content': '', // Üres tartalom, mivel ez egy kép
+        'imageUrl': downloadUrl, // Kép URL hozzáadása
+        'timestamp': DateTime.now()
+      };
+
+      setState(() {
+        _messages.add(newMessage);
+      });
+
+      await _chatServices.saveChatMessagesToFirestore(
+          widget.patientId, widget.doctorId, [newMessage]);
+
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }).catchError((error) {
+      print('Hiba a kép feltöltése közben: $error');
+    });
+  }
+
   Widget _buildMessageBubble(Map<String, dynamic> message) {
     final String sender = message['sender'];
     final String content = message['content'];
+    final String? imageUrl = message['imageUrl'];
     final DateTime timestamp = message['timestamp'];
     final bool isDoctor = sender == 'Doctor';
     final Color bubbleColor = isDoctor
@@ -128,11 +194,46 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
                       style: const TextStyle(fontSize: 14),
                     ),
                   if (isDoctor && _doctorData != null) const Text('You'),
-                  const SizedBox(height: 8),
-                  Text(
-                    content,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  if (imageUrl != null && imageUrl.isNotEmpty) // Ha van kép URL
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImagePreviewScreen(
+                              imageUrl: imageUrl,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 200,
+                            width: 200,
+                            child: CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              placeholder: (context, url) => const Padding(
+                                padding: EdgeInsets.all(
+                                    80.0), // Padding a progress indicator körül
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white), // Fehér színű indikátor
+                                ),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                  if (content.isNotEmpty) // Ha van szöveg tartalom
+                    Text(
+                      content,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
                   const SizedBox(height: 5),
                   Text(
                     '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}', // Display hour and minute
@@ -150,7 +251,7 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 211, 76, 99),
+      backgroundColor: const Color.fromARGB(255, 255, 230, 234),
       appBar: AppBar(
         title: Row(
           children: [
@@ -162,7 +263,7 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
               )
             else
               const CircleAvatar(
-                backgroundColor: Colors.black,
+                backgroundColor: Color.fromARGB(255, 0, 0, 0),
                 child: Icon(Icons.person),
               ),
             const SizedBox(width: 20),
@@ -172,10 +273,10 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
             ),
           ],
         ),
-        backgroundColor: const Color.fromARGB(255, 245, 71, 94),
+        backgroundColor: const Color.fromARGB(255, 255, 53, 77),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          color: const Color.fromARGB(255, 91, 91, 91),
+          color: const Color.fromARGB(255, 245, 245, 245),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -183,7 +284,7 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
       ),
       body: SafeArea(
         child: Container(
-          color: const Color.fromARGB(255, 235, 235, 235),
+          color: const Color.fromARGB(255, 240, 231, 255),
           child: Column(
             children: [
               Expanded(
@@ -200,16 +301,27 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
+                    IconButton(
+                      icon: const Icon(Icons.camera_alt),
+                      color: const Color.fromARGB(255, 255, 53, 77),
+                      onPressed: _getImageFromCamera,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.photo_library),
+                      color: const Color.fromARGB(255, 255, 53, 77),
+                      onPressed: _getImageFromGallery,
+                    ),
                     Expanded(
                       child: TextField(
                         controller: _messageController,
+                        cursorColor: Colors.white,
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Type your message...',
                           hintStyle: const TextStyle(color: Colors.white),
                           filled: true,
-                          fillColor: const Color.fromARGB(255, 245, 71, 94),
+                          fillColor: const Color.fromARGB(255, 255, 53, 77),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide.none,
@@ -219,8 +331,10 @@ class _DoctorChatScreenState extends State<DoctorChatScreen> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.send),
-                      color: const Color.fromARGB(255, 236, 66, 83),
-                      onPressed: _sendMessage,
+                      color: const Color.fromARGB(255, 255, 53, 77),
+                      onPressed: () {
+                        _sendMessage(null); // For sending message without image
+                      },
                     ),
                   ],
                 ),

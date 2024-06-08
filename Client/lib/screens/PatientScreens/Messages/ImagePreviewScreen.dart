@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -89,7 +88,8 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Image Preview', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('Image Preview', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 146, 71, 245),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),

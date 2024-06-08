@@ -263,7 +263,7 @@ class _PatientChatScreenState extends State<PatientChatScreen> {
               )
             else
               const CircleAvatar(
-                backgroundColor: Color.fromARGB(255, 186, 186, 186),
+                backgroundColor: Color.fromARGB(255, 0, 0, 0),
                 child: Icon(Icons.person),
               ),
             const SizedBox(width: 20),
