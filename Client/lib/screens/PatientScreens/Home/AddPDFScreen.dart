@@ -121,6 +121,7 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool hasDoctors = doctorsList.isNotEmpty;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add PDF Document'),
@@ -153,11 +154,13 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                         color: Colors.black,
                         size: 40,
                       ),
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedDoctorId = newValue;
-                        });
-                      },
+                      onChanged: hasDoctors
+                          ? (newValue) {
+                              setState(() {
+                                selectedDoctorId = newValue;
+                              });
+                            }
+                          : null,
                       items: doctorsList.map((doctor) {
                         return DropdownMenuItem<String>(
                           value: doctor['id'],
@@ -176,11 +179,13 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                             Checkbox(
                               activeColor: Colors.green,
                               value: selectedDoctorId == doctor['id'],
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  selectedDoctorId = doctor['id'];
-                                });
-                              },
+                              onChanged: hasDoctors
+                                  ? (bool? value) {
+                                      setState(() {
+                                        selectedDoctorId = doctor['id'];
+                                      });
+                                    }
+                                  : null,
                             ),
                           ]),
                         );
@@ -190,6 +195,15 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 10),
+              if (!hasDoctors)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    'Get in contact with a doctor',
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  ),
+                ),
               const SizedBox(height: 20),
 
               // PDF
@@ -258,17 +272,18 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                 ),
 
               const SizedBox(height: 15),
-              if (!_isSelected)
-                ElevatedButton.icon(
-                  onPressed: selectFile,
-                  icon: const Icon(Icons.vertical_align_bottom, size: 24),
-                  label: const Text('Select PDF'),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: const Color.fromARGB(255, 255, 198, 11),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
+              ElevatedButton.icon(
+                onPressed: hasDoctors ? selectFile : null,
+                icon: const Icon(Icons.vertical_align_bottom, size: 24),
+                label: const Text('Select PDF'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: hasDoctors
+                      ? const Color.fromARGB(255, 255, 198, 11)
+                      : Colors.grey,
+                  minimumSize: const Size(double.infinity, 50),
                 ),
+              ),
               if (_isSelected)
                 Column(
                   children: [
@@ -298,31 +313,10 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                   ],
                 ),
               const SizedBox(height: 20),
-              if (task != null) buildUploadStatus(task!),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildUploadStatus(UploadTask task) {
-    return StreamBuilder<TaskSnapshot>(
-      stream: task.snapshotEvents,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final snap = snapshot.data!;
-          final progress = snap.bytesTransferred / snap.totalBytes;
-          final percentage = (progress * 100).toStringAsFixed(2);
-
-          return Text(
-            '$percentage %',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          );
-        } else {
-          return Container();
-        }
-      },
     );
   }
 }

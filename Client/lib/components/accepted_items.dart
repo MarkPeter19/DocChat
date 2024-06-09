@@ -45,6 +45,7 @@ class AcceptedAppointmentItem extends StatelessWidget {
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
               title: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Dátum megjelenítése
                   Column(
@@ -74,32 +75,55 @@ class AcceptedAppointmentItem extends StatelessWidget {
                   const SizedBox(width: 15),
 
                   // Idő megjelenítése
-                  Text(
-                    hourMinute,
-                    style: const TextStyle(
-                        fontSize: 35,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255)),
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        hourMinute,
+                        style: const TextStyle(
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 255, 255, 255)),
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(width: 35),
+                  const SizedBox(width: 15),
+
                   // paciens neve
                   Expanded(
-                    child: Row(
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center, // Elemek középre igazítása
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.person,
-                          color: Color.fromARGB(255, 253, 253, 253),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          patientName,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.white),
+                        const SizedBox(height: 30),
+                        Stack(
+                          alignment: Alignment.centerLeft,
+                          children: [
+                            const Positioned(
+                              left: 0,
+                              child: Icon(
+                                Icons.person,
+                                color: Color.fromARGB(255, 253, 253, 253),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 30), // Helyet hagy az ikon számára
+                              child: Text(
+                                patientName,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.white),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -193,7 +217,8 @@ class AcceptedAppointmentItem extends StatelessWidget {
               },
               child: const Text(
                 'Close',
-                style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 252, 252, 252)),
+                style: TextStyle(
+                    fontSize: 18, color: Color.fromARGB(255, 252, 252, 252)),
               ),
             ),
             ElevatedButton.icon(
@@ -201,7 +226,10 @@ class AcceptedAppointmentItem extends StatelessWidget {
                 Navigator.of(context).pop();
                 onReschedule();
               },
-              icon: const Icon(Icons.calendar_today, color: Colors.black,),
+              icon: const Icon(
+                Icons.calendar_today,
+                color: Colors.black,
+              ),
               label: const Text(
                 'Reschedule',
                 style: TextStyle(fontSize: 18),

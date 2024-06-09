@@ -1,6 +1,8 @@
+import 'package:doctorgpt/screens/PatientScreens/Messages/PatientChatScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
 import 'package:doctorgpt/services/patient_services.dart';
+
 
 class DoctorDetailsScreen extends StatefulWidget {
   final String doctorId;
@@ -82,8 +84,7 @@ class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
                         children: [
                           CircleAvatar(
                             radius: 60,
-                            backgroundColor:
-                                Color.fromARGB(255, 190, 170, 212),
+                            backgroundColor: Color.fromARGB(255, 190, 170, 212),
                             backgroundImage:
                                 _doctorData!['profilePictureURL'] != null
                                     ? NetworkImage(
@@ -184,18 +185,32 @@ class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
     if (_isContactRequestSent && !_isRequestAccepted) {
       return ElevatedButton.icon(
         onPressed: null,
-        icon: const Icon(Icons.send, color: Color.fromARGB(255, 186, 186, 186),),
+        icon: const Icon(
+          Icons.send,
+          color: Color.fromARGB(255, 186, 186, 186),
+        ),
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
           backgroundColor: const Color.fromARGB(255, 190, 190, 190),
           minimumSize: const Size(double.infinity, 50),
         ),
-        label: const Text('Request Sent', style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 179, 179, 179))),
+        label: const Text('Request Sent',
+            style: TextStyle(
+                fontSize: 16, color: Color.fromARGB(255, 179, 179, 179))),
       );
     } else if (_isRequestAccepted) {
       return ElevatedButton.icon(
         onPressed: () {
-          // Handle send message action
+          // Navigate to the PatientChatScreen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PatientChatScreen(
+                patientId: widget.patientId,
+                doctorId: widget.doctorId,
+              ),
+            ),
+          );
         },
         icon: const Icon(Icons.message_outlined),
         style: ElevatedButton.styleFrom(

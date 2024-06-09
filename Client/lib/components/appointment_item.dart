@@ -17,7 +17,6 @@ class AppointmentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Az időpont megjelenítése formázva
     DateTime appointmentDate = DateTime(
       date['year'],
       date['month'],
@@ -37,11 +36,12 @@ class AppointmentItem extends StatelessWidget {
         final doctorAddress = snapshot.data?['address'] ?? 'Unknown';
 
         return Card(
-          color: Color.fromARGB(255, 64, 44, 86),
+          color: const Color.fromARGB(255, 64, 44, 86),
           elevation: 2,
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
             title: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Dátum megjelenítése
                 Column(
@@ -49,68 +49,85 @@ class AppointmentItem extends StatelessWidget {
                   children: [
                     Text(
                       _getDayOfWeek(appointmentDate), // nap
-                      style: const TextStyle(fontSize: 14,  color: Color.fromARGB(255, 211, 100, 236)),
+                      style: const TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(255, 211, 100, 236)),
                     ),
                     Text(
                       appointmentDate.day.toString(), // Nap
                       style: const TextStyle(
-                          fontSize: 34, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 211, 100, 236)),
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 211, 100, 236),
+                      ),
                     ),
                     Text(
                       _getMonth(appointmentDate), // Hónap
-                      style: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 211, 100, 236)),
+                      style: const TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(255, 211, 100, 236)),
                     ),
                   ],
                 ),
-                const SizedBox(
-                    width: 15), // Szünet a dátum és az orvos neve között
+                const SizedBox(width: 15),
 
-                // time
-                Text(
-                  hourMinute,
-                  style: const TextStyle(
-                      fontSize: 35, fontWeight: FontWeight.bold,  color: Color.fromARGB(255, 255, 6, 126)),
+                // Time megjelenítése
+                Column(
+                  children: [
+                    const SizedBox(height: 20,),
+                    Text(
+                      hourMinute,
+                      style: const TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 255, 6, 126),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(width: 15),
+
                 // Orvos neve és címe
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 10,),
                       Row(
                         children: [
-                          const Icon(Icons.person, color: Color.fromARGB(255, 211, 100, 236),),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            doctorName,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18,  color: Colors.white),
+                          const Icon(Icons.person,
+                              color: Color.fromARGB(255, 211, 100, 236)),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              doctorName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      // Address megjelenítése két sorban, ha hosszabb, mint a megadott maximális hossz
+                      const SizedBox(height: 10),
                       Row(
                         children: [
-                          const Icon(Icons.location_on, color: Color.fromARGB(255, 211, 100, 236),),
-                          const SizedBox(
-                            width: 10,
-                          ),
+                          const Icon(Icons.location_on,
+                              color: Color.fromARGB(255, 211, 100, 236)),
+                          const SizedBox(width: 10),
                           Expanded(
-                            child: SizedBox(
-                              height: 40, // Két sor maximális magassága
-                              child: Text(
-                                doctorAddress,
-                                style: const TextStyle(fontSize: 14,  color: Colors.white),
-                                maxLines: 2, // Maximum két sor
-                                overflow: TextOverflow
-                                    .ellipsis, // Több sor esetén ellipszist jelenít meg
+                            child: Text(
+                              doctorAddress,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -127,7 +144,6 @@ class AppointmentItem extends StatelessWidget {
     );
   }
 
-  // Hét napjának lekérése
   String _getDayOfWeek(DateTime date) {
     switch (date.weekday) {
       case DateTime.monday:
@@ -149,7 +165,6 @@ class AppointmentItem extends StatelessWidget {
     }
   }
 
-  // Hónap lekérése
   String _getMonth(DateTime date) {
     switch (date.month) {
       case DateTime.january:
@@ -181,7 +196,6 @@ class AppointmentItem extends StatelessWidget {
     }
   }
 
-  // Orvos adatok lekérése
   Future<Map<String, String>> _fetchDoctorData(String doctorId) async {
     final doctorServices = DoctorServices();
     final doctorName = await doctorServices.getDoctorName(doctorId);
