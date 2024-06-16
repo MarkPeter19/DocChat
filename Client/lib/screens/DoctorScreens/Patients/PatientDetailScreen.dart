@@ -39,15 +39,17 @@ class PatientDetailScreen extends StatelessWidget {
                           CircleAvatar(
                             radius: 60,
                             backgroundColor:
-                                const Color.fromARGB(255, 156, 111, 116),
+                                const Color.fromARGB(255, 80, 80, 80),
                             backgroundImage: patientData['profilePictureURL'] !=
                                     null
                                 ? NetworkImage(patientData['profilePictureURL'])
                                 : null,
-                            child: patientData['profilePictureURL'] == ""
-                                ? const Icon(Icons.person,
+                            child: patientData['profilePictureURL'] == null
+                                ? const Icon(
+                                    Icons.person,
+                                    color: Colors.white,
                                     size: 60,
-                                    color: Color.fromARGB(255, 216, 209, 209))
+                                  )
                                 : null,
                           ),
                           const SizedBox(width: 20),
@@ -67,7 +69,9 @@ class PatientDetailScreen extends StatelessWidget {
                                 Text(
                                   patientData['address'],
                                   style: const TextStyle(
-                                      fontSize: 17, color: Color.fromARGB(255, 248, 216, 219)),
+                                      fontSize: 17,
+                                      color:
+                                          Color.fromARGB(255, 248, 216, 219)),
                                   overflow: TextOverflow.visible,
                                 ),
                               ],
@@ -76,7 +80,9 @@ class PatientDetailScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      const Divider(color: Color.fromARGB(255, 255, 203, 227),),
+                      const Divider(
+                        color: Color.fromARGB(255, 255, 203, 227),
+                      ),
                       _buildDetailRow(
                         'Gender:',
                         patientData['gender'].toString(),

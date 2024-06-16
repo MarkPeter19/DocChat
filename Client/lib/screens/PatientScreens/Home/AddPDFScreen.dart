@@ -164,30 +164,39 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                       items: doctorsList.map((doctor) {
                         return DropdownMenuItem<String>(
                           value: doctor['id'],
-                          child: Row(children: [
-                            Text(
-                              '${doctor['fullName']} -',
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              doctor['specialization'],
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(width: 15),
-                            Checkbox(
-                              activeColor: Colors.green,
-                              value: selectedDoctorId == doctor['id'],
-                              onChanged: hasDoctors
-                                  ? (bool? value) {
-                                      setState(() {
-                                        selectedDoctorId = doctor['id'];
-                                      });
-                                    }
-                                  : null,
-                            ),
-                          ]),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      doctor['fullName'],
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      doctor['specialization'],
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Checkbox(
+                                activeColor: Colors.green,
+                                value: selectedDoctorId == doctor['id'],
+                                onChanged: hasDoctors
+                                    ? (bool? value) {
+                                        setState(() {
+                                          selectedDoctorId = doctor['id'];
+                                        });
+                                      }
+                                    : null,
+                              ),
+                            ],
+                          ),
                         );
                       }).toList(),
                       style: Theme.of(context).textTheme.titleMedium,
@@ -197,8 +206,8 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
               ),
               const SizedBox(height: 10),
               if (!hasDoctors)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
                   child: Text(
                     'Get in contact with a doctor',
                     style: TextStyle(color: Colors.red, fontSize: 16),

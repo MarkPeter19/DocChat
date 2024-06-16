@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
 
 class EditDoctorProfileScreen extends StatefulWidget {
+  const EditDoctorProfileScreen({Key? key}) : super(key: key);
+
   @override
   _EditDoctorProfileScreenState createState() =>
       _EditDoctorProfileScreenState();
@@ -11,242 +13,183 @@ class EditDoctorProfileScreen extends StatefulWidget {
 
 class _EditDoctorProfileScreenState extends State<EditDoctorProfileScreen> {
   final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
+  final _formKey = GlobalKey<FormState>();
   final DoctorServices _doctorServices = DoctorServices();
 
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _currentPasswordController =
-      TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _specializationController =
-      TextEditingController();
+  late TextEditingController _fullNameController;
+  late TextEditingController _specializationController;
+  late TextEditingController _clinicController;
+  late TextEditingController _addressController;
+  late TextEditingController _experienceController;
+  late TextEditingController _aboutController;
 
   @override
-  void dispose() {
-    _usernameController.dispose();
-    _currentPasswordController.dispose();
-    _newPasswordController.dispose();
-    _fullNameController.dispose();
-    _specializationController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _fullNameController = TextEditingController();
+    _specializationController = TextEditingController();
+    _clinicController = TextEditingController();
+    _addressController = TextEditingController();
+    _experienceController = TextEditingController();
+    _aboutController = TextEditingController();
+    _fetchDoctorDetails();
   }
 
-  //change username
-  Future<void> _saveUsername() async {
-    String newUsername = _usernameController.text.trim();
-    if (newUsername.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('New username cannot be empty!')));
-      return;
-    }
-
-    User? user = _auth.currentUser;
-    String uid = user!.uid;
-    await _firestore
-        .collection('users')
-        .doc(uid)
-        .update({'userName': newUsername}).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Username updated successfully')));
-    }).catchError((error) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error updating username')));
+  void _fetchDoctorDetails() async {
+    var details =
+        await _doctorServices.getAllDoctorDatas(_auth.currentUser!.uid);
+    setState(() {
+      _fullNameController.text = details['fullName'] ?? '';
+      _specializationController.text = details['specialization'] ?? '';
+      _clinicController.text = details['clinic'] ?? '';
+      _addressController.text = details['address'] ?? '';
+      _experienceController.text = details['experience'] ?? '';
+      _aboutController.text = details['about'] ?? '';
     });
   }
 
-  Future<void> _saveProfileChanges() async {
-    String fullName = _fullNameController.text.trim();
-    String specialization = _specializationController.text.trim();
-
-    Map<String, String> updates = {};
-    if (fullName.isNotEmpty) {
-      updates['fullName'] = fullName;
-    }
-    if (specialization.isNotEmpty) {
-      updates['specialization'] = specialization;
-    }
-
-    if (updates.isNotEmpty) {
+  Future<void> _saveProfile() async {
+    if (_formKey.currentState!.validate()) {
       try {
-        await _doctorServices.updateDoctorDetails(updates);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully!')),
+        await _doctorServices.saveDoctorDatas(
+          _auth.currentUser!.uid,
+          {
+            'fullName': _fullNameController.text,
+            'specialization': _specializationController.text,
+            'clinic': _clinicController.text,
+            'address': _addressController.text,
+            'experience': _experienceController.text,
+            'about': _aboutController.text,
+          },
         );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+        Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to update profile: $e')),
         );
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter data to update.')),
-      );
     }
-  }
-
-  //change password
-  Future<void> _changePassword(
-      String currentPassword, String newPassword) async {
-    // A jelszó frissítéséhez a felhasználónak újra kell hitelesítenie magát
-    User? user = _auth.currentUser;
-    AuthCredential credential = EmailAuthProvider.credential(
-      email: user!.email!,
-      password: currentPassword,
-    );
-
-    user.reauthenticateWithCredential(credential).then((value) {
-      user.updatePassword(newPassword).then((_) {
-        // Sikeres jelszó frissítés
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Password updated successfully')));
-      }).catchError((error) {
-        // Jelszó frissítési hiba kezelése
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error updating password')));
-      });
-    }).catchError((error) {
-      // Újrahitelesítési hiba
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Current password is incorrect')));
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Profile', style: TextStyle(fontSize: 26)),
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context)),
+        title: const Text('Edit Profile'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Update Datas Card
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Update Datas',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Card(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
                       controller: _fullNameController,
-                      decoration: InputDecoration(
-                        labelText: 'Full Name',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Full Name'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your full name';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: 16),
-                    TextField(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
                       controller: _specializationController,
-                      decoration: InputDecoration(
-                        labelText: 'Specialization',
-                      ),
+                      decoration:
+                          const InputDecoration(labelText: 'Specialization'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your specialization';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _saveProfileChanges,
-                      child: Text('Save Changes'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _clinicController,
+                      decoration: const InputDecoration(labelText: 'Clinic'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your clinic';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _addressController,
+                      decoration: const InputDecoration(labelText: 'Address'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your address';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _experienceController,
+                      decoration:
+                          const InputDecoration(labelText: 'Experience'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your experience';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _aboutController,
+                      decoration: const InputDecoration(labelText: 'About'),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter something about you';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton.icon(
+                      onPressed: _saveProfile,
+                      icon: const Icon(Icons.check),
+                      label: const Text('Save'),
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.green,
-                        onPrimary: Colors.white,
-                        textStyle: TextStyle(fontSize: 16),
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            const Color.fromARGB(255, 100, 222, 129),
+                        textStyle: const TextStyle(fontSize: 16),
+                        minimumSize: const Size(double.infinity, 50),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 16),
-
-            // Change Username Card
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Change Username',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        labelText: 'Username',
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _saveUsername,
-                      child: Text('Save Username'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.lightBlue,
-                        onPrimary: Colors.white,
-                        textStyle: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-
-            // Change Password Card
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Change Password',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _currentPasswordController,
-                      decoration: InputDecoration(
-                        labelText: 'Current Password',
-                      ),
-                      obscureText: true,
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _newPasswordController,
-                      decoration: InputDecoration(
-                        labelText: 'New Password',
-                      ),
-                      obscureText: true,
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => _changePassword(
-                          _currentPasswordController.text,
-                          _newPasswordController.text),
-                      child: Text('Save New Password'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.deepOrange,
-                        onPrimary: Colors.white,
-                        textStyle: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

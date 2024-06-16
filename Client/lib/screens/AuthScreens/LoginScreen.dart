@@ -6,6 +6,8 @@ import '/screens/PatientScreens/PatientHomeScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -34,12 +36,12 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         } else if (userType == 'patient') {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => PatientHomeScreen()),
+            MaterialPageRoute(builder: (context) => const PatientHomeScreen()),
           );
         }
       } else {
         // Hiba kezelese, ha a user null
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login failed')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login failed')));
       }
     } on FirebaseAuthException catch (e) {
       // Firebase Auth hibak kezelese
@@ -56,11 +58,11 @@ class _LoginScreenState extends State<LoginScreen> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Login Failed'),
+          title: const Text('Login Failed'),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -83,13 +85,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              SizedBox(height: 120.0),
-              Text(
+              const SizedBox(height: 120.0),
+              const Text(
                 'Login',
                 style: TextStyle(
                   fontSize: 32.0,
@@ -97,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 90.0),
+              const SizedBox(height: 90.0),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -111,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -125,22 +127,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 obscureText: true,
               ),
-              SizedBox(height: 30.0),
+              const SizedBox(height: 30.0),
               ElevatedButton(
                 style: ButtonStyle(
                   fixedSize: MaterialStateProperty.all<Size>(
-                    Size(double.infinity, 50), 
+                    const Size(double.infinity, 50), 
                   ),
                 ),
-                child: Text(
+                onPressed: _login,
+                child: const Text(
                   'Login',
                   style: TextStyle(fontSize: 16),
                 ),
-                onPressed: _login,
               ),
-              SizedBox(height: 15.0),
+              const SizedBox(height: 15.0),
               TextButton(
-                child: Text('Don\'t have an account? Register here'),
+                child: const Text('Don\'t have an account? Register here'),
                 onPressed: () {
                   Navigator.of(context)
                       .pushNamed('/register'); // navigacio a RegisterScreen-hez

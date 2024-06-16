@@ -5,7 +5,7 @@
 
 
     <application
-        android:label="doctorgpt"
+        android:label="DocChat"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

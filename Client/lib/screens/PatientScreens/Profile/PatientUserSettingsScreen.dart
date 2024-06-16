@@ -3,13 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctorgpt/services/patient_services.dart';
 
-class EditPatientProfileScreen extends StatefulWidget {
+class PatientUserSettingsScreen extends StatefulWidget {
   @override
-  _EditPatientProfileScreenState createState() =>
-      _EditPatientProfileScreenState();
+  _PatientUserSettingsScreenState createState() =>
+      _PatientUserSettingsScreenState();
 }
 
-class _EditPatientProfileScreenState extends State<EditPatientProfileScreen> {
+class _PatientUserSettingsScreenState extends State<PatientUserSettingsScreen> {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   final PatientServices _patientServices = PatientServices();

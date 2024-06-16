@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:doctorgpt/services/patient_services.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
-import 'package:doctorgpt/screens/PatientScreens/Profile/EditPatientProfileScreen.dart';
+import 'package:doctorgpt/screens/PatientScreens/Profile/PatientUserSettingsScreen.dart';
 
 class PatientProfileScreen extends StatefulWidget {
   @override
@@ -228,7 +228,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
-                                      EditPatientProfileScreen()));
+                                      PatientUserSettingsScreen()));
                             },
                             icon: const Icon(Icons.edit),
                             label: const Text('Edit Profile'),

@@ -86,21 +86,31 @@ class DeclinedAppointmentItem extends StatelessWidget {
                 const SizedBox(width: 35),
                 // paciens neve
                 Expanded(
-                  child: Row(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.person,
-                        color: Color.fromARGB(255, 253, 253, 253),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        patientName,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.white),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.person,
+                            color: Color.fromARGB(255, 253, 253, 253),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Flexible(
+                            child: Text(
+                              patientName,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Colors.white),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

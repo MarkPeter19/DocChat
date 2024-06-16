@@ -37,10 +37,9 @@ class AcceptedAppointmentItem extends StatelessWidget {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         final patientName = snapshot.data?['name'] ?? 'Unknown';
-        //final doctorAddress = snapshot.data?['address'] ?? 'Unknown';
 
         return Card(
-          color: Color.fromARGB(255, 34, 124, 73),
+          color: const Color.fromARGB(255, 34, 124, 73),
           elevation: 2,
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
@@ -77,7 +76,7 @@ class AcceptedAppointmentItem extends StatelessWidget {
                   // Idő megjelenítése
                   Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Text(
@@ -95,29 +94,23 @@ class AcceptedAppointmentItem extends StatelessWidget {
                   // paciens neve
                   Expanded(
                     child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center, // Elemek középre igazítása
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 30),
-                        Stack(
-                          alignment: Alignment.centerLeft,
+                        Row(
                           children: [
-                            const Positioned(
-                              left: 0,
-                              child: Icon(
-                                Icons.person,
-                                color: Color.fromARGB(255, 253, 253, 253),
-                              ),
+                            const Icon(
+                              Icons.person,
+                              color: Color.fromARGB(255, 253, 253, 253),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 30), // Helyet hagy az ikon számára
+                            const SizedBox(width: 5),
+                            Flexible(
                               child: Text(
                                 patientName,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     color: Colors.white),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -235,7 +228,7 @@ class AcceptedAppointmentItem extends StatelessWidget {
                 style: TextStyle(fontSize: 18),
               ),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Color.fromARGB(255, 0, 0, 0),
+                foregroundColor: const Color.fromARGB(255, 0, 0, 0),
                 backgroundColor: const Color.fromARGB(255, 190, 255, 201),
                 elevation: 3,
               ),

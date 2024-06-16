@@ -60,6 +60,7 @@ dependencies:
   table_calendar: ^3.1.1
   cached_network_image: ^3.3.1
   flutter_file_dialog: ^3.0.2
+  flutter_launcher_icons: ^0.13.1
 
 
 dev_dependencies:
@@ -92,7 +93,8 @@ flutter:
     - lib/assets/pdf_logo.png
     - lib/assets/success.png
     - lib/assets/medical_background.jpg
-    
+    - lib/assets/docChat_logo.png
+  
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -119,3 +121,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "lib/assets/docChat_logo.png"    

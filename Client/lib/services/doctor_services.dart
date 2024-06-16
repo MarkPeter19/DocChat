@@ -214,6 +214,16 @@ class DoctorServices {
     }
   }
 
+  //save doctor datas
+  Future<void> saveDoctorDatas(String doctorId, Map<String, dynamic> data) async {
+    try {
+      await _firestore.collection('doctors').doc(doctorId).update(data);
+    } catch (e) {
+      print('Error saving doctor data: $e');
+      throw Exception('Error saving doctor data');
+    }
+  }
+
   //fetch patient contact requests for items
   Future<List<DocumentSnapshot>> fetchContactRequests(String doctorId) async {
     try {

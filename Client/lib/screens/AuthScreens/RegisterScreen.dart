@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 enum UserType { patient, doctor }
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -33,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else {
         // Hiba kezelése, ha a user null
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Registration failed')));
+            .showSnackBar(const SnackBar(content: Text('Registration failed')));
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'An unexpected error occurred, please try again.';
@@ -47,11 +49,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Registration Failed'),
+          title: const Text('Registration Failed'),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -59,7 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } catch (e) {
       // Handle other errors
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('An unexpected error occurred, please try again')));
     }
   }
@@ -73,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  List<bool> _selections = [
+  final List<bool> _selections = [
     true,
     false
   ]; // kezdeti kivalasztas a ToggleButtons-hoz (patient/doctor)
@@ -83,13 +85,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              SizedBox(height: 120.0),
-              Text(
+              const SizedBox(height: 120.0),
+              const Text(
                 'Register',
                 style: TextStyle(
                   fontSize: 32.0,
@@ -97,37 +99,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 60.0),
+              const SizedBox(height: 60.0),
               TextField(
                 controller: _usernameController,
-                decoration: InputDecoration(labelText: 'Username'),
+                decoration: const InputDecoration(labelText: 'Username'),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
               ),
-              SizedBox(height: 24.0),
+              const SizedBox(height: 24.0),
               Center(
                 child: ToggleButtons(
                   // user type select: Patient/Doctor
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 32.0),
-                      child: Text('Patient'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 32.0),
-                      child: Text('Doctor'),
-                    ),
-                  ],
                   onPressed: (int index) {
                     setState(() {
                       for (int i = 0; i < _selections.length; i++) {
@@ -144,24 +136,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   selectedColor: Colors.white,
                   borderColor: Theme.of(context).colorScheme.primary,
                   borderWidth: 2,
+                  // user type select: Patient/Doctor
+                  children: const <Widget>[
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Text('Patient'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Text('Doctor'),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 24.0),
+              const SizedBox(height: 24.0),
               ElevatedButton(
                 style: ButtonStyle(
                   fixedSize: MaterialStateProperty.all<Size>(
-                    Size(double.infinity, 50), 
+                    const Size(double.infinity, 50), 
                   ),
                 ),
-                child: Text(
+                onPressed: _register,
+                child: const Text(
                   'Register',
                   style: TextStyle(fontSize: 16),
                 ),
-                onPressed: _register,
               ),
-              SizedBox(height: 15.0),
+              const SizedBox(height: 15.0),
               TextButton(
-                child: Text('Already have an account? Login here'),
+                child: const Text('Already have an account? Login here'),
                 onPressed: () {
                   Navigator.of(context)
                       .pushNamed('/login'); // Navigálj a LoginScreen-hez

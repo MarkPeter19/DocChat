@@ -1,3 +1,4 @@
+import 'package:doctorgpt/screens/DoctorScreens/Profile/EditDoctorProfileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:doctorgpt/services/doctor_services.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
-import 'package:doctorgpt/screens/DoctorScreens/Profile/EditDoctorProfileScreen.dart';
+import 'package:doctorgpt/screens/DoctorScreens/Profile/DoctorUserSettingsScreen.dart';
 
 class DoctorProfileScreen extends StatefulWidget {
   @override
@@ -62,8 +63,8 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
       await _auth.currentUser!.delete();
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error deleting account')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error deleting account')));
     }
   }
 
@@ -110,9 +111,9 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile', style: TextStyle(fontSize: 26)),
+        title: const Text('Profile', style: TextStyle(fontSize: 26)),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -120,7 +121,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   Card(
@@ -128,10 +129,10 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    margin: EdgeInsets.symmetric(vertical: 8),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
                     child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -157,7 +158,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                 bottom: -10,
                                 right: -8,
                                 child: IconButton(
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.camera_alt,
                                     color: Color.fromARGB(255, 47, 221, 137),
                                     size: 40,
@@ -167,22 +168,22 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
 
                           //username
                           Center(
                             child: Text(
-                              '$_username',
-                              style: TextStyle(
+                              _username,
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          Divider(),
-                          SizedBox(
+                          const Divider(),
+                          const SizedBox(
                             height: 12,
                           ),
 
@@ -190,7 +191,7 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 'Specialization:',
                                 style: TextStyle(
                                   fontSize: 18,
@@ -198,15 +199,15 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                 ),
                               ),
                               Text(
-                                '$_specialization',
-                                style: TextStyle(
+                                _specialization,
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
-                              Text(
+                              const Text(
                                 'Email Address:',
                                 style: TextStyle(
                                   fontSize: 18,
@@ -214,29 +215,48 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                                 ),
                               ),
                               Text(
-                                '$_email',
-                                style: TextStyle(
+                                _email,
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
                           //edit profile button
                           ElevatedButton.icon(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
-                                      EditDoctorProfileScreen()));
+                                      const EditDoctorProfileScreen()));
                             },
-                            icon: Icon(Icons.edit),
-                            label: Text('Edit Profile'),
+                            icon: const Icon(Icons.edit),
+                            label: const Text('Edit Profile'),
                             style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).colorScheme.primary,
-                              onPrimary: Colors.white,
-                              textStyle: TextStyle(fontSize: 16),
-                              minimumSize: Size(double.infinity, 40),
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              textStyle: const TextStyle(fontSize: 16),
+                              minimumSize: const Size(double.infinity, 40),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          //user settings button
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      const DoctorUserSettingsScreen()));
+                            },
+                            icon: const Icon(Icons.settings),
+                            label: const Text('User Settings'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              textStyle: const TextStyle(fontSize: 16),
+                              minimumSize: const Size(double.infinity, 40),
                             ),
                           ),
                         ],
@@ -250,30 +270,30 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
 
           //log out and delete buttons
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Column(
               children: [
                 ElevatedButton.icon(
                   onPressed: _logout,
-                  icon: Icon(Icons.exit_to_app),
-                  label: Text('Log Out'),
+                  icon: const Icon(Icons.exit_to_app),
+                  label: const Text('Log Out'),
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 252, 171, 50),
-                    onPrimary: Colors.white,
-                    textStyle: TextStyle(fontSize: 16),
-                    minimumSize: Size(double.infinity, 50),
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 252, 171, 50),
+                    textStyle: const TextStyle(fontSize: 16),
+                    minimumSize: const Size(double.infinity, 50),
                   ),
                 ),
-                SizedBox(height: 10), // Több hely az alsó gombok között
+                const SizedBox(height: 10), // Több hely az alsó gombok között
                 ElevatedButton.icon(
                   onPressed: _deleteAccount,
-                  icon: Icon(Icons.delete_forever),
-                  label: Text('Delete Account'),
+                  icon: const Icon(Icons.delete_forever),
+                  label: const Text('Delete Account'),
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 255, 106, 96),
-                    onPrimary: Colors.white,
-                    textStyle: TextStyle(fontSize: 16),
-                    minimumSize: Size(double.infinity, 50),
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 255, 106, 96),
+                    textStyle: const TextStyle(fontSize: 16),
+                    minimumSize: const Size(double.infinity, 50),
                   ),
                 ),
               ],
