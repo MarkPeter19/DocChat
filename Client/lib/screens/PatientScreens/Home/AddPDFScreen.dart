@@ -281,18 +281,17 @@ class _AddPDFScreenState extends State<AddPDFScreen> {
                 ),
 
               const SizedBox(height: 15),
-              ElevatedButton.icon(
-                onPressed: hasDoctors ? selectFile : null,
-                icon: const Icon(Icons.vertical_align_bottom, size: 24),
-                label: const Text('Select PDF'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: hasDoctors
-                      ? const Color.fromARGB(255, 255, 198, 11)
-                      : Colors.grey,
-                  minimumSize: const Size(double.infinity, 50),
+              if (!_isSelected)
+                ElevatedButton.icon(
+                  onPressed: selectFile,
+                  icon: const Icon(Icons.vertical_align_bottom, size: 24),
+                  label: const Text('Select PDF'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 255, 198, 11),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
                 ),
-              ),
               if (_isSelected)
                 Column(
                   children: [

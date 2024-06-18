@@ -50,24 +50,27 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //patient requests
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        'There are your patient requests:',
-                        style: TextStyle(fontSize: 18),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+          body: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //patient requests
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'There are your patient requests:',
+                          style: TextStyle(fontSize: 18),
+                        ),
                       ),
-                    ),
-                    for (var requestItem in patientRequests) requestItem,
-                  ],
-                ),
-              ));
+                      for (var requestItem in patientRequests) requestItem,
+                    ],
+                  ),
+                )),
+    );
   }
 }
