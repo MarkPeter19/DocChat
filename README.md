@@ -1,2 +1,2 @@
-# DoctorGPT
+# DocChat
  
