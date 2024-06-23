@@ -4,7 +4,7 @@ import 'package:advance_pdf_viewer2/advance_pdf_viewer.dart';
 class ViewPDFScreen extends StatefulWidget {
   final String pdfUrl;
 
-  ViewPDFScreen({required this.pdfUrl});
+  const ViewPDFScreen({super.key, required this.pdfUrl});
 
   @override
   _ViewPDFScreenState createState() => _ViewPDFScreenState();
@@ -32,10 +32,10 @@ class _ViewPDFScreenState extends State<ViewPDFScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('PDF Viewer'),
+        title: const Text('PDF Viewer'),
       ),
       body: _loading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : PDFViewer(document: _document),
     );
   }

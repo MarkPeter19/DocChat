@@ -96,12 +96,12 @@ class AppointmentServices {
       for (var doc in querySnapshot.docs) {
         var appointmentData = doc.data() as Map<String, dynamic>;
         var doctorId = appointmentData['doctorId'];
-        var appointmentId = doc.id; // Az appointment dokumentumának id-ja
+        var appointmentId = doc.id; // appointment id
 
-        // Ellenőrizzük, hogy az 'isAccepted' mező nem létezik-e
+        // check if 'isAccepted' property does'nt exist
         if (!appointmentData.containsKey('isAccepted')) {
           Map<String, dynamic> appointment = {
-            'id': appointmentId, // Hozzáadva az appointment id-ja
+            'id': appointmentId,
             'doctorId': doctorId,
             'date': {
               'year': appointmentData['date']['year'],

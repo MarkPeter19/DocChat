@@ -19,16 +19,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   //---login----
-  
+
   Future<void> _login() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
     try {
-      User? user = await _authService.loginWithEmailAndPassword(email, password);
+      User? user =
+          await _authService.loginWithEmailAndPassword(email, password);
       if (user != null) {
         // Itt ellenőrizzük a felhasználó típusát és navigálunk a megfelelő képernyőre.
-        var userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        var userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         var userType = userDoc.data()?['userType'];
         if (userType == 'doctor') {
           Navigator.of(context).pushReplacement(
@@ -41,18 +45,20 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       } else {
         // Hiba kezelese, ha a user null
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login failed')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Login failed')));
       }
     } on FirebaseAuthException catch (e) {
       // Firebase Auth hibak kezelese
-      String errorMessage = 'Login error, please try again';;
+      String errorMessage = 'Login error, please try again';
+      ;
       if (e.code == 'user-not-found') {
-      errorMessage = 'No user found for that email';
-    } else if (e.code == 'wrong-password') {
-      errorMessage = 'Wrong password provided for that user';
-    } else if (e.code == 'invalid-email') {
-      errorMessage = 'The email address is badly formatted.';
-    }
+        errorMessage = 'No user found for that email';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided for that user';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'The email address is badly formatted.';
+      }
 
       // Handle other errors
       showDialog(
@@ -70,8 +76,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
-  
-
 
   @override
   void dispose() {
@@ -82,73 +86,76 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const SizedBox(height: 120.0),
-              const Text(
-                'Login',
-                style: TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 90.0),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                obscureText: true,
-              ),
-              const SizedBox(height: 30.0),
-              ElevatedButton(
-                style: ButtonStyle(
-                  fixedSize: MaterialStateProperty.all<Size>(
-                    const Size(double.infinity, 50), 
-                  ),
-                ),
-                onPressed: _login,
-                child: const Text(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const SizedBox(height: 120.0),
+                const Text(
                   'Login',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              const SizedBox(height: 15.0),
-              TextButton(
-                child: const Text('Don\'t have an account? Register here'),
-                onPressed: () {
-                  Navigator.of(context)
-                      .pushNamed('/register'); // navigacio a RegisterScreen-hez
-                },
-              ),
-            ],
+                const SizedBox(height: 90.0),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 30.0),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    fixedSize: MaterialStateProperty.all<Size>(
+                      const Size(double.infinity, 50),
+                    ),
+                  ),
+                  onPressed: _login,
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 15.0),
+                TextButton(
+                  child: const Text('Don\'t have an account? Register here'),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(
+                        '/register'); // navigacio a RegisterScreen-hez
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -9,19 +9,18 @@ import 'screens/PatientScreens/Profile/PatientProfileScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'services/firebase_options.dart';
 
-
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,15 +30,15 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.amber,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SplashScreen(), // Kezdő képernyő beállítása
+      home: const SplashScreen(), // splash
       routes: {
         // routing logika
-        '/login': (context) => LoginScreen(),
-        '/register': (context) => RegisterScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
         '/doctor_home': (context) => DoctorHomeScreen(),
         '/patient_home': (context) => const PatientHomeScreen(),
-        '/doctor_profile' :(context) => DoctorProfileScreen(),
-        '/patient_profile' :(context) => PatientProfileScreen(),
+        '/doctor_profile': (context) => DoctorProfileScreen(),
+        '/patient_profile': (context) => PatientProfileScreen(),
       },
     );
   }

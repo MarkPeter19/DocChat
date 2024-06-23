@@ -198,7 +198,7 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor:
-                                    Color.fromARGB(255, 213, 78, 78),
+                                    const Color.fromARGB(255, 213, 78, 78),
                                 minimumSize: const Size(double.infinity, 50),
                               ),
                             ),
@@ -278,7 +278,7 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
                                   style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
                                     backgroundColor:
-                                        Color.fromARGB(255, 78, 182, 116),
+                                        const Color.fromARGB(255, 78, 182, 116),
                                     minimumSize:
                                         const Size(double.infinity, 50),
                                   ),
