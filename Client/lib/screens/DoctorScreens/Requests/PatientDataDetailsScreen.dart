@@ -29,7 +29,7 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
   late Map<String, dynamic> documentData;
   late String doctorId;
   bool isLoading = true;
-
+  String? _selectedTag;
   final String apiKey = APIKeys.chatPDFKey;
 
   @override
@@ -45,7 +45,12 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
       documentData = await doctorServices.fetchDocumentData(
           widget.patientId, widget.documentId);
       doctorId = await doctorServices.fetchDoctorId();
+
+      // Fetch and set the current tag
+      String? currentTag = await doctorServices.fetchDocumentTag(
+          widget.patientId, widget.documentId);
       setState(() {
+        _selectedTag = currentTag;
         isLoading = false;
       });
     } catch (e) {
@@ -55,6 +60,27 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+
+  void _updateTag(String? tag) async {
+    setState(() {
+      _selectedTag = tag;
+    });
+    try {
+      await DoctorServices()
+          .updateDocumentTag(widget.patientId, widget.documentId, tag!);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error updating tag: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      // Revert the selected tag back to the previous value on error
+      setState(() {
+        _selectedTag = tag;
+      });
     }
   }
 
@@ -100,199 +126,270 @@ class _PatientDataDetailsScreenState extends State<PatientDataDetailsScreen> {
       {'label': 'Alcohol consumption:', 'value': patientData['alcohol']},
       {'label': 'Allergies:', 'value': patientData['allergies']},
       {'label': 'Symptoms:', 'value': patientData['symptoms']},
-      {'label': 'Current treatments:', 'value': patientData['currentTreatments']},
+      {
+        'label': 'Current treatments:',
+        'value': patientData['currentTreatments']
+      },
       {'label': 'Medical history:', 'value': patientData['medicalHistory']},
     ];
 
     return Scaffold(
-        appBar: AppBar(title: const Text('Patient Details')),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 10),
-              Card(
-                margin: const EdgeInsets.all(8.0),
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Patient Data',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold)),
-                      const Divider(),
-                      ...personalDataLabels
-                          .map((data) =>
-                              _buildDataRow(data['label'], data['value']))
-                          .toList(),
-                    ],
-                  ),
+      appBar: AppBar(title: const Text('Patient Details')),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 10),
+            Card(
+              margin: const EdgeInsets.all(8.0),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Patient Data',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold)),
+                    const Divider(),
+                    ...personalDataLabels
+                        .map((data) =>
+                            _buildDataRow(data['label'], data['value']))
+                        .toList(),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16.0),
+            ),
+            const SizedBox(height: 16.0),
 
-              // PDF card
-              Card(
-                margin: const EdgeInsets.all(8.0),
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('PDF Document',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold)),
-                      const Divider(),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Image.asset(
-                            'lib/assets/pdf_logo.png',
-                            height: 50,
-                            width: 50,
-                          ),
-                          const SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                documentData['PDFName'],
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                DateFormat('yyyy-MM-dd – kk:mm').format(
-                                    (documentData['uploadDate'] as Timestamp)
-                                        .toDate()),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: Column(
+            // PDF card
+            Card(
+              margin: const EdgeInsets.all(8.0),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('PDF Document',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold)),
+                    const Divider(),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Image.asset(
+                          'lib/assets/pdf_logo.png',
+                          height: 50,
+                          width: 50,
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                // Navigate to ViewPDFScreen and pass the URL
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ViewPDFScreen(
-                                      pdfUrl: documentData['PDFUrl'],
-                                    ),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.picture_as_pdf),
-                              label: const Text('View PDF'),
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 213, 78, 78),
-                                minimumSize: const Size(double.infinity, 50),
-                              ),
+                            Text(
+                              documentData['PDFName'],
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(height: 10),
-                            ElevatedButton.icon(
-                              onPressed: () async {
-                                String? pdfUrl = await PatientServices()
-                                    .fetchDocumentPDFUrl(
-                                        widget.patientId, widget.documentId);
-                                if (pdfUrl != null) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChatScreen(
-                                        pdfUrl: pdfUrl,
-                                        doctorId: doctorId,
-                                        chatPDFService: ChatPDFService(
-                                            apiKey: APIKeys.chatPDFKey),
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  // Kezeljük a null url-t
-                                  print(
-                                      'Null URL received from fetchDocumentPDFUrl');
-                                }
-                              },
-                              icon: const Icon(Icons.chat),
-                              label: const Text('Ask ChatPDF'),
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 0, 0, 0),
-                                minimumSize: const Size(double.infinity, 50),
+                            const SizedBox(height: 2),
+                            Text(
+                              DateFormat('yyyy-MM-dd – kk:mm').format(
+                                  (documentData['uploadDate'] as Timestamp)
+                                      .toDate()),
+                              style: const TextStyle(
+                                fontSize: 14,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20.0),
-
-              //appointement card
-              Card(
-                margin: const EdgeInsets.all(8.0),
-                elevation: 3,
-                child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Column(
                         children: [
-                          const Text('Make Appointment',
-                              style: TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold)),
-                          const Divider(),
-                          Center(
-                            child: Column(
-                              children: [
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            MakeAppointmentScreen(
-                                          patientId: widget.patientId,
-                                          doctorId: doctorId,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.calendar_today),
-                                  label: const Text('Make Appointment'),
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 78, 182, 116),
-                                    minimumSize:
-                                        const Size(double.infinity, 50),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // Navigate to ViewPDFScreen and pass the URL
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ViewPDFScreen(
+                                    pdfUrl: documentData['PDFUrl'],
                                   ),
                                 ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                              ],
+                              );
+                            },
+                            icon: const Icon(Icons.picture_as_pdf),
+                            label: const Text('View PDF'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  const Color.fromARGB(255, 213, 78, 78),
+                              minimumSize: const Size(double.infinity, 50),
                             ),
                           ),
-                        ])),
+                          const SizedBox(height: 10),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              String? pdfUrl = await PatientServices()
+                                  .fetchDocumentPDFUrl(
+                                      widget.patientId, widget.documentId);
+                              if (pdfUrl != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                      pdfUrl: pdfUrl,
+                                      doctorId: doctorId,
+                                      chatPDFService: ChatPDFService(
+                                          apiKey: APIKeys.chatPDFKey),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                // Kezeljük a null url-t
+                                print(
+                                    'Null URL received from fetchDocumentPDFUrl');
+                              }
+                            },
+                            icon: const Icon(Icons.chat),
+                            label: const Text('Ask ChatPDF'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  const Color.fromARGB(255, 0, 0, 0),
+                              minimumSize: const Size(double.infinity, 50),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ));
+            ),
+            const SizedBox(height: 20.0),
+
+            //appointement card
+            Card(
+              margin: const EdgeInsets.all(8.0),
+              elevation: 3,
+              child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Make Appointment',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.bold)),
+                        const Divider(),
+                        Center(
+                          child: Column(
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          MakeAppointmentScreen(
+                                        patientId: widget.patientId,
+                                        doctorId: doctorId,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.calendar_today),
+                                label: const Text('Make Appointment'),
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 78, 182, 116),
+                                  minimumSize: const Size(double.infinity, 50),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ])),
+            ),
+
+            // Tag selection
+            Card(
+              margin: const EdgeInsets.all(8.0),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Give a Tag',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    const Divider(),
+                    Row(
+                      children: [
+                        ChoiceChip(
+                          label: const Text('Urgent'),
+                          selected: _selectedTag == 'urgent',
+                          selectedColor: Colors.red,
+                          onSelected: (selected) {
+                            _updateTag(selected ? 'urgent' : null);
+                          },
+                          backgroundColor: Colors.red.withOpacity(0.3),
+                          labelStyle: TextStyle(
+                            color: _selectedTag == 'urgent'
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        ChoiceChip(
+                          label: const Text('Not Urgent'),
+                          selected: _selectedTag == 'not urgent',
+                          selectedColor: Colors.yellow,
+                          onSelected: (selected) {
+                            _updateTag(selected ? 'not urgent' : null);
+                          },
+                          backgroundColor: Colors.yellow.withOpacity(0.3),
+                          labelStyle: TextStyle(
+                            color: _selectedTag == 'not urgent'
+                                ? Colors.black
+                                : Colors.black,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        ChoiceChip(
+                          label: const Text('Done'),
+                          selected: _selectedTag == 'done',
+                          selectedColor: Colors.green,
+                          onSelected: (selected) {
+                            _updateTag(selected ? 'done' : null);
+                          },
+                          backgroundColor: Colors.green.withOpacity(0.3),
+                          labelStyle: TextStyle(
+                            color: _selectedTag == 'done'
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

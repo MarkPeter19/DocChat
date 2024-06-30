@@ -91,6 +91,22 @@ class DoctorServices {
     }
   }
 
+  // Method to update the tag of a document
+  Future<void> updateDocumentTag(
+      String patientId, String documentId, String tag) async {
+    try {
+      await _firestore
+          .collection('patients')
+          .doc(patientId)
+          .collection('documents')
+          .doc(documentId)
+          .update({'tag': tag});
+    } catch (e) {
+      print('Error updating document tag: $e');
+      throw Exception('Error updating document tag');
+    }
+  }
+
   //fetch patient requets for items
   Future<List<Map<String, dynamic>>> fetchPatientRequests(
       String doctorId) async {
@@ -125,11 +141,35 @@ class DoctorServices {
               formattedUploadDate, // A dokumentum feltöltésének ideje
           'documentId': document.id, // A dokumentum azonosítója
           'patientId': patientId,
+          'tag': documentData['tag'] ?? 'none',
         });
       }
     }
 
     return requests;
+  }
+
+  // Method to fetch the current tag of a document
+  Future<String?> fetchDocumentTag(String patientId, String documentId) async {
+    try {
+      DocumentSnapshot documentSnapshot = await _firestore
+          .collection('patients')
+          .doc(patientId)
+          .collection('documents')
+          .doc(documentId)
+          .get();
+
+      if (!documentSnapshot.exists) {
+        throw Exception('Document not found');
+      }
+
+      Map<String, dynamic> data =
+          documentSnapshot.data() as Map<String, dynamic>;
+      return data['tag'] as String?;
+    } catch (e) {
+      print('Error fetching document tag: $e');
+      throw Exception('Error fetching document tag');
+    }
   }
 
   // fetch data for patient data details screen
@@ -215,7 +255,8 @@ class DoctorServices {
   }
 
   //save doctor datas
-  Future<void> saveDoctorDatas(String doctorId, Map<String, dynamic> data) async {
+  Future<void> saveDoctorDatas(
+      String doctorId, Map<String, dynamic> data) async {
     try {
       await _firestore.collection('doctors').doc(doctorId).update(data);
     } catch (e) {
@@ -237,6 +278,24 @@ class DoctorServices {
     } catch (e) {
       print('Error fetching contact requests: $e');
       throw e;
+    }
+  }
+
+  // Törlési művelet implementálása
+  Future<void> deleteRequest(String patientId, String documentId) async {
+    try {
+      // A Firestore-ból történő törlés
+      await _firestore
+          .collection('patients') // a kollekció neve
+          .doc(patientId) // a páciens dokumentumának azonosítója
+          .collection('documents') // a dokumentumok kollekciója
+          .doc(documentId) // a törlendő dokumentum azonosítója
+          .delete();
+
+      print('Request deleted successfully');
+    } catch (e) {
+      print('Error deleting request: $e');
+      throw Exception('Error deleting request');
     }
   }
 
